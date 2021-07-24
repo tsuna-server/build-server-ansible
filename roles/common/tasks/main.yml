@@ -1,0 +1,3 @@
+- name: Upgrade all current packages
+  apt:
+    upgrade: full

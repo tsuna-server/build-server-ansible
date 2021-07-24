@@ -1,0 +1,7 @@
+---
+- name: Install packages for private routers
+  apt:
+    name:
+      - iptables-persistent
+      - netfilter-persistent
+      - bridge-utils
