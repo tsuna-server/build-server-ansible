@@ -1,0 +1,5 @@
+[private-routers]
+private-router01
+
+[routers:children]
+private-routers
