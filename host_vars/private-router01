@@ -1,0 +1,6 @@
+---
+host_vars:
+  iptables:
+    masquerade:
+      src_ip: 192.168.255.0
+
