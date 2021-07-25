@@ -1,0 +1,11 @@
+---
+- name: Create 00-installer-config.yaml for netplan
+  ansible.builtin.template:
+    src: "{{ inventory_hostname }}/00-installer-config.yaml.j2"
+    dest: "/var/tmp/00-installer-config.yaml"    # Testing
+    owner: root
+    group: root
+    mode: '644'
+    backup: no
+  when: "'routers' in group_names"
+  notify: Apply netplan

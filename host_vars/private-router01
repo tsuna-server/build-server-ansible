@@ -2,5 +2,19 @@
 host_vars:
   iptables:
     masquerade:
-      src_ip: 192.168.255.0
+      src_ip: 192.168.255.0/24
+
+  network:
+    outer_bridge_interface:
+      ip: 192.168.254.254/24
+      gateway4: 192.168.254.1
+      mtu: 1500
+      nameservers:
+        addresses:
+          - 192.168.254.1
+          - 8.8.8.8
+          - 8.8.4.4
+    inner_interface:
+      ip: 192.168.255.254/24
+      mtu: 1500
 
