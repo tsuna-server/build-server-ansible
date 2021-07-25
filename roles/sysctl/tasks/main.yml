@@ -1,0 +1,10 @@
+---
+- name: Copy
+  ansible.builtin.copy:
+    src: "{{ inventory_hostname }}/20-net-ipv4-ip-forward.conf"
+    dest: "/etc/sysctl.d/20-net-ipv4-ip-forward.conf"
+    owner: root
+    group: root
+    mode: '644'
+  when: "'routers' in group_names"
+  notify: Apply kernel parameters

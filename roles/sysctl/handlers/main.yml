@@ -1,0 +1,2 @@
+- name: Apply kernel parameters
+  shell: /usr/sbin/sysctl -p
