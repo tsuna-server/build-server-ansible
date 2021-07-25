@@ -1,5 +1,5 @@
 ---
-- name: Copy rules.v4 for iptables
+- name: Create rules.v4 for iptables
   ansible.builtin.template:
     src: "{{ inventory_hostname }}/rules.v4.j2"
     dest: "/etc/iptables/rules.v4"
