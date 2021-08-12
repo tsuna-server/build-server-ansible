@@ -6,10 +6,8 @@ This is a repository to build servers.
 You can prepare an environment with Python virtualenv like below.
 
 ```
-$ python3 -m venv venv/
 $ . ./venv/bin/activate
-$ pip -r requirements.txt
-(venv) $  # <- your terminal will be changed
+(venv) $ pip -r requirements.txt
 ```
 
 `ansible-playbook` can run with checking mode by adding `--check` option like below.
@@ -22,6 +20,6 @@ $ pip -r requirements.txt
 If NO errors were reported then you can run Ansible without the option `--check`.
 
 ```
-(venv) $ ansible-playbook -i production -l [hostname or group name] sites.yml
+(venv) $ ansible-playbook -i production -l <hostname or group name> sites.yml
 ```
 
