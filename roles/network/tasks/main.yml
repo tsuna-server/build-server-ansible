@@ -1,10 +1,35 @@
 ---
-- name: Create 00-installer-config.yaml for netplan
+- name: Get the existence of a directory /etc/cloud/cloud.cfg.d
+  stat:
+    path: /etc/cloud/cloud.cfg.d
+  register: stat_directory
+
+- name: Get the existence of a file /etc/cloud/cloud.cfg.d
+  stat:
+    path: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+  register: stat_file
+
+- name: Create a file if /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg was not existed
+  copy:
+    dest: "/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg"
+    content: "network: {config: disabled}"
+  when: "stat_directory.stat.exists and not stat_file.stat.exists"
+
+- name: Declare path of the configuration file
+  set_fact:
+    group_directory: "{% if 'compute-nodes' in group_names %}compute-nodes{% elif 'private-routers' in group_names %}private-routers{% else %}default{% endif %}"
+
+- name: Debug group_names
+  ansible.builtin.debug:
+    msg: "group_names={{ group_names }}, groups={{ groups }}, group_directory={{ group_directory }}"
+
+- name: Create 90-custom-network-config.yaml for netplan
   ansible.builtin.template:
-    src: "{{ inventory_hostname }}/00-installer-config.yaml.j2"
-    dest: "/etc/netplan/00-installer-config.yaml"
+    src: "{{ inventory_hostname }}/90-custom-network-config.yaml"
+    dest: "/etc/netplan/90-custom-network-config.yaml"
     owner: root
     group: root
-    mode: '644'
+    mode: '0644'
     backup: no
   notify: Apply netplan
+
