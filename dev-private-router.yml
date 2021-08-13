@@ -1,0 +1,8 @@
+---
+- hosts: private-routers
+  roles:
+    - dev-environment-common
+    - common
+    - private-router-common
+    - network
+    - iptables
