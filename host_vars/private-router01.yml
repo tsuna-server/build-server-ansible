@@ -1,20 +1,24 @@
 ---
 host_vars:
   iptables:
-    masquerade:
-      src_ip: 192.168.255.0/24
+    provider:
+      nat:
+        src: 192.168.1.0/24
 
   network:
-    outer_bridge_interface:
-      ip: 192.168.254.254/24
-      gateway4: 192.168.254.1
-      mtu: 1500
-      nameservers:
-        addresses:
-          - 192.168.254.1
-          - 8.8.8.8
-          - 8.8.4.4
-    inner_interface:
-      ip: 192.168.255.254/24
-      mtu: 1500
-
+    provider:
+      bridge:
+        - name: br0
+          ip: 192.168.1.254/24
+          gateway4: 192.168.1.1
+          mtu: 1500
+          nameservers:
+            addresses:
+              - 192.168.1.1
+              - 8.8.8.8
+              - 8.8.4.4
+    management:
+      bridge:
+        - name: br1
+          ip: 192.168.2.1
+          mtu: 1500
