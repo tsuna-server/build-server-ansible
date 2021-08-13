@@ -1,0 +1,6 @@
+---
+- name: Domain should be running
+  community.libvirt.virt:
+    name: "{{ inventory_hostname }}"
+    state: running
+
