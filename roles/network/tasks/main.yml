@@ -25,7 +25,7 @@
 
 - name: Create 90-custom-network-config.yaml for netplan
   ansible.builtin.template:
-    src: "{{ inventory_hostname }}/90-custom-network-config.yaml"
+    src: "{{ group_directory }}/90-custom-network-config.yaml.j2"
     dest: "/etc/netplan/90-custom-network-config.yaml"
     owner: root
     group: root
