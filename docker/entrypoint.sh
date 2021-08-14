@@ -39,7 +39,7 @@ main() {
     echo "inventry_file = ${inventry_file}, target = ${target}"
     echo "$@"
 
-    ${ANSIBLE_DIRECTORY}/${PYTHON_VIRTUALENV_DIRECTORY}/bin/ansible-playbook -i "$inventry_file" -l "$target" site.yml
+    ${ANSIBLE_DIRECTORY}/${PYTHON_VIRTUALENV_DIRECTORY}/bin/ansible-playbook --user ubuntu -i "$inventry_file" -l "$target" site.yml
 }
 
 create_ansible_environment() {
