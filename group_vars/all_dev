@@ -5,3 +5,9 @@ group_vars:
     dev-compute01: 192.168.2.11
     dev-compute02: 192.168.2.12
     dev-compute03: 192.168.2.13
+
+  ntp:
+    ip:
+      allow: 192.168.2.0/24
+      server: dev-private-router01
+
