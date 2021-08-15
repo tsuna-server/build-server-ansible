@@ -1,5 +1,5 @@
 ---
-- hosts: private-routers
+- hosts: private_routers
   roles:
     - dev-environment-common
     - common
