@@ -1,5 +1,5 @@
-[private-routers]
+[private_routers]
 private-router01
 
 [routers:children]
-private-routers
+private_routers
