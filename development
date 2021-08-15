@@ -5,6 +5,9 @@ dev-private-router01
 [routers:children]
 private_routers
 
+[controllers:children]
+routers
+
 [all_dev:children]
 routers
 
