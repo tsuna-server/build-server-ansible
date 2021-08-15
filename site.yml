@@ -1,5 +1,5 @@
 ---
-- import_playbook: private_router.yml
+- import_playbook: private_routers.yml
 
 - import_playbook: controllers.yml
 
