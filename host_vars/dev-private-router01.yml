@@ -2,8 +2,13 @@
 host_vars:
   iptables:
     provider:
+      # NAT source IP going from provider segment
       nat:
         src: 192.168.1.0/24
+    management:
+      # NAT source IP going from management segment
+      nat:
+        src: 192.168.2.0/24
 
   network:
     provider:
