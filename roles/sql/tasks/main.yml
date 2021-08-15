@@ -1,0 +1,22 @@
+---
+- name: Install packages for sql services
+  apt:
+    name:
+      name:
+        - mariadb-server
+        - python3-pymysql
+
+- name: Configure /etc/mysql/mariadb.conf.d/99-openstack.cnf
+  ansible.builtin.template:
+    src: 99-openstack.cnf
+    dest: /etc/mysql/mariadb.conf.d/99-openstack.cnf
+    group: root
+    owner: root
+    mode: '0644'
+  notify: Reboot mariadb
+
+- name: MariaDB should be enabled
+  ansible.builtin.systemd:
+    enabled: true
+    name: mariadb
+
