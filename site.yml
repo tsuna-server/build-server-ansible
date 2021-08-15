@@ -1,2 +1,2 @@
 ---
-- import_playbook: private-router.yml
+- import_playbook: private_router.yml

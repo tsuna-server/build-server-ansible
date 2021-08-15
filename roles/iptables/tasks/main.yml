@@ -1,12 +1,15 @@
 ---
+- name: Declare path of the configuration file
+  set_fact:
+    group_directory: "{% if 'compute_nodes' in group_names %}compute_nodes{% elif 'private_routers' in group_names %}private_routers{% else %}default{% endif %}"
+
 - name: Create rules.v4 for iptables
   ansible.builtin.template:
-    src: "{{ inventory_hostname }}/rules.v4.j2"
+    src: "{{ group_directory }}/rules.v4.j2"
     dest: "/etc/iptables/rules.v4"
     owner: root
     group: root
     mode: '644'
     backup: yes
-  when: "'routers' in group_names"
-  notify: Restart netfilter-persistent
+  notify: Restart netfilter persistent
 
