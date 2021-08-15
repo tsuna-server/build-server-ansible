@@ -6,3 +6,4 @@
     - private-router-common
     - network
     - iptables
+    - hosts
