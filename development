@@ -5,3 +5,6 @@ dev-private-router01
 [routers:children]
 private_routers
 
+[all_dev:children]
+routers
+
