@@ -3,7 +3,7 @@
 :INPUT ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
 :POSTROUTING ACCEPT [0:0]
--A POSTROUTING -s {{ host_vars.iptables.masquerade.src_ip }} -j MASQUERADE
+-A POSTROUTING -s {{ host_vars.iptables.provider.nat.src }} -j MASQUERADE
 COMMIT
 *filter
 :INPUT ACCEPT [0:0]
