@@ -11,3 +11,7 @@ group_vars:
       allow: 192.168.2.0/24
       server: dev-private-router01
 
+  sql:
+    bind_address: 192.168.2.1
+    max_connections: 4096
+
