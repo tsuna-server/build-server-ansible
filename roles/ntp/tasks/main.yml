@@ -1,0 +1,23 @@
+---
+- name: Install packages for ntp services
+  apt:
+    name:
+      - chrony
+
+- name: Determin config of chrony
+  ansible.builtin.set_fact:
+    chrony_config: "{% if 'controllers' in group_names %}allow {{ group_vars.ntp.ip.allow }}{% else %}server {{ group_vars.ntp.ip.server }} iburst{% endif %}"
+
+- name: Configure /etc/chrony/chrony.conf
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: /etc/chrony/chrony.conf
+    group: root
+    owner: root
+    mode: '0644'
+  notify: Reboot chrony
+
+- name: chrony should be enabled
+  ansible.builtin.systemd:
+    enabled: yes
+    name: chrony
