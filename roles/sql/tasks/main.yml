@@ -2,9 +2,8 @@
 - name: Install packages for sql services
   apt:
     name:
-      name:
-        - mariadb-server
-        - python3-pymysql
+      - mariadb-server
+      - python3-pymysql
 
 - name: Configure /etc/mysql/mariadb.conf.d/99-openstack.cnf
   ansible.builtin.template:
@@ -19,4 +18,6 @@
   ansible.builtin.systemd:
     enabled: true
     name: mariadb
+
+- include: mysql_secure_installation.yml
 
