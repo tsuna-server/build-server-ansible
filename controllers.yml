@@ -4,4 +4,5 @@
   roles:
     - ntp
     - sql
+    - mq
 
