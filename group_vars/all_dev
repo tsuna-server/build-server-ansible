@@ -14,9 +14,10 @@ group_vars:
   sql:
     bind_address: 192.168.2.1
     max_connections: 4096
-    password: secret
 
   mq:
-    usre_name: openstack
+    user_name: openstack
     password: secret
 
+  memcached:
+    listen_ip: 192.168.2.1
