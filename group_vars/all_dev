@@ -16,3 +16,7 @@ group_vars:
     max_connections: 4096
     password: secret
 
+  mq:
+    usre_name: openstack
+    password: secret
+
