@@ -1,0 +1,24 @@
+---
+- name: Install packages for rabbitmq-server
+  apt:
+    name:
+      - rabbitmq-server
+
+- name: Add user openstack for rabbitmq
+  ansible.builtin.command:
+   argv:
+    - rabbitmqctl
+    - add_user
+    - "{{ group_vars.mq.user_name }}"
+    - "{{ group_vars.mq.password }}"
+
+- name: Set permission of rabbitmq
+  ansible.builtin.command:
+    argv:
+      - rabbitmqctl
+      - set_permissions
+      - "{{ group_vars.mq.user_name }}"
+      - ".*"
+      - ".*"
+      - ".*"
+
