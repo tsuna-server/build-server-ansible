@@ -1,7 +1,5 @@
 ---
-- name: Run mysql_secure_installation.yml
-
-# 
+# https://stackoverflow.com/questions/24270733/automate-mysql-secure-installation-with-echo-command-via-a-shell-script
 - name: Make sure that NOBODY can access the server without a password
   ansible.builtin.command:
     argv:
