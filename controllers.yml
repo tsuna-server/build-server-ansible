@@ -5,4 +5,5 @@
     - ntp
     - sql
     - mq
+    - memcached
 

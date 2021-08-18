@@ -1,0 +1,22 @@
+---
+- name: Install packages for rabbitmq-server
+  apt:
+    name:
+      - memcached
+      - python3-memcache
+
+- name: Modify /etc/memcached.conf
+  ansible.builtin.template:
+    src: memcached.conf.j2
+    dest: /etc/memcached.conf
+    owner: root
+    group: root
+    mode: '0644'
+  register: memcached_conf
+
+- name: Restart memcached if its config files were modified
+  ansible.builtin.systemd:
+    state: restarted
+    name: memcached
+  when: memcached_conf.changed
+
