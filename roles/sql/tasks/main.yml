@@ -19,5 +19,21 @@
     enabled: true
     name: mariadb
 
+# Run mysql_secure_installation if it was not run
+- name: Check a flag that means mysql_secure_installation.yml was finished
+  stat:
+    path: /root/.mysql_secure_installation_has_finished
+  register: flag_file
+
 - include: mysql_secure_installation.yml
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means mysql_secure_installation.yml was finished
+  copy:
+    content: ""
+    dest: /root/.mysql_secure_installation_has_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
 

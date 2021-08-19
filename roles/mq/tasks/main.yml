@@ -4,6 +4,11 @@
     name:
       - rabbitmq-server
 
+- name: Check openstack user has already existed in rabbitmq
+  ansible.builtin.script:
+    cmd: check_existence_of_user.sh {{ group_vars.mq.user_name }}
+  register: ret
+
 - name: Add user openstack for rabbitmq
   ansible.builtin.command:
    argv:
@@ -11,6 +16,7 @@
     - add_user
     - "{{ group_vars.mq.user_name }}"
     - "{{ group_vars.mq.password }}"
+  when: ret.rc != 0
 
 - name: Set permission of rabbitmq
   ansible.builtin.command:
