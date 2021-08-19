@@ -6,4 +6,4 @@
     - sql
     - mq
     - memcached
-
+    - etcd
