@@ -7,3 +7,4 @@
     - mq
     - memcached
     - etcd
+    - add-openstack_repository
