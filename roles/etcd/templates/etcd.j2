@@ -114,7 +114,7 @@ ETCD_INITIAL_ADVERTISE_PEER_URLS="http://{{ ip_of_inventory_host }}:2380"
 ## default uses `default` for the key because this is the default for the
 ## `--name` flag.
 ## default: "default=http://localhost:2380"
-ETCD_INITIAL_CLUSTER="{{ inventry_hostname }}=http://{{ ip_of_inventory_host }}:2380"
+ETCD_INITIAL_CLUSTER="{{ inventory_hostname }}=http://{{ ip_of_inventory_host }}:2380"
 
 ##### --initial-cluster-state
 ## Initial cluster state ("new" or "existing"). Set to `new` for all members

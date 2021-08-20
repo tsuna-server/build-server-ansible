@@ -11,7 +11,7 @@
 
 - name: Declare a variable for IP address
   set_fact:
-    ip_of_inventory_host: "{{ ret_getent.stdout_lines }}"
+    ip_of_inventory_host: "{{ ret_getent.stdout_lines[0] }}"
 
 - name: Create etcd config file
   ansible.builtin.template:
@@ -27,4 +27,9 @@
     state: restarted
     name: etcd
   when: etcd_config.changed
+
+- name: etcd should be enabled
+  ansible.builtin.systemd:
+    enabled: yes
+    name: etcd
 
