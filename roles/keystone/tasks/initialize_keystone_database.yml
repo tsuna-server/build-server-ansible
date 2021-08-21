@@ -1,0 +1,22 @@
+---
+- name: Create Keystone database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "CREATE DATABASE keystone;"
+
+- name: Grant privileges to resources on keystone database for a user keystone at localhost
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '{{ group_vars.keystone.password }}';"
+
+- name: Grant privileges to resources on keystone database for a user keystone at remote host
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY '{{ group_vars.keystone.password }}';"
+
