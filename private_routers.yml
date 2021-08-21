@@ -3,7 +3,7 @@
   become: yes
   roles:
     - common
-    - private-router-common
+    - private_router_common
     - network
     - iptables
     - hosts
