@@ -43,3 +43,18 @@
       - --keystone-group
       - "{{ group_vars.keystone.group }}"
 
+- name: Bootstrap the Identity service
+  ansible.builtin.command:
+    argv:
+      - keystone-manage
+      - bootstrap
+      - --bootstrap-password '{{ group_vars.keystone.password }}'
+      - --bootstrap-admin-url
+      - http://{{ inventory_hostname }}:5000/v3/
+      - --bootstrap-internal-url
+      - http://{{ inventory_hostname }}:5000/v3/
+      - --bootstrap-public-url
+      - http://{{ inventory_hostname }}:5000/v3/
+      - --bootstrap-region-id
+      - RegionOne
+
