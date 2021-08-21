@@ -26,3 +26,8 @@ group_vars:
   etcd:
     initial_cluster_token: etcd-cluster
 
+  keystone:
+    user: keystone
+    group: keystone
+    password: secret
+
