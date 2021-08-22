@@ -1,6 +1,5 @@
 ---
-- name: Reboot chrony
+- name: Restart chrony
   ansible.builtin.systemd:
     state: restarted
     name: chrony
-

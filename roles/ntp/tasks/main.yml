@@ -15,7 +15,10 @@
     group: root
     owner: root
     mode: '0644'
-  notify: Reboot chrony
+  notify: Restart chrony
+
+- name: Run notified handler of memcached
+  meta: flush_handlers
 
 - name: chrony should be enabled
   ansible.builtin.systemd:
