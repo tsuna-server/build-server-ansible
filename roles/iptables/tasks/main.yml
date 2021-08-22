@@ -13,3 +13,11 @@
     backup: yes
   notify: Restart netfilter persistent
 
+- name: Run notified handler of iptables
+  meta: flush_handlers
+
+- name: Iptables should be enabled
+  ansible.builtin.systemd:
+    name: netfilter-persistent
+    enabled: yes
+
