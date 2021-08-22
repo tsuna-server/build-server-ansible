@@ -12,11 +12,8 @@
     owner: root
     group: root
     mode: '0644'
-  register: memcached_conf
+  notify: Restart memcached
 
-- name: Restart memcached if its config files were modified
-  ansible.builtin.systemd:
-    state: restarted
-    name: memcached
-  when: memcached_conf.changed
+- name: Run notified handler of memcached
+  meta: flush_handlers
 
