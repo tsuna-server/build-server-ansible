@@ -30,3 +30,8 @@
       - ".*"
   when: ret.rc != 0
 
+- name: Rabbitmq should be enabled
+  ansible.builtin.systemd:
+    name: rabbitmq-server
+    enabled: yes
+
