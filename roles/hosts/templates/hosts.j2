@@ -3,5 +3,5 @@
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
 {% for key, value in group_vars.hosts.items() %}
-{{ value }} {{ key }}
+{{ value }} {{ key.split('.')[0] }} {{ key }}
 {% endfor %}

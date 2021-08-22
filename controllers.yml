@@ -8,3 +8,4 @@
     - memcached
     - etcd
     - add_openstack_repository
+    - keystone
