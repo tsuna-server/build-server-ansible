@@ -12,7 +12,10 @@
     group: root
     owner: root
     mode: '0644'
-  notify: Reboot mariadb
+  notify: Restart mariadb
+
+- name: Run notified handler of mariadb
+  meta: flush_handlers
 
 - name: MariaDB should be enabled
   ansible.builtin.systemd:

@@ -1,5 +1,5 @@
 ---
-- name: Reboot mariadb
+- name: Restart mariadb
   ansible.builtin.systemd:
     state: restarted
     name: mariadb
