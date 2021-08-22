@@ -8,6 +8,7 @@
   ansible.builtin.script:
     cmd: check_existence_of_user.sh {{ group_vars.mq.user_name }}
   register: ret
+  failed_when: ret.rc not in [0, 1]
 
 - name: Add user openstack for rabbitmq
   ansible.builtin.command:
@@ -27,4 +28,5 @@
       - ".*"
       - ".*"
       - ".*"
+  when: ret.rc != 0
 
