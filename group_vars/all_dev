@@ -31,3 +31,9 @@ group_vars:
     group: keystone
     password: secret
 
+  openstack:
+    package:
+      repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
+      keyserver: keyserver.ubuntu.com
+      id: 5EDB1B62EC4926EA
+

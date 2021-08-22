@@ -1,7 +1,12 @@
 ---
+- name: Add a GPG key for OpenStack wallaby
+  ansible.builtin.apt_key:
+    keyserver: "{{ group_vars.openstack.package.keyserver }}"
+    id: "{{ group_vars.openstack.package.id }}"
+
 - name: Add a repository of OpenStack wallaby
   ansible.builtin.apt_repository:
-    repo: deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main
+    repo: "{{ group_vars.openstack.package.repository }}"
 
 - name: Update package indexes
   apt:
