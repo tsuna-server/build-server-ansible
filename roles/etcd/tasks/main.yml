@@ -20,13 +20,10 @@
     owner: root
     group: root
     mode: '0644'
-  register: etcd_config
+  notify: Restart etcd
 
-- name: Restart etcd if its config files were modified
-  ansible.builtin.systemd:
-    state: restarted
-    name: etcd
-  when: etcd_config.changed
+- name: Run notified handler of etcd
+  meta: flush_handlers
 
 - name: etcd should be enabled
   ansible.builtin.systemd:
