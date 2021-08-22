@@ -23,6 +23,25 @@
     name:
       - keystone
 
+- name: Configure keystone.conf
+  ansible.builtin.template:
+    src: keystone/keystone.conf.j2
+    dest: /etc/keystone/keystone.conf
+    owner: keystone
+    group: keystone
+    mode: '0640'
+
+- name: Sync keystone DB
+  ansible.builtin.command:
+    argv:
+      - su
+      - -s
+      - /bin/sh
+      - -c
+      - "keystone-manage db_sync"
+      - "{{ group_vars.keystone.user }}"
+
+# Command `keystone-manage fernet_setup` is idempotent
 - name: Initialize Fernet key repositories with keystone-manage fernet_setup
   ansible.builtin.command:
     argv:
@@ -33,6 +52,7 @@
       - --keystone-group
       - "{{ group_vars.keystone.group }}"
 
+# Command `keystone-manage credential_setup` is idempotent
 - name: Initialize Fernet key repositories with keystone-manage credential_setup
   ansible.builtin.command:
     argv:
@@ -43,12 +63,14 @@
       - --keystone-group
       - "{{ group_vars.keystone.group }}"
 
+# Command `keystone-manage bootstrap` is idempotent
 - name: Bootstrap the Identity service
   ansible.builtin.command:
     argv:
       - keystone-manage
       - bootstrap
-      - --bootstrap-password '{{ group_vars.keystone.password }}'
+      - --bootstrap-password
+      - '{{ group_vars.keystone.password }}'
       - --bootstrap-admin-url
       - http://{{ inventory_hostname }}:5000/v3/
       - --bootstrap-internal-url
@@ -56,5 +78,17 @@
       - --bootstrap-public-url
       - http://{{ inventory_hostname }}:5000/v3/
       - --bootstrap-region-id
-      - RegionOne
+      - "{{ group_vars.openstack.region.name }}"
+
+- name: Set ServerName in apache2 config
+  ansible.builtin.template:
+    src: templates/apache2/sites-available/000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart apache2
+
+- name: Run notified handler of apache2
+  meta: flush_handlers
 
