@@ -30,10 +30,17 @@ group_vars:
     user: keystone
     group: keystone
     password: secret
+    configs:
+      keystone_conf:
+        token:
+          provider: fernet
 
   openstack:
     package:
       repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
       keyserver: keyserver.ubuntu.com
       id: 5EDB1B62EC4926EA
+    region:
+      # Create default region
+      name: RegionOne
 
