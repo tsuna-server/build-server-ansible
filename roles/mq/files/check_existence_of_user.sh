@@ -3,7 +3,7 @@
 main() {
     local target_user="$1"
 
-    [[ -z "$target_user" ]] && return 1
+    [[ -z "$target_user" ]] && return 2
 
     while read user; do
         [[ "$target_user" == "$user" ]] && return 0
