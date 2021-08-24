@@ -1,10 +1,10 @@
 group_vars:
   hosts:
     # Define IP addresses in management
-    dev-private-router01: 192.168.2.1
-    dev-compute01: 192.168.2.11
-    dev-compute02: 192.168.2.12
-    dev-compute03: 192.168.2.13
+    dev-private-router01.example.com: 192.168.2.1
+    dev-compute01.example.com: 192.168.2.11
+    dev-compute02.example.com: 192.168.2.12
+    dev-compute03.example.com: 192.168.2.13
 
   ntp:
     ip:
