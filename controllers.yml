@@ -9,3 +9,11 @@
     - etcd
     - add_openstack_repository
     - keystone
+  environment:
+    OS_USERNAME: admin
+    OS_PASSWORD: "{{ group_vars.openstack.password }}"
+    OS_PROJECT_NAME: admin
+    OS_USER_DOMAIN_NAME: Default
+    OS_PROJECT_DOMAIN_NAME: Default
+    OS_AUTH_URL: "{{ group_vars.keystone.auth_url }}"
+    OS_IDENTITY_API_VERSION: 3
