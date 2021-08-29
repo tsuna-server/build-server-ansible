@@ -1,0 +1,14 @@
+---
+- name: Include a do_create_domain.yml
+  include: do_create_domain.yml
+  loop: "{{ group_vars.openstack.domains }}"
+
+- name: Get list of domains
+  ansible.builtin.command:
+    argv: ["openstack", "domain", "list"]
+  register: result
+
+- name: Print list of domains
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+

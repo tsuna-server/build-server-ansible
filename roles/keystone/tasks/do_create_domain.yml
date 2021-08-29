@@ -1,0 +1,17 @@
+---
+- name: Check the domain is already existed or not
+  ansible.builtin.script: ./check_duplicate_domain.sh "{{ item.name }}"
+  register: result
+  failed_when: ( result.rc not in [0, 1] )
+
+- name: Create a domain
+  ansible.builtin.command:
+    argv: ["openstack", "domain", "create", "--description", "{{ item.description }}", "{{ item.name }}"]
+    creates: "/opt/ansible/flags/do_create_domain/{{ item.name }}"
+  when: result.rc == 0
+
+- name: Print the result of creating example domain
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+  when: result.rc == 0
+
