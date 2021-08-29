@@ -92,3 +92,93 @@
 - name: Run notified handler of apache2
   meta: flush_handlers
 
+# This instruction assumes environment variables in order to authenticate the endpoint are already declared at controllers.yml.
+- name: Run openstack domain list
+  ansible.builtin.command:
+    argv: ["openstack", "domain", "list"]
+  register: result
+
+- name: Print the result of openstack domain list
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# Optional: Add an example domain
+- name: Create an example domain
+  ansible.builtin.command:
+    argv: ["openstack", "domain", "create", "--description", "An Example Domain", "example"]
+  register: result
+
+- name: Print the result of creating example domain
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+- name: Run openstack domain list
+  ansible.builtin.command:
+    argv: ["openstack", "domain", "list"]
+  register: result
+
+- name: Print the result of openstack domain list
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# Creating a project service
+- name: Create a project named "service" in "default" domain
+  ansible.builtin.command:
+    argv: ["openstack", "project", "create", "--domain", "default", "--description", "Service Project", "service"]
+  register: result
+
+- name: Print the result of creating a project "service"
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# Optional: Create a project "myproject"
+- name: Create a project named "myproject" in "default" domain
+  ansible.builtin.command:
+    argv: ["openstack", "project", "create", "--domain", "default", "--description", "Demo Project", "myproject"]
+  register: result
+
+- name: Print the result of creating a project "myproject"
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# List all created projects
+- name: List all created projects
+  ansible.builtin.command:
+    argv: ["openstack", "project", "list", "--long", "--domain", "default"]
+  register: result
+
+- name: Print all created projects
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# Create a user in domain
+- name: Create a user "myuser" in a domain "default"
+  ansible.builtin.command:
+    argv: ["openstack", "user", "create", "--domain", "default", "--password=secret", "myuser"]
+  register: result
+- name: Print a result of creating a user
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+- name: List users in a domain "default"
+  ansible.builtin.command:
+    argv: ["openstack", "user", "list", "--domain", "default", "--long"]
+  register: result
+- name: Print all created users
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# Create a role
+- name: Create a role "myrole"
+  ansible.builtin.command:
+    argv: ["openstack", "role", "create", "myrole"]
+  register: result
+- name: Print a result of creating a role
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
+# Add a role to a user and group
+- name: Add a role to a user "myuser" and a group "myproject"
+  ansible.builtin.command:
+    argv: ["openstack", "role", "add", "--project", "myproject", "--user", "myuser", "myrole"]
+
