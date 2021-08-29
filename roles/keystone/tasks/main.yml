@@ -93,14 +93,12 @@
   meta: flush_handlers
 
 # This instruction assumes environment variables in order to authenticate the endpoint are already declared at controllers.yml.
-- include: create_domain.yml
+- name: Include create_domain.yml
+  include: create_domain.yml
 
-##
+- name: Include create_project.yml
+  include: create_project.yml
 
-#- name: Print the result of openstack domain list
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
 ## Creating a project service
 #- name: Create a project named "service" in "default" domain
 #  ansible.builtin.command:

@@ -1,5 +1,5 @@
 ---
-- name: Include a do_create_domain.yml
+- name: Include do_create_domain.yml
   include: do_create_domain.yml
   loop: "{{ group_vars.openstack.domains }}"
 
