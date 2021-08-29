@@ -6,6 +6,8 @@
 - name: Include do_create_project_in_domain.yml
   include: do_create_project_in_domain.yml
   loop: "{{ item.projects }}"
+  loop_control:
+    loop_var: inner_item
 
 - name: Get list of projects
   ansible.builtin.command:

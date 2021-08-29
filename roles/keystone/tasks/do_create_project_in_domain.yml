@@ -1,12 +1,12 @@
 ---
 - name: Check the project is already existed or not
-  ansible.builtin.script: ./check_duplicate_project.sh "{{ domain_of_project }}" "{{ item.name }}"
+  ansible.builtin.script: ./check_duplicate_project.sh "{{ domain_of_project }}" "{{ inner_item.name }}"
   register: result_of_checking
   failed_when: ( result_of_checking.rc not in [0, 1] )
 
 - name: Create a project
   ansible.builtin.command:
-    argv: ["openstack", "project", "create", "--domain", "{{ domain_of_project }}", "--description", "{{ item.description }}", "{{ item.name }}"]
+    argv: ["openstack", "project", "create", "--domain", "{{ domain_of_project }}", "--description", "{{ inner_item.description }}", "{{ inner_item.name }}"]
   register: result
   when: result_of_checking.rc == 0
 
