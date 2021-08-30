@@ -1,0 +1,12 @@
+---
+- name: Declare domain variable
+  set_fact:
+    domain_of_user: "{{ item.name }}"
+
+- name: Include do_create_user_in_domain.yml
+  include: do_create_user_in_domain.yml
+  loop: "{{ item.users }}"
+  loop_control:
+    loop_var: inner_item
+  when: item.users is defined
+

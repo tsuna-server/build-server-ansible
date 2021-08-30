@@ -1,0 +1,9 @@
+---
+- name: Check the user is already existed or not
+  ansible.builtin.script: ./check_duplicate_user.sh "{{ domain_of_user }}" "{{ inner_item.name }}"
+  register: result_of_checking
+  failed_when: ( result_of_checking.rc not in [0, 1] )
+
+- name: Create a user
+
+

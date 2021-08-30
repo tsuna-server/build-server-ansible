@@ -1,6 +1,6 @@
 ---
 
-# Run mysql_secure_installation if it was not run
+# Prepare keystone database
 - name: Check a flag that means mysql_secure_installation.yml was finished
   stat:
     path: /root/.keystone_database_was_initialized
@@ -99,36 +99,9 @@
 - name: Include create_project.yml
   include: create_project.yml
 
-## Creating a project service
-#- name: Create a project named "service" in "default" domain
-#  ansible.builtin.command:
-#    argv: ["openstack", "project", "create", "--domain", "default", "--description", "Service Project", "service"]
-#  register: result
-#
-#- name: Print the result of creating a project "service"
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
-## Optional: Create a project "myproject"
-#- name: Create a project named "myproject" in "default" domain
-#  ansible.builtin.command:
-#    argv: ["openstack", "project", "create", "--domain", "default", "--description", "Demo Project", "myproject"]
-#  register: result
-#
-#- name: Print the result of creating a project "myproject"
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
-## List all created projects
-#- name: List all created projects
-#  ansible.builtin.command:
-#    argv: ["openstack", "project", "list", "--long", "--domain", "default"]
-#  register: result
-#
-#- name: Print all created projects
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
+- name: Include create_user.yml
+  include: create_user.yml
+
 ## Create a user in domain
 #- name: Create a user "myuser" in a domain "default"
 #  ansible.builtin.command:

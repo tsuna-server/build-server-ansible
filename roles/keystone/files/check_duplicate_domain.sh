@@ -11,7 +11,9 @@ main() {
     [[ -z "$target_domain" ]] && return 2
 
     while read line; do
-        [[ "${line%\\n}" == "$target_domain" ]] && return 1
+        # Chomp white spaces
+        line="${line%\\n}"
+        [[ "${line^^}" == "${target_domain^^}" ]] && return 1
     done < <(openstack domain list | tail +4 | head -n -1 | cut -d '|' -f 3)
 
     return 0

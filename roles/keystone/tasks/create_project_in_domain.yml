@@ -8,6 +8,7 @@
   loop: "{{ item.projects }}"
   loop_control:
     loop_var: inner_item
+  when: item.projects is defined
 
 - name: Get list of projects
   ansible.builtin.command:

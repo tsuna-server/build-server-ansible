@@ -15,7 +15,9 @@ main() {
     [[ -z "$target_domain" ]] && return 2
 
     while read project _ domain; do
-        [[ "${domain%\\n}" == "$target_domain" ]] && [[ ${project%\\n} == "$target_project" ]] && return 1
+        domain="${domain%\\n}"
+        project="${project%\\n}"
+        [[ "${domain^^}" == "${target_domain^^}" ]] && [[ ${project^^} == "${target_project^^}" ]] && return 1
     done < <(openstack project list --long --domain $target_domain | tail +4 | head -n -1 | cut -d '|' -f 3,4)
 
     return 0
