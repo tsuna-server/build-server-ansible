@@ -11,7 +11,7 @@
   register: result
   when: result_of_checking.rc == 0
 
-- name: Print the result of creating example domain
+- name: Print the result of creating a domain
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking.rc == 0

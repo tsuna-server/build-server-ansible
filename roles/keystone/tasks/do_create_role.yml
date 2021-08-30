@@ -1,3 +1,29 @@
 ---
-- name: Check toe role is already existed or not
+- name: Check the role is already existed or not
   ansible.builtin.script: ./check_duplicate_role.sh "{{ item.name }}"
+  register: result_of_checking
+  failed_when: ( result_of_checking.rc not in [0, 1] )
+
+- name: Create a role
+  ansible.builtin.command:
+    argv: ["openstack", "role", "create", "{{ item.name }}"]
+  register: result
+  when: result_of_checking.rc == 0
+
+- name: Print the result of creating a role
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+  when: result_of_checking.rc == 0
+
+- name: Include do_assign_role.yml
+  include: do_assign_role.yml
+  loop_control:
+    loop_var: inner_item
+  loop: "{{ item.assigners }}"
+
+- name: Assign a role to users
+  ansible.builtin.command:
+    argv: ["openstack", "role", "add", "--domain", "{{ item.domain }}", "--project", "{{ iten.project }}", "--user", "{{ item.user }}", "iten.name"]
+
+
+
