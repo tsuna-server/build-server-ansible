@@ -5,5 +5,13 @@
   failed_when: ( result_of_checking.rc not in [0, 1] )
 
 - name: Create a user
+  ansible.builtin.command:
+    argv: ["openstack", "user", "create", "--domain", "{{ domain_of_user }}", "--password", "{{ inner_item.password }}", "{{ inner_item.name }}"]
+  register: result
+  when: result_of_checking.rc == 0
 
+- name: Print the result of creating a user
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+  when: result_of_checking.rc == 0
 

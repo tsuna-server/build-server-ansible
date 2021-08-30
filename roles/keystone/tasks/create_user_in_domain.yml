@@ -10,3 +10,12 @@
     loop_var: inner_item
   when: item.users is defined
 
+- name: Get list of users
+  ansible.builtin.command:
+    argv: ["openstack", "user", "list", "--domain", "{{ domain_of_user }}", "--long"]
+  register: result
+
+- name: Print list of users
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+

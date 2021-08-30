@@ -12,7 +12,7 @@ main() {
     local domain
 
     [[ -z "$target_domain" ]] && return 2
-    [[ -z "$target_domain" ]] && return 2
+    [[ -z "$target_project" ]] && return 2
 
     while read project _ domain; do
         domain="${domain%\\n}"
