@@ -1,0 +1,3 @@
+---
+- name: Check toe role is already existed or not
+  ansible.builtin.script: ./check_duplicate_role.sh "{{ item.name }}"
