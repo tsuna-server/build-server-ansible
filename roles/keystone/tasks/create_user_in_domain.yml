@@ -3,6 +3,11 @@
   set_fact:
     domain_of_user: "{{ item.name }}"
 
+- name: Debug creating users
+  ansible.builtin.debug:
+    msg: "Creating users {{ item.users }} in the domain \"{{ domain_of_user }}\""
+  when: item.users is defined
+
 - name: Include do_create_user_in_domain.yml
   include: do_create_user_in_domain.yml
   loop: "{{ item.users }}"
@@ -18,3 +23,4 @@
 - name: Print list of users
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
+  when: result.stdout != ""
