@@ -1,10 +1,10 @@
 group_vars:
   hosts:
     # Define IP addresses in management
-    dev-private-router01.example.com: 192.168.2.1
-    dev-compute01.example.com: 192.168.2.11
-    dev-compute02.example.com: 192.168.2.12
-    dev-compute03.example.com: 192.168.2.13
+    dev-private-router01: 192.168.2.1
+    dev-compute01: 192.168.2.11
+    dev-compute02: 192.168.2.12
+    dev-compute03: 192.168.2.13
 
   ntp:
     ip:
@@ -24,7 +24,7 @@ group_vars:
     listen_ip: 192.168.2.1
 
   etcd:
-    initial_cluster_token: etcd-cluster
+    initial_cluster_token: etcd-cluster-01
 
   keystone:
     user: keystone
@@ -34,8 +34,11 @@ group_vars:
       keystone_conf:
         token:
           provider: fernet
+    auth_url: http://dev-private-router01:5000/v3
 
   openstack:
+    admin_username: admin
+    password: secret
     package:
       repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
       keyserver: keyserver.ubuntu.com
@@ -44,3 +47,29 @@ group_vars:
       # Create default region
       name: RegionOne
 
+    # Domains belonging in this array will all be created except that "default" domain.
+    domains:
+      - name: default
+        description: "Default domain of OpenStack"
+        users:
+          - name: myuser
+            password: secret
+        projects:
+          - name: myproject
+            description: "Demo Project"
+          - name: service
+            description: "Service Project"
+      - name: example
+        description: "An example domain"
+
+    roles:
+      - name: myrole
+        assigners:
+          # There are some restrictions
+          #   domain: Domain must be existed
+          #   project: Project must be existed in the domain
+          #   user: User must be existed in the project
+          - user: myuser
+            domain: default
+            project: myproject
+          - user: myuser
