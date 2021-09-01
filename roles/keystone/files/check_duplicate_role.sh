@@ -5,16 +5,28 @@
 #   return 0; The domain was NOT existed
 
 main() {
-    local target_role="$1"
-    local role
+    local target_project="$1"
+    local target_user="$2"
+    local target_role="$3"
+    local role user project domain_of_user domain_of_project
 
+    [[ -z "$target_project" ]] && return 2
+    [[ -z "$target_user" ]] && return 2
     [[ -z "$target_role" ]] && return 2
 
-    while read role; do
+    # Output sample
+    #    [role] | [user]         | [project]
+    # ----------------------------------------------------
+    #    myrole | myuser@Default | myproject@Default
+    #    admin  | admin@Default  | admin@Default
+    #    admin  | admin@Default  |
+    while read role _ user _ project ; do
         # Chomp white spaces
+        project="cut -d '@' -f 1 <<< ${project%\\n}"
+        user="cut -d '@' -f 1 <<< ${user%\\n}"
         role="${role%\\n}"
-        [[ "${role^^}" == "${target_role^^}" ]] && return 1
-    done < <(openstack role list | tail +4 | head -n -1 | cut -d '|' -f 3)
+        [[ "${project^^}" == "${target_project^^}" ]] && [[ "${user^^}" == "${target_user^^}" ]] && [[ "${role^^}" == "${target_role^^}" ]] && return 1
+    done< <(openstack role assignment list --name | tail +4 | head -n -1 | cut -d '|' -f 2,3,5)
 
     return 0
 }
