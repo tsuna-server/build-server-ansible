@@ -3,6 +3,7 @@
   apt:
     name:
       - mariadb-server
+      - mariadb-client
       - python3-pymysql
 
 - name: Configure /etc/mysql/mariadb.conf.d/99-openstack.cnf
