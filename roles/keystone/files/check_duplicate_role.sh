@@ -22,8 +22,8 @@ main() {
     #    admin  | admin@Default  |
     while read role _ user _ project ; do
         # Chomp white spaces
-        project="cut -d '@' -f 1 <<< ${project%\\n}"
-        user="cut -d '@' -f 1 <<< ${user%\\n}"
+        project="$(cut -d '@' -f 1 <<< ${project%\\n})"
+        user="$(cut -d '@' -f 1 <<< ${user%\\n})"
         role="${role%\\n}"
         [[ "${project^^}" == "${target_project^^}" ]] && [[ "${user^^}" == "${target_user^^}" ]] && [[ "${role^^}" == "${target_role^^}" ]] && return 1
     done< <(openstack role assignment list --name | tail +4 | head -n -1 | cut -d '|' -f 2,3,5)
