@@ -102,8 +102,8 @@
 - name: Include create_user.yml
   include: create_user.yml
 
-#- name: Include create_role.yml
-#  include: create_role.yml
+- name: Include create_role.yml
+  include: create_role.yml
 
 ## Create a user in domain
 #- name: Create a user "myuser" in a domain "default"
