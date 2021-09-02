@@ -1,3 +1,15 @@
 ---
+# Variable info:
+#   "item" equals an item in "group_vars.openstack.roles[]"
+#   "inner_item" equals an item in "group_vars.openstack.roles[].assigners[]"
+#
 - name: Check the role is already assigned or not
-  ansible.builtin.script: ./check_duplicate_assigned_role.sh "{{  }}"
+  ansible.builtin.script: ./check_duplicate_assigned_role.sh "{{ inner_item.project }}" "{{ inner_item.user }}" "{{ item.name }}"
+  register: result_of_checking
+  failed_when: ( result_of_checking.rc not in [0, 1] )
+
+- name: Assigne a role
+  ansible.builtin.command:
+    argv: ["openstack", "role", "add", "--project", "{{ inner_item.project }}", "--user", "{{ inner_item.user }}", "{{ item.name }}"]
+  register: result
+  when: result_of_checking.rc == 0

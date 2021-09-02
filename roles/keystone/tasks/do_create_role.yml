@@ -1,4 +1,7 @@
 ---
+# Variable info:
+#   "item" equals an item in "group_vars.openstack.roles[]"
+
 - name: Check the role is already existed or not
   ansible.builtin.script: ./check_duplicate_role.sh "{{ item.name }}"
   register: result_of_checking
@@ -21,9 +24,12 @@
     loop_var: inner_item
   loop: "{{ item.assigners }}"
 
-- name: Assign a role to users
+- name: List assigned_roles
   ansible.builtin.command:
-    argv: ["openstack", "role", "add", "--domain", "{{ item.domain }}", "--project", "{{ iten.project }}", "--user", "{{ item.user }}", "iten.name"]
+    argv: ["openstack", "role", "assignment", "list", "--name"]
+  register: result
 
-
+- name: Print the result of assigned roles
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
 
