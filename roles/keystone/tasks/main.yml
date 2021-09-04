@@ -94,10 +94,9 @@
 # This instruction assumes environment variables are already declared in order to authenticate the endpoint are already declared at controllers.yml.
 - name: Include create_domain.yml
   include: create_domain/main.yml
-  #include: create_domain.yml
 
 - name: Include create_project.yml
-  include: create_project.yml
+  include: create_project/main.yml
 
 - name: Include create_user.yml
   include: create_user.yml
