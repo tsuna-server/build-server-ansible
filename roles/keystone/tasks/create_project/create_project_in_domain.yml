@@ -14,8 +14,10 @@
   ansible.builtin.command:
     argv: ["openstack", "project", "list", "--long", "--domain", "{{ domain_of_project }}"]
   register: result
+  when: item.projects is defined
 
 - name: Print list of projects
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
+  when: item.projects is defined
 

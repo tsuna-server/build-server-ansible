@@ -105,8 +105,8 @@
   include: create_role/main.yml
 
 - name: Include create_admin_openrc.yml
-  include: create_admin_openrc.yml
+  include: create_admin_openrc/main.yml
 
 - name: Include check_after_keystone_has_installed.yml
-  include: check_after_keystone_has_installed.yml
+  include: check_keystone_env/main.yml
 
