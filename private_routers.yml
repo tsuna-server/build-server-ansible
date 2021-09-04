@@ -5,5 +5,5 @@
     - common
     - private_router_common
     - network
-    - iptables
     - hosts
+    - iptables
