@@ -13,6 +13,7 @@
   ansible.builtin.debug:
     msg: "group_vars.hosts={{ group_vars.hosts }}"
 
+
 - name: Create /etc/hosts
   ansible.builtin.template:
     src: hosts.j2
@@ -20,4 +21,21 @@
     owner: root
     group: root
     mode: '0644'
+    backup: yes
+
+# If the environment was prepared by cloud-init, we should also override /etc/cloud/templates/hosts.debian.tmpl to keep /etc/hosts when OS was also restarted
+- name: Check the /etc/cloud/templates/hosts.debian.tmpl exists
+  stat:
+    path: /etc/cloud/templates/hosts.debian.tmpl
+  register: result
+
+- name: Create /etc/cloud/templates/hosts.debian.tmpl
+  ansible.builtin.template:
+    src: hosts.j2
+    dest: /etc/cloud/templates/hosts.debian.tmpl
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  when: result.stat.exists
 
