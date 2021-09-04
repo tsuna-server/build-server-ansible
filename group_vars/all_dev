@@ -37,8 +37,9 @@ group_vars:
     auth_url: http://dev-private-router01:5000/v3
 
   openstack:
-    admin_username: admin
-    password: secret
+    admin_user_name: admin
+    admin_project_name: admin
+    admin_password: secret
     package:
       repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
       keyserver: keyserver.ubuntu.com
@@ -72,4 +73,3 @@ group_vars:
           - user: myuser
             domain: default
             project: myproject
-          - user: myuser
