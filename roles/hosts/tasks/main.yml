@@ -4,16 +4,6 @@
 #  when: hostvars[item].ansible_default_ipv4.address is defined
 #  with_items: groups['all']
 
-- name: "Debug"
-  ansible.builtin.debug:
-    msg: "host={{ item.key }},IP={{ item.value }}"
-  with_dict: "{{ group_vars.hosts }}"
-
-- name: "Debug2"
-  ansible.builtin.debug:
-    msg: "group_vars.hosts={{ group_vars.hosts }}"
-
-
 - name: Create /etc/hosts
   ansible.builtin.template:
     src: hosts.j2
