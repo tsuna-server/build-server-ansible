@@ -1,5 +1,4 @@
 ---
-
 # Prepare keystone database
 - name: Check a flag that means mysql_secure_installation.yml was finished
   stat:
@@ -92,7 +91,7 @@
 - name: Run notified handler of apache2
   meta: flush_handlers
 
-# This instruction assumes environment variables in order to authenticate the endpoint are already declared at controllers.yml.
+# This instruction assumes environment variables are already declared in order to authenticate the endpoint are already declared at controllers.yml.
 - name: Include create_domain.yml
   include: create_domain.yml
 
@@ -108,34 +107,6 @@
 - name: Include create_admin_openrc.yml
   include: create_admin_openrc.yml
 
-## Create a user in domain
-#- name: Create a user "myuser" in a domain "default"
-#  ansible.builtin.command:
-#    argv: ["openstack", "user", "create", "--domain", "default", "--password=secret", "myuser"]
-#  register: result
-#- name: Print a result of creating a user
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
-#- name: List users in a domain "default"
-#  ansible.builtin.command:
-#    argv: ["openstack", "user", "list", "--domain", "default", "--long"]
-#  register: result
-#- name: Print all created users
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
-## Create a role
-#- name: Create a role "myrole"
-#  ansible.builtin.command:
-#    argv: ["openstack", "role", "create", "myrole"]
-#  register: result
-#- name: Print a result of creating a role
-#  ansible.builtin.debug:
-#    msg: "{{ result.stdout.split('\n') }}"
-#
-## Add a role to a user and group
-#- name: Add a role to a user "myuser" and a group "myproject"
-#  ansible.builtin.command:
-#    argv: ["openstack", "role", "add", "--project", "myproject", "--user", "myuser", "myrole"]
+- name: Include check_after_keystone_has_installed.yml
+ slinclude: check_after_keystone_has_installed.yml
 

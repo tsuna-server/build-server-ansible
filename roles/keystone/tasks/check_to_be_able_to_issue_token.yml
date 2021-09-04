@@ -1,0 +1,37 @@
+---
+- name: Include do_check_to_be_able_to_issue_token.yml
+  include: do_check_to_be_able_to_issue_token.yml
+  loop_control:
+    loop_var: project
+  loop: "{{ domain.projects }}"
+  when: domain.projects is defined
+
+# A token for admin that created by "keystone-manage bootstrap" should be able to issue a token
+- name: Debug going to create a token for admin
+  ansible.builtin.debug:
+    msg: "Issuing a token for admin: os-project-domain-name=default, os-user-domain-name=domain, os-project-name=admin, os-username=admin, os-password=*"
+
+- name: Check to be able to issue a token for admin that will be created by default in default project in default domain
+  ansible.builtin.command:
+    argv:
+      - "openstack"
+      - "--os-auth-url"
+      - "{{ group_vars.keystone.auth_url }}"
+      - "--os-project-domain-name"
+      - "default"
+      - "--os-user-domain-name"
+      - "default"
+      - "--os-project-name"
+      - "{{ group_vars.openstack.admin_user_name }}"
+      - "--os-username"
+      - "{{ group_vars.openstack.admin_project_name }}"
+      - "--os-password"
+      - "{{ group_vars.openstack.admin_password }}"
+      - "token"
+      - "issue"
+  register: result
+
+- name: Print an issued token for admin
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+

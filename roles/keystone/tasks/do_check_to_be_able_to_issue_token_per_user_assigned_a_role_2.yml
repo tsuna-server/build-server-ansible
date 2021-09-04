@@ -1,0 +1,31 @@
+---
+- name: Debug going to create a token
+  ansible.builtin.debug:
+    msg: "Issuing a token: os-project-domain-name={{ domain.name }}, os-user-domain-name={{ domain.name }}, os-project-name={{ project.name }}, os-username={{ user.name }}, os-password=*"
+
+# Issue the token only already assigned role in the project
+- name: Issue a token
+  ansible.builtin.command:
+    argv:
+      - "openstack"
+      - "--os-auth-url"
+      - "{{ group_vars.keystone.auth_url }}"
+      - "--os-project-domain-name"
+      - "{{ domain.name }}"
+      - "--os-user-domain-name"
+      - "{{ domain.name }}"
+      - "--os-project-name"
+      - "{{ project.name }}"
+      - "--os-username"
+      - "{{ user.name }}"
+      - "--os-password"
+      - "{{ user.password }}"
+      - "token"
+      - "issue"
+  when: "assigner.user == user.name and assigner.domain == domain.name and assigner.project == project.name"
+  register: result
+
+- name: Print an issued token
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
