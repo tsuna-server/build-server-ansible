@@ -1,22 +1,6 @@
 ---
-# Prepare keystone database
-- name: Check a flag that means mysql_secure_installation.yml was finished
-  stat:
-    path: /root/.keystone_database_was_initialized
-  register: flag_file
-
 - name: Include init_keystone_db/main.yml
   include: init_keystone_db/main.yml
-  when: not flag_file.stat.exists
-
-- name: Create a flag that means initialize_keystone_database.yml was finished
-  copy:
-    content: ""
-    dest: /root/.keystone_database_was_initialized
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
 
 - name: Install packages of keystone
   apt:
