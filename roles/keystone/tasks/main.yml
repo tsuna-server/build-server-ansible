@@ -5,7 +5,8 @@
     path: /root/.keystone_database_was_initialized
   register: flag_file
 
-- include: initialize_keystone_database.yml
+- name: Include init_keystone_db/main.yml
+  include: init_keystone_db/main.yml
   when: not flag_file.stat.exists
 
 - name: Create a flag that means initialize_keystone_database.yml was finished
