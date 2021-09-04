@@ -99,7 +99,7 @@
   include: create_project/main.yml
 
 - name: Include create_user.yml
-  include: create_user.yml
+  include: create_user/main.yml
 
 - name: Include create_role.yml
   include: create_role.yml
