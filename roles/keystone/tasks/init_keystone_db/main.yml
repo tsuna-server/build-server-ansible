@@ -1,7 +1,7 @@
 ---
 - name: Check a flag that means mysql_secure_installation.yml was finished
   stat:
-    path: /root/ansible/flags/keystone_database_was_initialized
+    path: /root/.ansible_keystone_database_was_initialized
   register: flag_file
 
 - name: Init keystone DB
@@ -31,7 +31,7 @@
 - name: Create a flag that means initialize_keystone_database.yml was finished
   copy:
     content: ""
-    dest: /root/ansible/flags/keystone_database_was_initialized
+    dest: /root/.ansible_keystone_database_was_initialized
     force: no
     owner: root
     group: root

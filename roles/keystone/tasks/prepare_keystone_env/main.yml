@@ -1,0 +1,93 @@
+---
+- name: Install packages of keystone
+  apt:
+    name:
+      - keystone
+
+- name: Configure keystone.conf
+  ansible.builtin.template:
+    src: keystone/keystone.conf.j2
+    dest: /etc/keystone/keystone.conf
+    owner: keystone
+    group: keystone
+    mode: '0640'
+  register: keystone_conf
+
+- name: Sync keystone DB
+  ansible.builtin.command:
+    argv:
+      - su
+      - -s
+      - /bin/sh
+      - -c
+      - "keystone-manage db_sync"
+      - "{{ group_vars.keystone.user }}"
+  when: keystone_conf.changed
+
+# Command `keystone-manage fernet_setup|credential_setup|bootstrap` is idempotent.
+- name: Check a flag that means instructions of keystone-manage were already finished
+  stat:
+    path: /root/.ansible_instructions_of_keystone_manage_were_already_finished
+  register: flag_file
+
+- name: Run instructions of keystone-manage
+  block:
+    - name: Initialize Fernet key repositories with keystone-manage fernet_setup
+      ansible.builtin.command:
+        argv:
+          - keystone-manage
+          - fernet_setup
+          - --keystone-user
+          - "{{ group_vars.keystone.user }}"
+          - --keystone-group
+          - "{{ group_vars.keystone.group }}"
+    
+    # Command `keystone-manage credential_setup` is idempotent
+    - name: Initialize Fernet key repositories with keystone-manage credential_setup
+      ansible.builtin.command:
+        argv:
+          - keystone-manage
+          - credential_setup
+          - --keystone-user
+          - "{{ group_vars.keystone.user }}"
+          - --keystone-group
+          - "{{ group_vars.keystone.group }}"
+
+    # Command `keystone-manage bootstrap` is idempotent
+    - name: Bootstrap the Identity service
+      ansible.builtin.command:
+        argv:
+          - keystone-manage
+          - bootstrap
+          - --bootstrap-password
+          - '{{ group_vars.keystone.password }}'
+          - --bootstrap-admin-url
+          - http://{{ inventory_hostname }}:5000/v3/
+          - --bootstrap-internal-url
+          - http://{{ inventory_hostname }}:5000/v3/
+          - --bootstrap-public-url
+          - http://{{ inventory_hostname }}:5000/v3/
+          - --bootstrap-region-id
+          - "{{ group_vars.openstack.region.name }}"
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means initialize_keystone_database.yml was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_instructions_of_keystone_manage_were_already_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Set ServerName in apache2 config
+  ansible.builtin.template:
+    src: templates/apache2/sites-available/000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart apache2
+
+- name: Run notified handler of apache2
+  meta: flush_handlers
