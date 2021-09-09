@@ -1,0 +1,40 @@
+---
+- name: Check a flag that means init_grance_db.yml was finished
+  stat:
+    path: /root/.ansible_grance_database_was_initialized
+  register: flag_file
+
+- name: Init grance DB
+  block:
+    - name: Create Grance database
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - -e
+          - "CREATE DATABASE glance;"
+
+    - name: Grant privileges to resources on grance database for a user grance at localhost
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - -e
+          - "GRANT ALL PRIVILEGES ON glance.* TO '{{ group_vars.grance.user }}'@'localhost' IDENTIFIED BY '{{ group_vars.grance.password }}';"
+
+    - name: Grant privileges to resources on grance database for a user grance at remote host
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - -e
+          - "GRANT ALL PRIVILEGES ON grance.* TO '{{ group_vars.keystone.user }}'@'%' IDENTIFIED BY '{{ group_vars.keystone.password }}';"
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means init_grance_database.yml was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_grance_database_was_initialized
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
+
