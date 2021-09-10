@@ -1,3 +1,0 @@
----
-- name: Include init_grance_db/main.yml
-  include: init_grance_db/main.yml

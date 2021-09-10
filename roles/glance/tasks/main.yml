@@ -1,0 +1,6 @@
+---
+- name: Include init_grance_db/main.yml
+  include: init_grance_db/main.yml
+
+- name: Include prepare_grance_env/main.yml
+  include: prepare_grance_env/main.yml

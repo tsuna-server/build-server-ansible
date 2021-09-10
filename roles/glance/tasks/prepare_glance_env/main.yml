@@ -1,0 +1,20 @@
+---
+#
+# Users and roles are already created at tasks in Keystone
+#
+
+# Create service for Glance
+# Command `keystone-manage bootstrap` is idempotent
+- name: Bootstrap the Identity service
+  ansible.builtin.command:
+    argv:
+      - openstack
+      - service
+      - create
+      - --name
+      - "{{ group_vars.glance.service.name }}"
+      - --description
+      - "{{ group_vars.glance.service.description }}"
+      - "{{ group_vars.glance.service.type }}"
+
+
