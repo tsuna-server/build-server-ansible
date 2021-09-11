@@ -44,8 +44,7 @@
     loop_var: region
   loop: "{{ regions }}"
 
-
-
+# NOTE: This instruction does not work even its file of task are in same role directory.
 #- name: Include do_create_endpoint.yml
 #  include: do_create_endpoint.yml
 #  loop_control:
