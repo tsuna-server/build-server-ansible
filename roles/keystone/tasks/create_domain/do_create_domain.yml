@@ -4,15 +4,15 @@
   register: result_of_checking
   failed_when: ( result_of_checking.rc not in [0, 1] )
 
-- name: Create a domain
-  ansible.builtin.command:
-    argv: ["openstack", "domain", "create", "--description", "{{ item.description }}", "{{ item.name }}"]
-    creates: "/opt/ansible/flags/do_create_domain/{{ item.name }}"
-  register: result
-  when: result_of_checking.rc == 0
-
-- name: Print the result of creating a domain
-  ansible.builtin.debug:
-    msg: "{{ result.stdout.split('\n') }}"
+- name: Block of create a domain
+  block:
+    - name: Create a domain
+      ansible.builtin.command:
+        argv: ["openstack", "domain", "create", "--description", "{{ item.description }}", "{{ item.name }}"]
+        creates: "/opt/ansible/flags/do_create_domain/{{ item.name }}"
+      register: result
+    - name: Print the result of creating a domain
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking.rc == 0
 
