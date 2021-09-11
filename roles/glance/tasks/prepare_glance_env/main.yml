@@ -2,6 +2,10 @@
 #
 # Users and roles are already created at tasks in Keystone
 #
+- name: Check a flag that means create_service_glance was finished
+  stat:
+    path: /root/.ansible_glance_service_was_created
+  register: flag_file
 
 - name: Create service for Glance
   ansible.builtin.command:
@@ -14,4 +18,13 @@
       - --description
       - "{{ group_vars.glance.service.description }}"
       - "{{ group_vars.glance.service.type }}"
+
+- name: Create a flag that means create_service_glance was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_glance_service_was_created
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
 
