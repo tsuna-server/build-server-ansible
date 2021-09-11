@@ -36,6 +36,31 @@ group_vars:
           provider: fernet
     auth_url: http://dev-private-router01:5000/v3
 
+  # Glance is an image service
+  glance:
+    user: glance
+    group: glance
+    password: secret
+    domain: default
+    service:
+      name: glance
+      description: "OpenStack Image"
+      type: image
+    endpoints:
+      public:
+        regions:
+          # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
+          - name: RegionOne
+            url: http://openstack-controller-node01:9292
+      internal:
+        regions:
+          - name: RegionOne
+            url: http://openstack-controller-node01:9292
+      admin:
+        regions:
+          - name: RegionOne
+            url: http://openstack-controller-node01:9292
+
   openstack:
     admin_user_name: admin
     admin_project_name: admin
@@ -53,7 +78,11 @@ group_vars:
       - name: default
         description: "Default domain of OpenStack"
         users:
+          # User for testing
           - name: myuser
+            password: secret
+          # User for glance API
+          - name: glance
             password: secret
         projects:
           - name: myproject
@@ -67,9 +96,15 @@ group_vars:
       - name: myrole
         assigners:
           # There are some restrictions
-          #   domain: Domain must be existed
-          #   project: Project must be existed in the domain
-          #   user: User must be existed in the project
+          #   domain: Domain must be existed at "group_vars.openstack.domains[]"
+          #   project: Project must be existed in the domain at "group_vars.openstack.domains[].projects[]"
+          #   user: User must be existed in the project at "group_vars.openstack.domains[]"
+
+          # Test user
           - user: myuser
             domain: default
             project: myproject
+          # User for glance
+          - user: glance
+            domain: default
+            project: service
