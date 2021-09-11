@@ -1,9 +1,14 @@
 ---
-- name: Include init_glance_db/main.yml
-  include: init_glance_db/main.yml
+#- name: Include init_glance_db/main.yml
+#  include: init_glance_db/main.yml
+#
+#- name: Include prepare_glance_env/main.yml
+#  include: prepare_glance_env/main.yml
 
-- name: Include prepare_glance_env/main.yml
-  include: prepare_glance_env/main.yml
+#- name: Include create_endpoints.yml from a role "functions"
+#  ansible.builtin.include_role:
+#    name: functions
+#    tasks_from: create_endpoints.yml
 
 - name: Include create_endpoints/main.yml
   include: create_endpoints/main.yml

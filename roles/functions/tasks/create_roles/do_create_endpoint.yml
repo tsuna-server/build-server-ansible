@@ -1,0 +1,4 @@
+---
+- name: Print endpoint that will be created
+  ansible.builtin.debug:
+    msg: "scope={{ scope }}, region={{ region.name }}, type_of_endpoint={{ type_of_endpoint }}, url={{ region.url }}"
