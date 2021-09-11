@@ -1,6 +1,10 @@
 ---
-- name: Include init_grance_db/main.yml
-  include: init_grance_db/main.yml
+- name: Include init_glance_db/main.yml
+  include: init_glance_db/main.yml
 
-- name: Include prepare_grance_env/main.yml
-  include: prepare_grance_env/main.yml
+- name: Include prepare_glance_env/main.yml
+  include: prepare_glance_env/main.yml
+
+- name: Include create_endpoints/main.yml
+  include: create_endpoints/main.yml
+

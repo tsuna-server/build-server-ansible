@@ -1,0 +1,7 @@
+---
+- name: Include do_create_endpoint.yml
+  include: do_create_endpoint.yml
+  loop_control:
+    loop_var: endpoint
+  loop: "{{ group_vars.glance.endpoints | dict2items }}"
+

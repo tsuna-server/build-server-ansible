@@ -1,0 +1,21 @@
+---
+- name: Declare an scope and regions variable to create endpoint
+  set_fact:
+    scope: "{{ endpoint.key }}"
+    regions: "{{ endpoint.value }}"
+
+- name: Create a public endpoint for Glance
+  ansible.builtin.command:
+    argv:
+      - openstack
+      - endpoint
+      - create
+      - --region
+      - "{{ region.name }}"
+      - "{{ group_vars.glance.service.type }}"
+      - "{{  }}"
+      - "{{ region.url }}"
+  loop_control:
+    loop_var: region
+  loop: "{{ regions }}"
+
