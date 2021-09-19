@@ -2,8 +2,8 @@
 - name: Include init_glance_db/main.yml
   include: init_glance_db/main.yml
 
-- name: Include prepare_glance_env/main.yml
-  include: prepare_glance_env/main.yml
+- name: Include create_glance_service/main.yml
+  include: create_glance_service/main.yml
 
 - name: Declare type_of_endpoint to include a tasks create_endpoint in function role
   set_fact:
