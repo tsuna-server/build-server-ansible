@@ -1,0 +1,5 @@
+---
+- name: Restart glance-api
+  ansible.builtin.systemd:
+    state: restarted
+    name: glance-api

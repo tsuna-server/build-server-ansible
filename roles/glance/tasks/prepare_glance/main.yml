@@ -4,3 +4,33 @@
     name:
       - glance
 
+- name: Check a flag that means set config and sync db was finished
+  stat:
+    path: /root/.ansible_keystone_database_was_initialized
+  register: flag_file
+
+- name: Block setting glance-api.conf and running db_sync
+  notify: Restart glance-api
+  block:
+    - name: Set /etc/glance/glance-api.conf
+      ansible.builtin.template:
+        src: glance/glance-api.conf.j2
+        dest: /etc/glance/glance-api.conf
+        owner: root
+        group: root
+        mode: 0640
+        backup: yes
+    - name: Sync database for glance
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "glance-manage db_sync", "glance"]
+  when: flag_file.stat.exists
+
+- name: Create a flag that means set config and sync db was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_glance_set_config_and_sync_db_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
