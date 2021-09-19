@@ -12,3 +12,6 @@
 - name: Include create_endpoint/main.yml
   include: create_endpoint/main.yml
 
+- name: Prepare glance
+  include: prepare_glance/main.yml
+
