@@ -1,0 +1,5 @@
+---
+- name: Include do create example cirros
+  include: do_create_example_cirros.yml
+  when: group_vars.glance.examples.cirros.create == 'true'
+

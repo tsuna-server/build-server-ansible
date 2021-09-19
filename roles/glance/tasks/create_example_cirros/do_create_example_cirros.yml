@@ -1,0 +1,27 @@
+---
+- name: Declare iso file image name
+  set_fact:
+    iso_cirros_file_name: "{{ group_vars.glance.examples.cirros.image_url.split('/')[-1] }}"
+
+- name: Declare iso file path
+  set_fact:
+    iso_cirros_file_path: "/root/{{ iso_cirros_file_name }}"
+
+- name: Check an iso file of cirros has already downloaded
+  stat:
+    path: "{{ iso_cirros_file_path }}"
+  register: flag_file
+
+- name: Download cirros image
+  get_url:
+    url: "{{ group_vars.glance.examples.cirros.image_url }}"
+    dest: "{{ iso_cirros_file_path }}"
+  when: not flag_file.stat.exists
+
+- name: Check Glance example image of cirros has already created
+  ansible.builtin.command:
+
+- name: Create Glance image of cirros
+  ansible.builtin.command:
+    argv: ["glance", "image-create", "--name", "cirros", "--file", "{{ iso_cirros_file_path }}", "--disk-format", "qcow2", "--container-format", "bare", "--visibility", "public"]
+
