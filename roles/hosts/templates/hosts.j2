@@ -2,6 +2,8 @@
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
-{% for key, value in group_vars.hosts.items() %}
-{{ value }} {{ key.split('.')[0] }} {{ key }}
-{% endfor %}
+{% for dict_type, dict_value in group_vars.hosts.items() -%}
+  {% for host in dict_value -%}
+    {{ host.ip }} {{ host.name }} {{ host.name.split('.')[0] }}{{ '\n' }}
+  {%- endfor %}
+{%- endfor %}
