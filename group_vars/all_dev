@@ -1,10 +1,23 @@
 group_vars:
   hosts:
-    # Define IP addresses in management
-    dev-private-router01: 192.168.2.1
-    dev-compute01: 192.168.2.11
-    dev-compute02: 192.168.2.12
-    dev-compute03: 192.168.2.13
+    controllers:
+      - name: dev-private-router01.openstack.example.com
+        ip: 192.168.2.1
+    computes:
+      - name: dev-compute01.openstack.example.com
+        ip: 192.168.2.11
+      - name: dev-compute02.openstack.example.com
+        ip: 192.168.2.12
+      - name: dev-compute03.openstack.example.com
+        ip: 192.168.2.13
+
+    ## >>>>> Deprecated section from here. It will be removed in the future >>>>>
+    ## Define IP addresses in management
+    #dev-private-router01.openstack.example.com: 192.168.2.1
+    #dev-compute01.openstack.example.com: 192.168.2.11
+    #dev-compute02.openstack.example.com: 192.168.2.12
+    #dev-compute03.openstack.example.com: 192.168.2.13
+    ## <<<<< Deprecated section to here. It will be removed in the future <<<<<
 
   ntp:
     ip:
@@ -104,3 +117,7 @@ group_vars:
           - user: myuser
             domain: default
             project: myproject
+          # User for glance
+          - user: glance
+            domain: default
+            project: service
