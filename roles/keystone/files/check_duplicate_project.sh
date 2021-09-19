@@ -3,7 +3,7 @@
 # This script validates whether the project is already existed in the domain or not.
 # And this script assumes the domain was already existed.
 #   return 1: The project was already existed
-#   return 0; The project was NOT existed
+#   return 0: The project was NOT existed
 
 main() {
     local target_domain="$1"
