@@ -9,7 +9,7 @@ main() {
     local target_image_name="$1"
     local image_name
 
-    [[ -z "$image_name" ]] && return 2
+    [[ -z "$target_image_name" ]] && return 2
 
     while read image_name _; do
         image_name="${image_name%\\n}"

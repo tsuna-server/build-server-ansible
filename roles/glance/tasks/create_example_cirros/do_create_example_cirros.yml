@@ -19,9 +19,23 @@
   when: not flag_file.stat.exists
 
 - name: Check Glance example image of cirros has already created
-  ansible.builtin.command:
+  ansible.builtin.script: ./check_duplicate_glance_image.sh cirros
+  register: result_of_checking
+  failed_when: ( result_of_checking.rc not in [0, 1] )
 
-- name: Create Glance image of cirros
-  ansible.builtin.command:
-    argv: ["glance", "image-create", "--name", "cirros", "--file", "{{ iso_cirros_file_path }}", "--disk-format", "qcow2", "--container-format", "bare", "--visibility", "public"]
+- name: Block of create Glance image of cirros
+  block: 
+    - name: Create Glance image of cirros
+      ansible.builtin.command:
+        argv: ["glance", "image-create", "--name", "cirros", "--file", "{{ iso_cirros_file_path }}", "--disk-format", "qcow2", "--container-format", "bare", "--visibility", "public"]
+    - name: List Glance images
+      ansible.builtin.command:
+        argv: ["glance", "image-list"]
+      register: result
+    - name: Print the result of creating Glance image
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: result_of_checking.rc == 0
 
+- name: Run notified handler of Glance API
+  meta: flush_handlers
