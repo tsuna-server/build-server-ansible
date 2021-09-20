@@ -41,7 +41,7 @@
           - "{{ group_vars.keystone.user }}"
           - --keystone-group
           - "{{ group_vars.keystone.group }}"
-    
+
     # Command `keystone-manage credential_setup` is idempotent
     - name: Initialize Fernet key repositories with keystone-manage credential_setup
       ansible.builtin.command:

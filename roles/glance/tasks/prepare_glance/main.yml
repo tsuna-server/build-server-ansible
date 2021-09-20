@@ -6,7 +6,7 @@
 
 - name: Check a flag that means set config and sync db was finished
   stat:
-    path: /root/.ansible_keystone_database_was_initialized
+    path: /root/.ansible_glance_set_config_and_sync_db_was_finished
   register: flag_file
 
 # TODO: Debug
@@ -28,7 +28,7 @@
     - name: Sync database for glance
       ansible.builtin.command:
         argv: ["su", "-s", "/bin/sh", "-c", "glance-manage db_sync", "glance"]
-  when: flag_file.stat.exists
+  when: not flag_file.stat.exists
 
 - name: Create a flag that means set config and sync db was finished
   copy:
@@ -38,4 +38,7 @@
     owner: root
     group: root
     mode: '0640'
+
+- name: Run notified handler of glance-api
+  meta: flush_handlers
 
