@@ -125,8 +125,11 @@ group_vars:
           - user: myuser
             domain: default
             project: myproject
+      - name: admin
+        assigners:
           # User for glance.
           # Project must be set as parimary service at "group_vars.openstack.domains[].projects[].primary"
           - user: glance
             domain: default
             project: service
+
