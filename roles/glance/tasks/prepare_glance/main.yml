@@ -39,6 +39,11 @@
     group: root
     mode: '0640'
 
+- name: Enable service glance-api
+  ansible.builtin.service:
+    name: glance-api
+    enabled: yes
+
 - name: Run notified handler of glance-api
   meta: flush_handlers
 
