@@ -13,7 +13,7 @@ main() {
     [[ -z "$target_image_name" ]] && return 2
 
     output="$(glance image-list)" || {
-        echo "ERROR: Failed to get image list from glance-api" 2>&1
+        echo "ERROR: Failed to get image list from glance-api" >&2
         return 2
     }
 
