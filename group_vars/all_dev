@@ -78,6 +78,29 @@ group_vars:
         create: true
         image_url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
 
+  placement:
+    user: placement
+    group: placement
+    password: secret
+    domain: default
+    service:
+      name: placement
+      description: "Placement API"
+      type: placement
+    endpoints:
+      public:
+        regions:
+          - name: RegionOne
+            url: http://openstack-controller-node01:8778
+      internal:
+        regions:
+          - name: RegionOne
+            url: http://openstack-controller-node01:8778
+      admin:
+        regions:
+          - name: RegionOne
+            url: http://openstack-controller-node01:8778
+
   openstack:
     admin_user_name: admin
     admin_project_name: admin
@@ -100,6 +123,8 @@ group_vars:
             password: secret
           # User for glance API
           - name: glance
+            password: secret
+          - name: placement
             password: secret
         projects:
           # Service which set "primary: true" is a primary service that never duplicated in this list.
@@ -127,9 +152,12 @@ group_vars:
             project: myproject
       - name: admin
         assigners:
-          # User for glance.
-          # Project must be set as parimary service at "group_vars.openstack.domains[].projects[].primary"
+          # User for glance. Project must be set as parimary service at "group_vars.openstack.domains[].projects[].primary"
           - user: glance
+            domain: default
+            project: service
+          # User for placement. Project must be set as parimary service at "group_vars.openstack.domains[].projects[].primary"
+          - user: placement
             domain: default
             project: service
 
