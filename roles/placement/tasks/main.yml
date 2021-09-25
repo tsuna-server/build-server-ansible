@@ -1,0 +1,7 @@
+---
+- name: Include init_placement_db/main.yml
+  include: init_placement_db/main.yml
+
+- name: Include create_placement_service/main.yml
+  include: create_placement_service/main.yml
+
