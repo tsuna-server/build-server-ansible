@@ -5,10 +5,6 @@
 - name: Include create_glance_service/main.yml
   include: create_glance_service/main.yml
 
-- name: Declare type_of_endpoint to include a tasks create_endpoint in function role
-  set_fact:
-    type_of_endpoint: "{{ group_vars.glance.service.type }}"
-
 - name: Include create_endpoint/main.yml
   include: create_endpoint/main.yml
 
