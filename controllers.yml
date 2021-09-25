@@ -10,6 +10,7 @@
     - add_openstack_repository
     - keystone
     - glance
+    - placement
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
