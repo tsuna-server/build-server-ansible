@@ -8,17 +8,21 @@
 main() {
     local target_domain="$1"
     local target_project="$2"
-    local project
-    local domain
+    local project domain output
 
     [[ -z "$target_domain" ]] && return 2
     [[ -z "$target_project" ]] && return 2
+
+    output="$(openstack project list --long --domain ${target_domain})" || {
+        echo "ERROR: Failed to get project list" >&2
+        return 2
+    }
 
     while read project _ domain; do
         domain="${domain%\\n}"
         project="${project%\\n}"
         [[ "${domain^^}" == "${target_domain^^}" ]] && [[ ${project^^} == "${target_project^^}" ]] && return 1
-    done < <(openstack project list --long --domain $target_domain | tail +4 | head -n -1 | cut -d '|' -f 3,4)
+    done < <(tail +4 <<< "$output" | head -n -1 | cut -d '|' -f 3,4)
 
     return 0
 }
