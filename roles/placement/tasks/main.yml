@@ -5,3 +5,9 @@
 - name: Include create_placement_service/main.yml
   include: create_placement_service/main.yml
 
+- name: Include create_endpoint/main.yml
+  include: create_endpoint/main.yml
+
+- name: Prepare placement
+  include: prepare_placement/main.yml
+
