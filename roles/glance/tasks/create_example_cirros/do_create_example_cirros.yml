@@ -37,5 +37,3 @@
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking.rc == 0
 
-- name: Run notified handler of Glance API
-  meta: flush_handlers
