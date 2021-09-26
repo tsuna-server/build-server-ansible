@@ -1,0 +1,29 @@
+- name: Check a flag that means create_endpoint was finished
+  stat:
+     path: /root/.ansible_placement_create_endpoint_was_finished
+  register: flag_file
+
+- name: Block of creating endpoints
+  block:
+    - name: Declare type_of_endpoint to include_role "functions"
+      set_fact:
+        type_of_endpoint: "{{ group_vars.placement.service.type }}"
+
+    - name: Include create_endpoint/main in a role functions
+      include_role:
+        name: functions
+        tasks_from: create_endpoint/main.yml
+      loop_control:
+        loop_var: endpoint
+      loop: "{{ group_vars.placement.endpoints | dict2items }}"
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means create_endpoint was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_placement_create_endpoint_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+

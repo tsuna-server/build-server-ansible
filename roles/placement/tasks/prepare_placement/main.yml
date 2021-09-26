@@ -1,0 +1,39 @@
+---
+- name: Install packages of placement-api
+  apt:
+    name:
+      - placement-api
+
+- name: Check a flag that means set config and sync db was finished
+  stat:
+    path: /root/.ansible_placement_set_config_and_sync_db_was_finished
+  register: flag_file
+
+- name: Block setting flacement-api.conf and running db_sync
+  notify: Restart apache2
+  block:
+    - name: Set /etc/placement/placement.conf
+      ansible.builtin.template:
+        src: placement/placement.conf.j2
+        dest: /etc/placement/placement.conf
+        owner: root
+        group: placement
+        mode: 0640
+        backup: yes
+    - name: Sync database for placement
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "placement-manage db sync", "placement"]
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means set config and sync db was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_placement_set_config_and_sync_db_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Run notified handler of apache2
+  meta: flush_handlers
+
