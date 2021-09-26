@@ -14,3 +14,6 @@
 - name: Include verify_installation/main.yml
   include: verify_installation/main.yml
 
+- name: Include prepare_wsgi_env/main.yml
+  include: prepare_wsgi_env/main.yml
+

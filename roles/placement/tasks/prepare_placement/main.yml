@@ -42,14 +42,6 @@
       - openstack-placement
       - pymysql
 
-- name: Adding placement user
-  ansible.builtin.user:
-    name: placement
-    comment: "User for Placement API"
-    groups: placement
-    shell: /bin/false
-    create_home: true
-
 - name: Run notified handler of apache2
   meta: flush_handlers
 

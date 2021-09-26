@@ -1,0 +1,29 @@
+---
+- name: Adding placement user
+  ansible.builtin.user:
+    name: placement
+    comment: "User for Placement API"
+    groups: placement
+    shell: /bin/false
+    create_home: true
+
+- name: Configure wsgi for placement to apache2
+  ansible.builtin.template:
+    src: apache2/sites-available/placement-api.conf.j2
+    dest: /etc/apache2/sites-available/placement-api.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+
+- name: a2ensite placement-api
+  ansible.builtin.command:
+    argv: ["a2ensite", "placement-api"]
+  register: result
+
+- name: Restart apache2 if required
+  ansible.builtin.service:
+    name: apache2
+    state: restarted
+  when: result.rc == 0 and result.stdout != "Site placement-api already enabled"
+
