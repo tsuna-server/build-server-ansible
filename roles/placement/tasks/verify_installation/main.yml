@@ -1,0 +1,9 @@
+---
+- name: Verify installation placement
+  ansible.builtin.command:
+    argv: ["placement-status", "upgrade", "check"]
+  register: result
+
+- name: Print the result of creating Placement image
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"

@@ -8,6 +8,9 @@
 - name: Include create_endpoint/main.yml
   include: create_endpoint/main.yml
 
-- name: Prepare placement
+- name: Include prepare_placement/main.yml
   include: prepare_placement/main.yml
+
+- name: Include verify_installation/main.yml
+  include: verify_installation/main.yml
 
