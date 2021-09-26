@@ -3,6 +3,7 @@
   apt:
     name:
       - placement-api
+      - python3-pip
 
 - name: Check a flag that means set config and sync db was finished
   stat:
@@ -22,7 +23,7 @@
         backup: yes
     - name: Sync database for placement
       ansible.builtin.command:
-        argv: ["su", "-s", "/bin/sh", "-c", "placement-manage db sync", "placement"]
+        argv: ["placement-manage", "db", "sync"]
   when: not flag_file.stat.exists
 
 - name: Create a flag that means set config and sync db was finished
@@ -33,6 +34,21 @@
     owner: root
     group: root
     mode: '0640'
+
+- name: Install pip uwsgi
+  pip:
+    name:
+      - uwsgi
+      - openstack-placement
+      - pymysql
+
+- name: Adding placement user
+  ansible.builtin.user:
+    name: placement
+    comment: "User for Placement API"
+    groups: placement
+    shell: /bin/false
+    create_home: true
 
 - name: Run notified handler of apache2
   meta: flush_handlers
