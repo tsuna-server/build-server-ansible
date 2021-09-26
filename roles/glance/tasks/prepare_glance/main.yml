@@ -9,11 +9,6 @@
     path: /root/.ansible_glance_set_config_and_sync_db_was_finished
   register: flag_file
 
-# TODO: Debug
-- name: Debug variable
-  ansible.builtin.debug:
-    msg: "{{ group_vars.openstack.domains[0].name.upper() }}"
-
 - name: Block setting glance-api.conf and running db_sync
   notify: Restart glance-api
   block:
