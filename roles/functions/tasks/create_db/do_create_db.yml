@@ -1,0 +1,14 @@
+---
+# openstack_service
+- name: Declare variables db_name, db_user and db_password
+  set_fact:
+    db_name: "{{ db.name }}"
+    db_user: "{% if 'user' in db %}{{ db.user }}{% else %}{{ group_vars[openstack_service_name].user }}{% endif %}"
+    db_password: "{% if 'password' in db %}{{ db.password }}{% else %}{{ group_vars[openstack_service_name].password }}{% endif %}"
+
+- name: Debugggggggggggggggggggggggggggggggggggg
+  ansible.builtin.debug:
+    msg: "db.name={{ db_name }}, db_user={{ db_user }}, db_password={{ db_password }}"
+
+
+
