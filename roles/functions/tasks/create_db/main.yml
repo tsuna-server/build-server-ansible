@@ -1,0 +1,34 @@
+---
+# * openstack_service_name (type string)
+#   OpenStack service name. eg) "keystone", "glance", "placement" etc.
+#   A dictionary which is used for creating DB will fetched from the configuration.
+#   For example, if you specify "keystone" as "openstack-service_name", group_vars.keystone will be used to create dbs.
+#
+
+- name: Declare openstack_service variable
+  ansible.builtin.setfact:
+    openstack_service: "{{ group_vars[openstack_service_name] }}"
+
+- name: Faile if openstack_service was None
+  fail:
+    msg: "Failed to run create_db because parameter 'group_vars' does not have a key '{{ openstack_service_name }}' "
+  when: openstack_service == None
+
+- name: Faile if group_vars.<openstack_service_name>.user or group_vars.<openstack_service_name>.password or group_vars.<openstack_service_name>.db was None
+  fail:
+    msg: "Faile if group_vars.{{ openstack_service_name }}.user or group_vars.{{ openstack_service_name }}.password or group_vars.{{ openstack_service_name }}.db was None"
+  when: not 'user' in openstack_service or not 'password' in openstack_service or not 'db' in openstack_service
+
+- name: Declare variables db_user and db_password to create DB
+  set_fact:
+    db_user: "{{ openstack_service.user }}"
+    db_password
+
+- name: Include do_create_db.yml
+  include_role:
+    name: functions
+    task_from: create_db/do_create_db.yml
+  loop_control:
+    loop_var: db_name
+  loop: "{{ openstack_service.db }}"
+
