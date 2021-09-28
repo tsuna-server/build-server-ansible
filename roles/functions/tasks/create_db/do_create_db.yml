@@ -6,9 +6,7 @@
     db_user: "{% if 'user' in db %}{{ db.user }}{% else %}{{ group_vars[openstack_service_name].user }}{% endif %}"
     db_password: "{% if 'password' in db %}{{ db.password }}{% else %}{{ group_vars[openstack_service_name].password }}{% endif %}"
 
-
-
-- name: Debugggggggggggggggggggggggggggggggggggg
+- name: Debug: Print the tables information that this script going to create
   ansible.builtin.debug:
     msg: "db.name={{ db_name }}, db_user={{ db_user }}, db_password={{ db_password }}"
 
