@@ -1,38 +1,9 @@
 ---
-- name: Check a flag that means mysql_secure_installation.yml was finished
-  stat:
-    path: /root/.ansible_keystone_database_was_initialized
-  register: flag_file
+- name: Declare openstack_service_name for keystone
+  set_fact:
+    openstack_service_name: "keystone"
 
-- name: Init keystone DB
-  block:
-    - name: Create Keystone database
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "CREATE DATABASE keystone;"
-
-    - name: Grant privileges to resources on keystone database for a user keystone at localhost
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "GRANT ALL PRIVILEGES ON keystone.* TO '{{ group_vars.keystone.user }}'@'localhost' IDENTIFIED BY '{{ group_vars.keystone.password }}';"
-
-    - name: Grant privileges to resources on keystone database for a user keystone at remote host
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "GRANT ALL PRIVILEGES ON keystone.* TO '{{ group_vars.keystone.user }}'@'%' IDENTIFIED BY '{{ group_vars.keystone.password }}';"
-  when: not flag_file.stat.exists
-
-- name: Create a flag that means initialize_keystone_database.yml was finished
-  copy:
-    content: ""
-    dest: /root/.ansible_keystone_database_was_initialized
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
+- name: Include role-functions to create DB for keystone
+  include_role:
+    name: functions
+    tasks_from: create_db/main.yml

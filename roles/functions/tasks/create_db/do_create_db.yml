@@ -1,0 +1,50 @@
+---
+# openstack_service
+- name: Declare variables db_name, db_user and db_password
+  set_fact:
+    db_name: "{{ db.name }}"
+    db_user: "{% if 'user' in db %}{{ db.user }}{% else %}{{ group_vars[openstack_service_name].user }}{% endif %}"
+    db_password: "{% if 'password' in db %}{{ db.password }}{% else %}{{ group_vars[openstack_service_name].password }}{% endif %}"
+
+- name: Print the tables information that this script going to create
+  ansible.builtin.debug:
+    msg: "db.name={{ db_name }}, db_user={{ db_user }}, db_password={{ db_password }}"
+
+- name: Check a flag that means mysql_secure_installation.yml was finished
+  stat:
+    path: "/root/.ansible_{{ openstack_service_name }}_{{ db_name }}_db_was_initialized"
+  register: flag_file
+
+- name: Init keystone DB
+  block:
+    - name: Create DB for each service
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - -e
+          - "CREATE DATABASE {{ db_name }};"
+
+    - name: Grant privileges to resources on each service DB for a user at localhost
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - -e
+          - "GRANT ALL PRIVILEGES ON {{ db_name }}.* TO '{{ db_user }}'@'localhost' IDENTIFIED BY '{{ db_password }}';"
+
+    - name: Grant privileges to resources on keystone database for a user keystone at remote host
+      ansible.builtin.command:
+        argv:
+          - mysql
+          - -e
+          - "GRANT ALL PRIVILEGES ON {{ db_name }}.* TO '{{ db_user }}'@'%' IDENTIFIED BY '{{ db_password }}';"
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means creating the DB was finished
+  copy:
+    content: ""
+    dest: "/root/.ansible_{{ openstack_service_name }}_{{ db_name }}_db_was_initialized"
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+

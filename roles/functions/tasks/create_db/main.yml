@@ -1,0 +1,15 @@
+---
+# * openstack_service_name (type string)
+#   OpenStack service name. eg) "keystone", "glance", "placement" etc.
+#   A dictionary which is used for creating DB will fetched from the configuration.
+#   For example, if you specify "keystone" as "openstack-service_name", group_vars.keystone will be used to create dbs.
+#
+
+- name: Include do_create_db.yml
+  include_role:
+    name: functions
+    tasks_from: create_db/do_create_db.yml
+  loop_control:
+    loop_var: db
+  loop: "{{ group_vars[openstack_service_name].dbs }}"
+

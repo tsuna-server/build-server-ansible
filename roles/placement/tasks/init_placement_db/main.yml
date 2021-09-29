@@ -1,38 +1,9 @@
 ---
-- name: Check a flag that means init_placement_db.yml was finished
-  stat:
-    path: /root/.ansible_placement_database_was_initialized
-  register: flag_file
+- name: Declare openstack_service_name for placment
+  set_fact:
+    openstack_service_name: "placement"
 
-- name: Init placement DB
-  block:
-    - name: Create Placement database
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "CREATE DATABASE placement;"
-
-    - name: Grant privileges to resources on placement database for a user placement at localhost
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "GRANT ALL PRIVILEGES ON placement.* TO '{{ group_vars.placement.user }}'@'localhost' IDENTIFIED BY '{{ group_vars.placement.password }}';"
-
-    - name: Grant privileges to resources on placement database for a user placement at remote host
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "GRANT ALL PRIVILEGES ON placement.* TO '{{ group_vars.placement.user }}'@'%' IDENTIFIED BY '{{ group_vars.placement.password }}';"
-  when: not flag_file.stat.exists
-
-- name: Create a flag that means init_placement_database.yml was finished
-  copy:
-    content: ""
-    dest: /root/.ansible_placement_database_was_initialized
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
+- name: Include role-functions to create DB for placement
+  include_role:
+    name: functions
+    tasks_from: create_db/main.yml
