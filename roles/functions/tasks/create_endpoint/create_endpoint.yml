@@ -1,0 +1,13 @@
+---
+# openstack_service_name
+# service_interface
+
+- name: Declare regions to create endpoints
+  set_fact:
+    regions: "{% if service_interface in group_vars[openstack_service_name].endpoints %}{{ group_vars[openstack_service_name].endpoints[service_interface].regions }}{% else %}{{ group_vars[openstack_service_name].endpoints.default['regions'] }}{% endif %}"
+
+    name: functions
+    tasks_from: create_endpoint/do_create_endpoint.yml
+  loop_control:
+    loop_var: region
+  loop: "{{ regions }}"

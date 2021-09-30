@@ -25,11 +25,15 @@
 #       loop_var: endpoint
 #     loop: "{{ group_vars.glance.endpoints | dict2items }}"
 #   ```
-#
 
-#- name: Debug values
-#  ansible.builtin.debug:
-#    msg: "endpoint.key={{ endpoint.key }}, endpoint.value={{ endpoint.value }}"
+# openstack_service_name
+- name: Include create_endpoint/create_endpoint.yml in function role
+  include_role:
+    name: functions
+    tasks_from: create_endpoint/create_endpoint.yml
+  loop_control:
+    loop_var: service_interface
+  loop: ["public", "internal", "admin"]
 
 - name: Declare variables scope_of_endpoint, regions
   set_fact:
