@@ -1,5 +1,13 @@
 ---
-# openstack_service_name and service_interface are already declared.
+# Parameters:
+#
+# * openstack_service_name (type String)
+#   A service name of OpenStack service. eg) "glance", "placement" etc.
+#
+# * service_interface (type String)
+#   Service interface of endpoint. eg) "public", "internal", "admin".
+#
+
 - name: Declare variables to create an endpoint
   set_fact:
     region_name: "{% if 'name' in region %}{{ region.name }}{% else %}{{ group_vars[openstack_service_name].endpoints.default.regions[0].name }}{% endif %}"
@@ -18,7 +26,6 @@
         msg: "Creating endpoint - region_name={{ region_name }} openstack_service_name={{ openstack_service_name }}, service_type={{ service_type }}, service_interface={{ service_interface }}, endpoint_url={{ endpoint_url }}"
     - name: Create an endpoint
       ansible.builtin.command:
-        argv: ["openstack", "endpoint", "create", "--region", "{{ region }}", "{{ service_type }}", "{{ service_interface }}" "{{ endpoint_url }}"]
-          openstack endpoint create --region RegionOne image public http://openstack-controller-node01:9292
+        argv: ["openstack", "endpoint", "create", "--region", "{{ region }}", "{{ service_type }}", "{{ service_interface }}", "{{ endpoint_url }}"]
   when: result_of_checking.rc == 0
 
