@@ -1,9 +1,8 @@
 ---
-- name: Declare openstack_service_name for glance
-  set_fact:
-    openstack_service_name: "glance"
-
 - name: Include role-functions to create endpoints for glance
   include_role:
     name: functions
     tasks_from: create_endpoint/main.yml
+  vars:
+    openstack_service_name: "glance"
+
