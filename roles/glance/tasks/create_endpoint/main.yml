@@ -1,30 +1,8 @@
 ---
-- name: Check a flag that means create_endpoint was finished
-  stat:
-     path: /root/.ansible_glance_create_endpoint_was_finished
-  register: flag_file
-
-- name: Block of creating endpoints
-  block:
-    - name: Declare type_of_endpoint to include_role "functions"
-      set_fact:
-        type_of_endpoint: "{{ group_vars.glance.service.type }}"
-
-    - name: Include create_endpoint/main in a role functions
-      include_role:
-        name: functions
-        tasks_from: create_endpoint/main.yml
-      loop_control:
-        loop_var: endpoint
-      loop: "{{ group_vars.glance.endpoints | dict2items }}"
-  when: not flag_file.stat.exists
-
-- name: Create a flag that means create_endpoint was finished
-  copy:
-    content: ""
-    dest: /root/.ansible_glance_create_endpoint_was_finished
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
+- name: Include role-functions to create endpoints for glance
+  include_role:
+    name: functions
+    tasks_from: create_endpoint/main.yml
+  vars:
+    openstack_service_name: "glance"
 

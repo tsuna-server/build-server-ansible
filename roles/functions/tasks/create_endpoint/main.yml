@@ -3,51 +3,25 @@
 # "create_roles" is a task to create endpoints for each services.
 # It requires variables like below.
 #
-# * endpoint (converted to item from type dictionary)
-#   A variable contains information how end point should be created.
-#   It might contains some information about scope(public or internal or admin) and regions.
-#   This variable must be equals as "group_vars.<component>.endpoints.<key of scope> == endpoint.key" and "group_vars.<component>.endpoints.<scope>.regions == endpoint.value.regions" 
-#   // eg) group_vars.glance.endpoints
+# * openstack_service_name (type String)
+#   A service name of OpenStack service. eg) "glance", "placement" etc.
+#   Values of endpoints will be used from group_vars in each OpenStack services.
+#   For example, if you specified the value as "glance", configurations of endpoints under "group_vars.glance.endpoints.endpoints" will be used.
 #
-# * type_of_endpoint (type string)
-#   A variable for type of endpoint.
-#   // eg) "image", "placement" etc...
-#
-#   This tasks assumes be included like below.
+#   This tasks is assumed to be included like below.
 #   ```
-#   - name: Declare type_of_endpoint to include a tasks create_endpoint in function role
-#
-#   - name: Include create_endpoint/main in a role functions
+#   - name: Include role-functions to create endpoints for glance
 #     include_role:
 #       name: functions
 #       tasks_from: create_endpoint/main.yml
-#     loop_control:
-#       loop_var: endpoint
-#     loop: "{{ group_vars.glance.endpoints | dict2items }}"
+#     vars:
+#       openstack_service_name: "glance"
 #   ```
-#
 
-#- name: Debug values
-#  ansible.builtin.debug:
-#    msg: "endpoint.key={{ endpoint.key }}, endpoint.value={{ endpoint.value }}"
-
-- name: Declare variables scope_of_endpoint, regions
-  set_fact:
-    scope: "{{ endpoint.key }}"
-    regions: "{{ endpoint.value.regions }}"
-
-- name: Include do_create_endpoint.yml
+- name: Include create_endpoint/create_endpoint.yml in function role
   include_role:
     name: functions
-    tasks_from: create_endpoint/do_create_endpoint.yml
+    tasks_from: create_endpoint/create_endpoint.yml
   loop_control:
-    loop_var: region
-  loop: "{{ regions }}"
-
-# NOTE: This instruction does not work even its file of task are in same role directory.
-#- name: Include do_create_endpoint.yml
-#  include: do_create_endpoint.yml
-#  loop_control:
-#    loop_var: region
-#  loop: "{{ regions }}"
-
+    loop_var: service_interface
+  loop: ["public", "internal", "admin"]

@@ -47,7 +47,7 @@ group_vars:
       keystone_conf:
         token:
           provider: fernet
-    auth_url: http://dev-private-router01:5000/v3
+    auth_url: "http://dev-private-router01:5000/v3"
     dbs:
       # DB names for OpenStack services. User and password will be inherited from "group_vars.keystone.user" and "group_vars.keystone.password"
       - name: keystone
@@ -63,21 +63,30 @@ group_vars:
       description: "OpenStack Image"
       type: image
     endpoints:
-      public:
+      # "public:", "internal:", "admin:" can be abbriviated. Parameters in "default:" will be used if they were abbriviated.
+      default:
         regions:
           # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
           - name: RegionOne
-            url: http://dev-private-router01:9292
-      internal:
-        regions:
-          - name: RegionOne
-            url: http://dev-private-router01:9292
-      admin:
-        regions:
-          - name: RegionOne
-            url: http://dev-private-router01:9292
+            url: "http://dev-private-router01:9292"
+      #public:
+      #  regions:
+      #    # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:9292"
+      #internal:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:9292"
+      #admin:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:9292"
     dbs:
+      # "user:" and "password:" can be abbreviated
       - name: glance
+        user: glance
+        password: secret
     examples:
       cirros:
         create: true
@@ -93,18 +102,22 @@ group_vars:
       description: "Placement API"
       type: placement
     endpoints:
-      public:
+      default:
         regions:
           - name: RegionOne
-            url: http://openstack-controller-node01:8778
-      internal:
-        regions:
-          - name: RegionOne
-            url: http://openstack-controller-node01:8778
-      admin:
-        regions:
-          - name: RegionOne
-            url: http://openstack-controller-node01:8778
+            url: "http://dev-private-router01:8778"
+      #public:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:8778"
+      #internal:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:8778"
+      #admin:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:8778"
     dbs:
       - name: placement
         user: placement
