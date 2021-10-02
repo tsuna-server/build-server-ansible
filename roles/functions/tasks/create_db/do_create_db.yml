@@ -10,41 +10,34 @@
   ansible.builtin.debug:
     msg: "db.name={{ db_name }}, db_user={{ db_user }}, db_password={{ db_password }}"
 
-- name: Check a flag that means mysql_secure_installation.yml was finished
-  stat:
-    path: "/root/.ansible_{{ openstack_service_name }}_{{ db_name }}_db_was_initialized"
-  register: flag_file
+- name: Create DB if it was not exsited for each service
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "CREATE DATABASE IF NOT EXISTS {{ db_name }};"
 
-- name: Init keystone DB
-  block:
-    - name: Create DB for each service
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "CREATE DATABASE {{ db_name }};"
+- name: Check whether a privilege of the user at localhost was existed
+  ansible.builtin.script: ./check_duplicate_privilege_on_db.sh "{{ db_name }}" "{{ db_user }}" "localhost"
+  register: result_of_checking
+  failed_when: ( result_of_checking.rc not in [0, 1] )
 
-    - name: Grant privileges to resources on each service DB for a user at localhost
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "GRANT ALL PRIVILEGES ON {{ db_name }}.* TO '{{ db_user }}'@'localhost' IDENTIFIED BY '{{ db_password }}';"
+- name: Grant privileges to resources on each service DB for a user at localhost
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "GRANT ALL PRIVILEGES ON {{ db_name }}.* TO '{{ db_user }}'@'localhost' IDENTIFIED BY '{{ db_password }}';"
+  when: result_of_checking.rc == 0
 
-    - name: Grant privileges to resources on keystone database for a user keystone at remote host
-      ansible.builtin.command:
-        argv:
-          - mysql
-          - -e
-          - "GRANT ALL PRIVILEGES ON {{ db_name }}.* TO '{{ db_user }}'@'%' IDENTIFIED BY '{{ db_password }}';"
-  when: not flag_file.stat.exists
+- name: Check whether a privilege of the user at remote host was existed
+  ansible.builtin.script: ./check_duplicate_privilege_on_db.sh "{{ db_name }}" "{{ db_user }}" "%"
+  register: result_of_checking
+  failed_when: ( result_of_checking.rc not in [0, 1] )
 
-- name: Create a flag that means creating the DB was finished
-  copy:
-    content: ""
-    dest: "/root/.ansible_{{ openstack_service_name }}_{{ db_name }}_db_was_initialized"
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
-
+- name: Grant privileges to resources on keystone database for a user keystone at remote host
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "GRANT ALL PRIVILEGES ON {{ db_name }}.* TO '{{ db_user }}'@'%' IDENTIFIED BY '{{ db_password }}';"
