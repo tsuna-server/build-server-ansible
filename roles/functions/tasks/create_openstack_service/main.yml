@@ -1,0 +1,28 @@
+---
+#
+# "create_openstack_service" is a task to create OpenStack service for each services.
+# It requires variables like below.
+#
+# * openstack_service_name (type String)
+#   A service name of OpenStack service. eg) "glance", "placement" etc.
+#   Values of endpoints will be used from group_vars in each OpenStack services.
+#   For example, if you specified the value as "glance", configurations of endpoints under "group_vars.glance.endpoints.endpoints" will be used.
+#
+#   This tasks is assumed to be included from another task like below.
+#   ```
+#   - name: Include role-functions to create OpenStack service for glance
+#     include_role:
+#       name: functions
+#       tasks_from: create_openstack_service/main.yml
+#     vars:
+#       openstack_service_name: "glance"
+#   ```
+
+- name: Include create_openstack_service/do_create_openstack_service.yml
+  include_role:
+    name: functions
+    tasks_from: create_openstack_service/do_create_openstack_service.yml
+  vars:
+    service_name: "{{ openstack_service_name }}"
+    service_type: "{{ group_vars[openstack_service_name].service.type }}"
+    service_description: "{{ group_vars[openstack_service_name].service.description }}"
