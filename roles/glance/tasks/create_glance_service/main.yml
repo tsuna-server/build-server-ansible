@@ -1,30 +1,7 @@
 ---
-#
-# Users and roles are already created at tasks in Keystone
-#
-- name: Check a flag that means create_service_glance was finished
-  stat:
-    path: /root/.ansible_glance_service_was_created
-  register: flag_file
-
-- name: Create service for Glance
-  ansible.builtin.command:
-    argv:
-      - openstack
-      - service
-      - create
-      - --name
-      - "{{ group_vars.glance.service.name }}"
-      - --description
-      - "{{ group_vars.glance.service.description }}"
-      - "{{ group_vars.glance.service.type }}"
-
-- name: Create a flag that means create_service_glance was finished
-  copy:
-    content: ""
-    dest: /root/.ansible_glance_service_was_created
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
-
+- name: Include role-function to create OpenStack service for glance
+  include_role:
+    name: functions
+    tasks_from: create_openstack_service/main.yml
+  vars:
+    openstack_service_name: "glance"
