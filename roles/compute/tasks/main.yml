@@ -1,0 +1,10 @@
+---
+- name: A block for OpenStack Compute service
+  block:
+    - name: Include init_compute_service_db/main.yml
+      include: init_compute_service_db/main.yml
+
+- name: A block for OpenStack Compute nodes
+  block:
+
+
