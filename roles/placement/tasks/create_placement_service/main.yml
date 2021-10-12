@@ -1,29 +1,7 @@
 ---
-#
-# Users and roles are already created at tasks in Keystone
-#
-- name: Check a flag that means create_service_placement was finished
-  stat:
-    path: /root/.ansible_placement_service_was_created
-  register: flag_file
-
-- name: Create service for Placement
-  ansible.builtin.command:
-    argv:
-      - openstack
-      - service
-      - create
-      - --name
-      - "{{ group_vars.placement.service.name }}"
-      - --description
-      - "{{ group_vars.placement.service.description }}"
-      - "{{ group_vars.placement.service.type }}"
-
-- name: Create a flag that means create_service_placement was finished
-  copy:
-    content: ""
-    dest: /root/.ansible_placement_service_was_created
-    force: no
-    owner: root
-    group: root
-    mode: '0640'
+- name: Include role-function to create OpenStack service for placement
+  include_role:
+    name: functions
+    tasks_from: create_openstack_service/main.yml
+  vars:
+    openstack_service_name: "placement"
