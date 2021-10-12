@@ -1,9 +1,7 @@
 ---
-- name: Declare openstack_service_name for placment
-  set_fact:
-    openstack_service_name: "placement"
-
-- name: Include role-functions to create DB for placement
+- name: Include role-functions to create DB for Placement
   include_role:
     name: functions
     tasks_from: create_db/main.yml
+  vars:
+    openstack_service_name: "placement"
