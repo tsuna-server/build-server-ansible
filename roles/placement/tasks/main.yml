@@ -1,4 +1,5 @@
 ---
+# This instruction only support installing placement from PyPI so far
 - name: Include init_placement_db/main.yml
   include: init_placement_db/main.yml
 
