@@ -6,7 +6,7 @@
 
 - name: Check openstack user has already existed in rabbitmq
   ansible.builtin.script:
-    cmd: check_existence_of_user.sh {{ group_vars.mq.user_name }}
+    cmd: check_existence_of_user.sh {{ group_vars.mq.user }}
   register: ret
   failed_when: ret.rc not in [0, 1]
 
@@ -15,7 +15,7 @@
    argv:
     - rabbitmqctl
     - add_user
-    - "{{ group_vars.mq.user_name }}"
+    - "{{ group_vars.mq.user }}"
     - "{{ group_vars.mq.password }}"
   when: ret.rc != 0
 
@@ -24,7 +24,7 @@
     argv:
       - rabbitmqctl
       - set_permissions
-      - "{{ group_vars.mq.user_name }}"
+      - "{{ group_vars.mq.user }}"
       - ".*"
       - ".*"
       - ".*"
