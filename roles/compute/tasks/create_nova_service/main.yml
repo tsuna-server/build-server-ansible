@@ -2,6 +2,6 @@
 - name: Include role-function to create OpenStack service for nova
   include_role:
     name: functions
-    taskf_from: create_openstack_service/main.yml
+    tasks_from: create_openstack_service/main.yml
   vars:
     openstack_service_name: "nova"
