@@ -3,8 +3,12 @@
   block:
     - name: Include init_compute_service_db/main.yml
       include: init_compute_service_db/main.yml
-    - name: Include init_nova_service/main.yml
-      include: init_nova_service/main.yml
+
+    - name: Include create_nova_service/main.yml
+      include: create_nova_service/main.yml
+
+    - name: Include create_endpoint/main.yml
+      include: create_endpoint/main.yml
 
 
 #- name: A block for OpenStack Compute nodes
