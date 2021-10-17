@@ -11,6 +11,7 @@
     - keystone
     - glance
     - placement
+    - compute
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
