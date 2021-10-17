@@ -59,7 +59,7 @@ group_vars:
     password: secret
     domain: default
     service:
-      name: glance
+      #name: glance
       description: "OpenStack Image"
       type: image
     endpoints:
@@ -123,6 +123,24 @@ group_vars:
         user: placement
         password: secret
 
+  nova:
+    user: nova
+    group: nova
+    password: secret
+    service:
+      name: nova
+      description: "OpenStack Compute"
+      type: compute
+    endpoints:
+      default:
+        regions:
+          - name: RegionOne
+            url: "http://dev-private-router01:8774/v2.1"
+    dbs:
+      - name: nova_api
+      - name: nova
+      - name: nova_cell0
+
   openstack:
     admin_user_name: admin
     admin_project_name: admin
@@ -147,6 +165,8 @@ group_vars:
           - name: glance
             password: secret
           - name: placement
+            password: secret
+          - name: nova
             password: secret
         projects:
           # Service which set "primary: true" is a primary service that never duplicated in this list.
@@ -176,5 +196,11 @@ group_vars:
         assigners:
           # User for glance. Project must be set as parimary service at "group_vars.openstack.domains[].projects[].primary"
           - user: glance
+            domain: default
+            project: service
+          - user: nova
+            domain: default
+            project: service
+          - user: placement
             domain: default
             project: service

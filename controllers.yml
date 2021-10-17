@@ -11,7 +11,7 @@
     - keystone
     - glance
     - placement
-    - compute
+    - nova
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
