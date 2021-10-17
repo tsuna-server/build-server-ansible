@@ -27,7 +27,7 @@
     argv: ["su", "-s", "/bin/sh", "-c", "placement-manage db sync", "placement"]
   when: not flag_file.stat.exists
 
-- name: Create a flag that means set config and sync db was finished
+- name: Create a flag that means sync db was finished
   copy:
     content: ""
     dest: /root/.ansible_placement_sync_db_was_finished
