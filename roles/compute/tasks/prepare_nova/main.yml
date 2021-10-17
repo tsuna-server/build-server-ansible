@@ -14,17 +14,17 @@
 
 - name: Set /etc/nova/nova.conf
   ansible.builtin.template:
-    src: glance/glance-api.conf.j2
-    dest: /etc/glance/glance-api.conf
+    src: nova/nova.conf.j2
+    dest: /etc/nova/nova.conf
     owner: root
-    group: glance
+    group: nova
     mode: 0640
     backup: yes
   register: template_result
 
 # There are no patterns to detect options to sync DB.
 # So they are written as hard coded so far.
-- name: Sync database for glance
+- name: Sync database for Nova
   ansible.builtin.command:
     argv: ["su", "-s", "/bin/sh", "-c", "{{ item }}", "{{ group_vars.nova.user }}"]
   loop:
@@ -36,10 +36,21 @@
 
 - name: Check the result of syncing Nova DB
   ansible.builtin.command:
-    argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 list_cells" "nova"]
+    argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 list_cells", "nova"]
   register: result
 
 - name: Print the result of syncing Nova DB
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
+
+- name: Restart services related Nova
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-novncproxy
+  when: template_result.changed
 

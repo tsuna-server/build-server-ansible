@@ -1,4 +1,5 @@
 [DEFAULT]
+
 log_dir = /var/log/nova
 lock_path = /var/lock/nova
 state_path = /var/lib/nova
@@ -1679,7 +1680,7 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 
 
 [database]
-connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@/{{ group_vars.hosts.controllers[0].name }}/nova
+connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].name }}/nova
 
 #
 # From oslo.db
