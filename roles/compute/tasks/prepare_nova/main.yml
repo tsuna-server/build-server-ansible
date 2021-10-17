@@ -7,11 +7,6 @@
       - nova-novncproxy
       - nova-scheduler
 
-#- name: Check a flag that means set config and sync db was finished
-#  stat:
-#    path: /root/.ansible_glance_set_config_and_sync_db_was_finished
-#  register: flag_file
-
 - name: Set /etc/nova/nova.conf
   ansible.builtin.template:
     src: nova/nova.conf.j2
