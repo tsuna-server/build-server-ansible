@@ -1,6 +1,12 @@
 - name: Upgrade all current packages
   apt:
     upgrade: full
+    update_cache: yes
+
+- name: Install common packages
+  apt:
+    name:
+      - jq
 
 - name: Check reboot was required
   stat:
