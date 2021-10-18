@@ -8,14 +8,24 @@
 main() {
     local target_image_name="$1"
     local image_name
-    local output
+    local output i
 
-    [[ -z "$target_image_name" ]] && return 2
-
-    output="$(glance image-list)" || {
-        echo "ERROR: Failed to get image list from glance-api" >&2
+    [[ -z "$target_image_name" ]] && {
+        echo "Usage: $0 <target_image_name>"
         return 2
     }
+
+    # Retry when the error was occured because
+    # "glance image-list" some times returns error after glance
+    # API restarted in a few seconds ago.
+    for i in {1..30}; do
+        output="$(glance image-list)" && break
+        [[ $i -eq 30 ]] && {
+            echo "ERROR: Failed to get image list from glance-api" >&2
+            return 2
+        }
+        sleep 2
+    done
 
     while read image_name _; do
         image_name="${image_name%\\n}"
