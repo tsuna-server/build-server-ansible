@@ -15,6 +15,7 @@
     group: root
     mode: 0644
     backup: yes
+  register: template_result
 
 - name: a2ensite placement-api
   ansible.builtin.command:
@@ -25,5 +26,5 @@
   ansible.builtin.service:
     name: apache2
     state: restarted
-  when: result.rc == 0 and result.stdout != "Site placement-api already enabled"
+  when: (template_result.changed) or (result.rc == 0 and result.stdout != "Site placement-api already enabled")
 
