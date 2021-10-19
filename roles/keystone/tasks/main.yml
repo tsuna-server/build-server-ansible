@@ -1,26 +1,25 @@
 ---
-- name: Include init_keystone_db/main.yml
-  include: init_keystone_db/main.yml
+- name: Include create_dbs/main.yml
+  include: create_dbs/main.yml
 
-- name: Include prepare_keystone_env/main.yml
-  include: prepare_keystone_env/main.yml
+- name: Include prepare_openstack_service/main.yml
+  include: prepare_openstack_service/main.yml
 
 # Instruction below assumes environment variables are already declared in order to authenticate the endpoint are already declared at controllers.yml.
-- name: Include create_domain.yml
-  include: create_domain/main.yml
+- name: Include create_domains/main.yml
+  include: create_domains/main.yml
 
-- name: Include create_project.yml
-  include: create_project/main.yml
+- name: Include create_projects/main.yml
+  include: create_projects/main.yml
 
-- name: Include create_user.yml
-  include: create_user/main.yml
+- name: Include create_users/main.yml
+  include: create_users/main.yml
 
-- name: Include create_role.yml
-  include: create_role/main.yml
+- name: Include create_roles/main.yml
+  include: create_roles/main.yml
 
-- name: Include create_admin_openrc.yml
+- name: Include create_admin_openrc/main.yml
   include: create_admin_openrc/main.yml
 
-- name: Include check_after_keystone_has_installed.yml
-  include: check_keystone_env/main.yml
-
+- name: Include check_environment/main.yml
+  include: check_environment/main.yml

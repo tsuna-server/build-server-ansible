@@ -1,16 +1,15 @@
 ---
-- name: Include init_glance_db/main.yml
-  include: init_glance_db/main.yml
+- name: Include create_db/main.yml
+  include: create_db/main.yml
 
-- name: Include create_glance_service/main.yml
-  include: create_glance_service/main.yml
+- name: Include create_service/main.yml
+  include: create_service/main.yml
 
-- name: Include create_endpoint/main.yml
-  include: create_endpoint/main.yml
+- name: Include create_endpoints/main.yml
+  include: create_endpoints/main.yml
 
-- name: Prepare glance
-  include: prepare_glance/main.yml
+- name: Include prepare_openstack_service/main.yml
+  include: prepare_openstack_service/main.yml
 
-- name: Create example cirros image
+- name: Include create_example_cirros/main.yml
   include: create_example_cirros/main.yml
-
