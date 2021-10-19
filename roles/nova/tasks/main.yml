@@ -1,21 +1,17 @@
 ---
 - name: A block for OpenStack Compute service
   block:
-    - name: Include init_compute_service_db/main.yml
-      include: init_compute_service_db/main.yml
+    - name: Include create_dbs/main.yml
+      include: create_dbs/main.yml
 
-    - name: Include create_nova_service/main.yml
-      include: create_nova_service/main.yml
+    - name: Include create_services/main.yml
+      include: create_services/main.yml
 
-    - name: Include create_endpoint/main.yml
-      include: create_endpoint/main.yml
+    - name: Include create_endpoints/main.yml
+      include: create_endpoints/main.yml
 
-    - name: Prepare nova
-      include: prepare_nova/main.yml
+    - name: Include prepare_openstack_services/main.yml
+      include: prepare_openstack_services/main.yml
 
-
-
-#- name: A block for OpenStack Compute nodes
-#  block:
-
+# TODO: Create instructions to build WSGI environment from package manager
 
