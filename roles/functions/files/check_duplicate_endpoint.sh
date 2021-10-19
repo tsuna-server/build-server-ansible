@@ -14,7 +14,7 @@ main() {
 
     local output region service_name service_type service_interface
 
-    if [[ -z "$target_region" ]] || [[ -z "$target_service_type" ]] || [[ -z "$target_service_interface" ]]; then
+    if [[ -z "$target_region" ]] || [[ -z "$target_service_name" ]] || [[ -z "$target_service_type" ]] || [[ -z "$target_service_interface" ]]; then
         echo "\$1: target_region, \$2: "
         return 2
     fi
@@ -25,26 +25,35 @@ main() {
     }
 
     # Example output of "openstack endpoint list"
-    #+----------------------------------+-----------+--------------+--------------+---------+-----------+-----------------------------------------+
-    #| ID                               | Region    | Service Name | Service Type | Enabled | Interface | URL                                     |
-    #+----------------------------------+-----------+--------------+--------------+---------+-----------+-----------------------------------------+
-    #| 20c673870a574dfda6d40845e4533547 | RegionOne | glance       | image        | True    | internal  | http://dev-private-router01:9292        |
-    #| 2b924c78af9f46ada9446cac957de861 | RegionOne | glance       | image        | True    | public    | http://dev-private-router01:9292        |
-    #| 7e2bd9787dc64c698656d123d514aac9 | RegionOne | glance       | image        | True    | admin     | http://dev-private-router01:9292        |
-    #+----------------------------------+-----------+--------------+--------------+---------+-----------+-----------------------------------------+
+    #+---------------+---------------------------------------------------+--------------+--------------+---------+-----------+--------------------------------------+
+    #| ID            | Region                                            | Service Name | Service Type | Enabled | Interface | URL                                  |
+    #+---------------+---------------------------------------------------+--------------+--------------+---------+-----------+--------------------------------------+
+    #| ......                                                                                                                                                       |
+    #| xxxxxxxx...xx | {'name': 'RegionOne', 'url': 'http://xxxxx:8778'} | placement    | placement    | True    | internal  | http://dev-private-router01:8778     |
+    #| yyyyyyyy...yy | RegionOne                                         | keystone     | identity     | True    | internal  | http://dev-private-router01:5000/v3/ |
+    #| zzzzzzzz...zz | {'name': 'RegionOne', 'url': 'http://xxxxx:9292'} | glance       | image        | True    | admin     | http://dev-private-router01:9292     |
+    #| ......                                                                                                                                                       |
+    #+---------------+---------------------------------------------------+--------------+--------------+---------+-----------+--------------------------------------+
 
-    #while read region service_name _; do
-    while read region _ service_name _ service_type _ service_interface _; do
-        region="${region%\\n}"
-        service_name="${service_name%\\n}"
-        service_type="${service_type%\\n}"
-        service_interface="${service_interface%\\n}"
-        echo "region=${region}, service_name=${service_name}, service_type=${service_type}, service_interface=${service_interface}"
+    while IFS="|" read -r region service_name service_type service_interface; do
+        region="$(trim ${region})"
+        service_name="$(trim "${service_name}")"
+        service_type="$(trim "${service_type}")"
+        service_interface="$(trim ${service_interface})"
+
+        if [[ "$region" =~ ^\{.* ]]; then
+            # If name of region is formatted as JSON
+            region="$(sed -e "s/'/\"/g" <<< "${region}" | jq -r '.name')"
+            true
+        fi
+
+        # "[DEBUG] region=${region}, service_name=${service_name}, service_type=${service_type}, service_interface=${service_interface}"
 
         if [[ "$region" == "$target_region" ]] \
                 && [[ "$service_name" == "$target_service_name" ]] \
                 && [[ "$service_type" == "$target_service_type" ]] \
                 && [[ "$service_interface" == "$target_service_interface" ]]; then
+            # The endpoint has already existed
             return 1
         fi
     done < <(tail -n +4 <<< "$output" | head -n -1 | cut -d '|' -f 3,4,5,7)
@@ -52,4 +61,14 @@ main() {
     return 0
 }
 
+trim() {
+    local var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"
+    printf '%s' "$var"
+}
+
 main "$@"
+
