@@ -1996,6 +1996,8 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 
 
 [glance]
+api_servers = http://{{ group_vars.hosts.controllers[0].name }}:9292
+
 # Configuration options for the Image service
 
 #
@@ -2633,16 +2635,6 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 
 
 [keystone_authtoken]
-www_authenticate_uri = http://openstack-controller-node01:5000/
-auth_url = http://openstack-controller-node01:5000/
-memcached_servers = openstack-controller-node01:11211
-auth_type = password
-project_domain_name = Default
-user_domain_name = Default
-project_name = service
-username = nova
-password = p@ssw0rd
-
 www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].name }}:5000/
 auth_url = http://{{ group_vars.hosts.controllers[0].name }}:5000/
 memcached_servers = {{ group_vars.hosts.controllers[0].name }}:11211
@@ -3705,6 +3697,7 @@ password = {{ group_vars.nova.password }}
 
 
 [oslo_concurrency]
+lock_path = /var/lib/nova/tmp
 
 #
 # From oslo.concurrency
@@ -4240,6 +4233,14 @@ password = {{ group_vars.nova.password }}
 
 
 [placement]
+region_name = RegionOne
+project_domain_name = Default
+project_name = service
+auth_type = password
+user_domain_name = Default
+auth_url = http://{{ group_vars.hosts.controllers[0].name }}:5000/v3
+username = placement
+password = p@ssw0rd
 
 #
 # From nova.conf
