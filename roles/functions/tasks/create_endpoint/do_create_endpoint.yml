@@ -26,6 +26,6 @@
         msg: "Creating endpoint - region_name={{ region_name }} openstack_service_name={{ openstack_service_name }}, service_type={{ service_type }}, service_interface={{ service_interface }}, endpoint_url={{ endpoint_url }}"
     - name: Create an endpoint
       ansible.builtin.command:
-        argv: ["openstack", "endpoint", "create", "--region", "{{ region }}", "{{ service_type }}", "{{ service_interface }}", "{{ endpoint_url }}"]
+        argv: ["openstack", "endpoint", "create", "--region", "{{ region_name }}", "{{ service_type }}", "{{ service_interface }}", "{{ endpoint_url }}"]
   when: result_of_checking.rc == 0
 
