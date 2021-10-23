@@ -1,5 +1,0 @@
-- name: Apply netplan
-  shell: /usr/sbin/netplan apply
-
-- name: Reboot machine
-  reboot:
