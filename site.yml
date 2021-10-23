@@ -1,5 +1,4 @@
 ---
 - import_playbook: private_routers.yml
-
 - import_playbook: controllers.yml
 
