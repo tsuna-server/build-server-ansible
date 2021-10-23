@@ -24,28 +24,22 @@ main() {
         return 2
     }
 
-    # Example output of "openstack endpoint list"
-    #+---------------+---------------------------------------------------+--------------+--------------+---------+-----------+--------------------------------------+
-    #| ID            | Region                                            | Service Name | Service Type | Enabled | Interface | URL                                  |
-    #+---------------+---------------------------------------------------+--------------+--------------+---------+-----------+--------------------------------------+
-    #| ......                                                                                                                                                       |
-    #| xxxxxxxx...xx | {'name': 'RegionOne', 'url': 'http://xxxxx:8778'} | placement    | placement    | True    | internal  | http://dev-private-router01:8778     |
-    #| yyyyyyyy...yy | RegionOne                                         | keystone     | identity     | True    | internal  | http://dev-private-router01:5000/v3/ |
-    #| zzzzzzzz...zz | {'name': 'RegionOne', 'url': 'http://xxxxx:9292'} | glance       | image        | True    | admin     | http://dev-private-router01:9292     |
-    #| ......                                                                                                                                                       |
-    #+---------------+---------------------------------------------------+--------------+--------------+---------+-----------+--------------------------------------+
+    # Example output
+    # +----------------------------------+-----------+--------------+--------------+---------+-----------+---------------------------------------+
+    # | ID                               | Region    | Service Name | Service Type | Enabled | Interface | URL                                   |
+    # +----------------------------------+-----------+--------------+--------------+---------+-----------+---------------------------------------+
+    # | ...                              | ...       | ...          | ...          | ...     | ...       | ...                                   |
+    # | xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx | RegionOne | glance       | image        | True    | internal  | http://dev-private-router01:9292      |
+    # | yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy | RegionOne | placement    | placement    | True    | public    | http://dev-private-router01:8778      |
+    # | zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz  | RegionOne | nova         | compute      | True    | internal  | http://dev-private-router01:8774/v2.1 |
+    # | ...                              | ...       | ...          | ...          | ...     | ...       | ...                                   |
+    # +----------------------------------+-----------+--------------+--------------+---------+-----------+---------------------------------------+
 
     while IFS="|" read -r region service_name service_type service_interface; do
         region="$(trim ${region})"
         service_name="$(trim "${service_name}")"
         service_type="$(trim "${service_type}")"
         service_interface="$(trim ${service_interface})"
-
-        if [[ "$region" =~ ^\{.* ]]; then
-            # If name of region is formatted as JSON
-            region="$(sed -e "s/'/\"/g" <<< "${region}" | jq -r '.name')"
-            true
-        fi
 
         # "[DEBUG] region=${region}, service_name=${service_name}, service_type=${service_type}, service_interface=${service_interface}"
 
