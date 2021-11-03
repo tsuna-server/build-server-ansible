@@ -1,5 +1,5 @@
 ---
-- hosts: private_routers
+- hosts: controllers
   become: yes
   roles:
     - common

@@ -1,13 +1,6 @@
 # An inventry file for development
-[private_routers]
+[controllers]
 dev-private-router01
 
-[routers:children]
-private_routers
-
-[controllers:children]
-routers
-
-[all_dev:children]
-routers
-
+[all:children]
+controllers
