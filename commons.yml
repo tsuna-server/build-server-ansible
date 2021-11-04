@@ -2,5 +2,5 @@
 - hosts: controllers
   become: yes
   roles:
-    - common
-    - hosts
+    - { role: common, tags: ['always']}
+    - { role: hosts, tags: ['skip_role_hosts'], when: "'skip_role_hosts' not in ansible_run_tags"}
