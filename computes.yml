@@ -1,0 +1,6 @@
+---
+- hosts: private_routers
+  become: yes
+  roles:
+    - common
+    - hosts
