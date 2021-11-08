@@ -1,6 +1,5 @@
 ---
-- hosts: private_routers
+- hosts: computes
   become: yes
   roles:
-    - common
-    - hosts
+    - { role: ntp, tags: ['always']}

@@ -2,5 +2,11 @@
 [controllers]
 dev-private-router01
 
+[computes]
+dev-compute01
+dev-compute02
+dev-compute03
+
 [all:children]
 controllers
+computes
