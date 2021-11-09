@@ -3,3 +3,5 @@
   become: yes
   roles:
     - { role: ntp, tags: ['always']}
+    - { role: add_openstack_repository, tags: ['always']}
+

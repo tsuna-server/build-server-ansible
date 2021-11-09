@@ -1,0 +1,16 @@
+---
+- name: Install packages of Nova controller node
+  apt:
+    name:
+      - nova-api
+      - nova-conductor
+      - nova-novncproxy
+      - nova-scheduler
+  when: "'controllers' in group_names"
+
+# Packages to install by default
+- name: Install packages of Nova compute node
+  apt:
+    name:
+      - nova-api
+  when: "'controllers' not in group_names"

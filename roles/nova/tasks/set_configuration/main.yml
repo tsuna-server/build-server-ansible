@@ -1,0 +1,86 @@
+---
+- name: Declare template directory of the nova.conf
+  set_fact:
+    group_directory: "{% if 'controllers' in group_names %}controllers{% else %}default{% endif %}"
+
+- name: Set /etc/nova/nova.conf
+  ansible.builtin.template:
+    src: "{{ group_directory }}/nova.conf.j2"
+    dest: /etc/nova/nova.conf
+    owner: root
+    group: nova
+    mode: 0640
+    backup: yes
+  register: template_result
+
+- name: Check a flag that means set config and sync db was finished
+  stat:
+    path: /root/.ansible_nova_sync_db_was_finished
+  register: flag_file
+
+- name: Block of sync DB for controller nodes
+  block:
+    # There are no patterns to detect options to sync DB.
+    # So they are written as hard coded so far.
+    - name: Sync Nova database for controller nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "{{ item }}", "{{ group_vars.nova.user }}"]
+      loop:
+        - "nova-manage api_db sync"
+        - "nova-manage cell_v2 map_cell0"
+        - "nova-manage cell_v2 create_cell --name=cell1 --verbose"
+        - "nova-manage db sync"
+
+    - name: Check the result of syncing Nova DB compute nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 list_cells", "nova"]
+      register: result
+
+    - name: Print the result of syncing Nova DB for compute nodes
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: not flag_file.stat.exists and 'controllers' in group_name
+
+
+- name: Block of sync DB for compute nodes
+  block:
+    - name: Sync Nova database for compute nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 discover_hosts --verbose", "nova"]
+
+    - name: Print the result of syncing Nova DB for compute nodes
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: not flag_file.stat.exists and 'computes' in group_name
+
+- name: Create a flag that means set config and sync db was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_nova_sync_db_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Restart services related Nova
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-novncproxy
+  when: template_result.changed and 'controllers' in group_name
+
+- name: Restart services related Nova
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-novncproxy
+  when: template_result.changed and 'computes' in group_name
+
