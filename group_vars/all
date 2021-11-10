@@ -1,0 +1,206 @@
+group_vars:
+  hosts:
+    controllers:
+      - name: dev-private-router01.openstack.example.com
+        ip: 192.168.2.1
+    computes:
+      - name: dev-compute01.openstack.example.com
+        ip: 192.168.2.11
+      - name: dev-compute02.openstack.example.com
+        ip: 192.168.2.12
+      - name: dev-compute03.openstack.example.com
+        ip: 192.168.2.13
+
+    ## >>>>> Deprecated section from here. It will be removed in the future >>>>>
+    ## Define IP addresses in management
+    #dev-private-router01.openstack.example.com: 192.168.2.1
+    #dev-compute01.openstack.example.com: 192.168.2.11
+    #dev-compute02.openstack.example.com: 192.168.2.12
+    #dev-compute03.openstack.example.com: 192.168.2.13
+    ## <<<<< Deprecated section to here. It will be removed in the future <<<<<
+
+  ntp:
+    ip:
+      allow: 192.168.2.0/24
+      server: dev-private-router01
+
+  sql:
+    bind_address: 192.168.2.1
+    max_connections: 4096
+    password: secret
+
+  mq:
+    user_name: openstack
+    password: secret
+
+  memcached:
+    listen_ip: 192.168.2.1
+
+  etcd:
+    initial_cluster_token: etcd-cluster-01
+
+  keystone:
+    user: keystone
+    group: keystone
+    password: secret
+    configs:
+      keystone_conf:
+        token:
+          provider: fernet
+    auth_url: "http://dev-private-router01:5000/v3"
+    dbs:
+      # DB names for OpenStack services. User and password will be inherited from "group_vars.keystone.user" and "group_vars.keystone.password"
+      - name: keystone
+
+  # Glance is an image service
+  glance:
+    user: glance
+    group: glance
+    password: secret
+    domain: default
+    service:
+      name: glance
+      description: "OpenStack Image"
+      type: image
+    endpoints:
+      # "public:", "internal:", "admin:" can be abbriviated. Parameters in "default:" will be used if they were abbriviated.
+      default:
+        regions:
+          # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
+          - name: RegionOne
+            url: "http://dev-private-router01:9292"
+      #public:
+      #  regions:
+      #    # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:9292"
+      #internal:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:9292"
+      #admin:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:9292"
+    dbs:
+      # "user:" and "password:" can be abbreviated
+      - name: glance
+        user: glance
+        password: secret
+    examples:
+      cirros:
+        create: true
+        image_url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+
+  placement:
+    user: placement
+    group: placement
+    password: secret
+    domain: default
+    service:
+      name: placement
+      description: "Placement API"
+      type: placement
+    endpoints:
+      default:
+        regions:
+          - name: RegionOne
+            url: "http://dev-private-router01:8778"
+      #public:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:8778"
+      #internal:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:8778"
+      #admin:
+      #  regions:
+      #    - name: RegionOne
+      #      url: "http://dev-private-router01:8778"
+    dbs:
+      - name: placement
+        user: placement
+        password: secret
+
+  nova:
+    user: nova
+    group: nova
+    password: secret
+    service:
+      name: nova
+      description: "OpenStack Compute"
+      type: compute
+    endpoints:
+      default:
+        regions:
+          - name: RegionOne
+            url: "http://dev-private-router01:8774/v2.1"
+    dbs:
+      - name: nova_api
+      - name: nova
+      - name: nova_cell0
+
+  openstack:
+    admin_user_name: admin
+    admin_project_name: admin
+    admin_password: secret
+    package:
+      repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
+      keyserver: keyserver.ubuntu.com
+      id: 5EDB1B62EC4926EA
+    region:
+      # Create default region
+      name: RegionOne
+
+    # Domains belonging in this array will all be created except that "default" domain.
+    domains:
+      - name: default
+        description: "Default domain of OpenStack"
+        users:
+          # User for testing
+          - name: myuser
+            password: secret
+          # User for glance API
+          - name: glance
+            password: secret
+          - name: placement
+            password: secret
+          - name: nova
+            password: secret
+        projects:
+          # Service which set "primary: true" is a primary service that never duplicated in this list.
+          # Primary service will be a service that is used by default as ...
+          #   * [keystone_authtoken] in /etc/glance/glance-api.conf
+          - name: service
+            description: "Service Project"
+            primary: true
+          - name: myproject
+            description: "Demo Project"
+      - name: example
+        description: "An example domain"
+
+    roles:
+      - name: myrole
+        assigners:
+          # There are some restrictions
+          #   domain: Domain must be existed at "group_vars.openstack.domains[]"
+          #   project: Project must be existed in the domain at "group_vars.openstack.domains[].projects[]"
+          #   user: User must be existed in the project at "group_vars.openstack.domains[]"
+
+          # Test user
+          - user: myuser
+            domain: default
+            project: myproject
+      - name: admin
+        assigners:
+          # User for glance. Project must be set as parimary service at "group_vars.openstack.domains[].projects[].primary"
+          - user: glance
+            domain: default
+            project: service
+          - user: nova
+            domain: default
+            project: service
+          - user: placement
+            domain: default
+            project: service
