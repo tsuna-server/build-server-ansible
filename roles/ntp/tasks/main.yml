@@ -3,6 +3,7 @@
   apt:
     name:
       - chrony
+    update_cache: yes
 
 - name: Determin config of chrony
   ansible.builtin.set_fact:
@@ -32,6 +33,7 @@
       ansible.builtin.command:
         argv: ["chronyc", "sources"]
       register: result_of_chrony_state
+      failed_when: ( result_of_chrony_state.rc not in [0, 1] )
     - name: Print the result of state of the NTP
       ansible.builtin.debug:
         msg: "{{ result_of_chrony_state.stdout.split('\n') }}"
