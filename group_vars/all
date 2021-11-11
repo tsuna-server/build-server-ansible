@@ -30,7 +30,7 @@ group_vars:
     password: secret
 
   mq:
-    user_name: openstack
+    user: openstack
     password: secret
 
   memcached:
