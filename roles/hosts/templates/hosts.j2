@@ -3,7 +3,7 @@
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
 {% for dict_type, dict_value in group_vars.hosts.items() -%}
-  {% for host in dict_value -%}
-    {{ host.ip }} {{ host.name }} {{ host.name.split('.')[0] }}{{ '\n' }}
+  {% for group in dict_value -%}
+    {{ group.ip }}{% for host_name in group.names %} {{ host_name }}{% endfor %}{{ '\n' }}
   {%- endfor %}
 {%- endfor %}
