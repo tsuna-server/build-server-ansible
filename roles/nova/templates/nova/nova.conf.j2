@@ -3,8 +3,14 @@ log_dir = /var/log/nova
 lock_path = /var/lock/nova
 state_path = /var/lib/nova
 
-transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].name }}:5672/
-my_ip = {{ group_vars.hosts.controllers[0].ip }}
+transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
+{# Find an IP from the inventry_hostname -#}
+{% set glob_flag = {} -%}
+my_ip = {% for group_key, group_value in group_vars.hosts.items() if glob_flag.found != True -%}
+  {% for host_element in group_value if inventory_hostname in host_element.names -%}
+    {% if loop.index <= 1 -%}{% set _ = glob_flag.update({'found': True}) %}{{ host_element.ip }}{%- endif %}
+  {%- endfor %}
+{%- endfor %}
 
 #
 # From nova.conf
@@ -1089,7 +1095,7 @@ auth_strategy = keystone
 
 
 [api_database]
-connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].name }}/nova_api
+connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/nova_api
 #
 # The *Nova API Database* is a separate database which is used for information
 # which is used across *cells*. This database is mandatory since the Mitaka
@@ -1679,7 +1685,7 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 
 
 [database]
-connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].name }}/nova
+connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/nova
 
 #
 # From oslo.db
@@ -1996,7 +2002,7 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 
 
 [glance]
-api_servers = http://{{ group_vars.hosts.controllers[0].name }}:9292
+api_servers = http://{{ group_vars.hosts.controllers[0].names[0] }}:9292
 
 # Configuration options for the Image service
 
@@ -2635,9 +2641,9 @@ api_servers = http://{{ group_vars.hosts.controllers[0].name }}:9292
 
 
 [keystone_authtoken]
-www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].name }}:5000/
-auth_url = http://{{ group_vars.hosts.controllers[0].name }}:5000/
-memcached_servers = {{ group_vars.hosts.controllers[0].name }}:11211
+www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
+auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
+memcached_servers = {{ group_vars.hosts.controllers[0].names[0] }}:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -4238,7 +4244,7 @@ project_domain_name = Default
 project_name = service
 auth_type = password
 user_domain_name = Default
-auth_url = http://{{ group_vars.hosts.controllers[0].name }}:5000/v3
+auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/v3
 username = placement
 password = p@ssw0rd
 

@@ -3,7 +3,7 @@ log_dir = /var/log/nova
 lock_path = /var/lock/nova
 state_path = /var/lib/nova
 
-transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].name }}:5672/
+transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
 
 #
 # From nova.conf
@@ -881,7 +881,13 @@ transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{
 [api]
 
 auth_strategy = keystone
-my_ip = {{ group_vars.hosts.controllers[0].ip }}
+{# Find an IP from the inventry_hostname -#}
+{% set glob_flag = {} -%}
+my_ip = {% for group_key, group_value in group_vars.hosts.items() if glob_flag.found != True -%}
+  {% for host_element in group_value if inventory_hostname in host_element.names -%}
+    {% if loop.index <= 1 -%}{% set _ = glob_flag.update({'found': True}) %}{{ host_element.ip }}{%- endif %}
+  {%- endfor %}
+{%- endfor %}
 
 #
 # Options under this group are used to define Nova API.

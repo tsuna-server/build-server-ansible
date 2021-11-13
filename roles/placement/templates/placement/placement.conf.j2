@@ -240,9 +240,9 @@ auth_strategy = keystone
 
 
 [keystone_authtoken]
-www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].name }}:5000/
-auth_url = http://{{ group_vars.hosts.controllers[0].name }}/v3
-memcached_servers = {{ group_vars.hosts.controllers[0].name }}:11211
+www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
+auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}/v3
+memcached_servers = {{ group_vars.hosts.controllers[0].names[0] }}:11211
 auth_type = password
 project_domain_name = Default
 user_domain_name = Default
@@ -515,7 +515,7 @@ password = {{ group_vars.placement.password }}
 
 [placement_database]
 # TODO: Primary controller node is only supported to connect to so far.
-connection = mysql+pymysql://{{ group_vars.placement.user }}:{{ group_vars.placement.password }}@{{ group_vars.hosts.controllers[0].name }}/placement
+connection = mysql+pymysql://{{ group_vars.placement.user }}:{{ group_vars.placement.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/placement
 
 #
 # The *Placement API Database* is a the database used with the placement
