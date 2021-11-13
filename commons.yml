@@ -1,5 +1,5 @@
 ---
-- hosts: controllers
+- hosts: all
   become: yes
   roles:
     - { role: common, tags: ['always']}
