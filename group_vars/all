@@ -1,14 +1,14 @@
 group_vars:
   hosts:
     controllers:
-      - name: dev-private-router01.openstack.example.com
+      - names: ["dev-private-router01.openstack.example.com", "dev-private-router01"]
         ip: 192.168.2.1
     computes:
-      - name: dev-compute01.openstack.example.com
+      - names: ["dev-compute01.openstack.example.com", "dev-compute01"]
         ip: 192.168.2.11
-      - name: dev-compute02.openstack.example.com
+      - names: ["dev-compute02.openstack.example.com", "dev-compute02"]
         ip: 192.168.2.12
-      - name: dev-compute03.openstack.example.com
+      - names: ["dev-compute03.openstack.example.com", "dev-compute03"]
         ip: 192.168.2.13
 
     ## >>>>> Deprecated section from here. It will be removed in the future >>>>>
