@@ -879,10 +879,9 @@ transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{
 
 
 [api]
-
 auth_strategy = keystone
 {# Find an IP from the inventry_hostname -#}
-{% set glob_flag = {} -%}
+{% set glob_flag = {'found': False} -%}
 my_ip = {% for group_key, group_value in group_vars.hosts.items() if glob_flag.found != True -%}
   {% for host_element in group_value if inventory_hostname in host_element.names -%}
     {% if loop.index <= 1 -%}{% set _ = glob_flag.update({'found': True}) %}{{ host_element.ip }}{%- endif %}
@@ -2003,6 +2002,7 @@ connection = sqlite:////var/lib/nova/nova.sqlite
 
 
 [glance]
+api_servers = http://{{ group_vars.hosts.controllers[0].names[0] }}:9292
 # Configuration options for the Image service
 
 #
@@ -2640,6 +2640,19 @@ connection = sqlite:////var/lib/nova/nova.sqlite
 
 
 [keystone_authtoken]
+www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
+auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
+memcached_servers = {{ group_vars.hosts.controllers[0].names[0] }}:11211
+auth_type = password
+project_domain_name = Default
+user_domain_name = Default
+project_name = {% for domain in group_vars.openstack.domains if domain.name.upper() == 'DEFAULT' -%}
+  {% for project in domain.projects if 'primary' in project and project.primary == true -%}
+    {{ project.name }}{{ '\n' }}
+  {%- endfor %}
+{%- endfor %}
+username = {{ group_vars.nova.user }}
+password = {{ group_vars.nova.password }}
 
 #
 # From keystonemiddleware.auth_token
@@ -3689,6 +3702,7 @@ connection = sqlite:////var/lib/nova/nova.sqlite
 
 
 [oslo_concurrency]
+lock_path = /var/lib/nova/tmp
 
 #
 # From oslo.concurrency
@@ -4224,6 +4238,14 @@ connection = sqlite:////var/lib/nova/nova.sqlite
 
 
 [placement]
+region_name = {{ group_vars.openstack.region.name }}
+project_domain_name = Default
+project_name = service
+auth_type = password
+user_domain_name = Default
+auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/v3
+username = {{ group_vars.placement.user }}
+password = {{ group_vars.placement.password }}
 
 #
 # From nova.conf
@@ -5243,6 +5265,11 @@ connection = sqlite:////var/lib/nova/nova.sqlite
 
 
 [vnc]
+enabled = true
+server_listen = 0.0.0.0
+server_proxyclient_address = $my_ip
+novncproxy_base_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:6080/vnc_auto.html
+
 #
 # Virtual Network Computer (VNC) can be used to provide remote desktop
 # console access to instances for tenants and/or administrators.

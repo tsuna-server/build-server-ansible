@@ -40,6 +40,18 @@
     name: "{{ item }}"
     state: restarted
   with_items:
-    - nova-api
+    - nova-compute
   when: template_result.changed
+
+## Should this command be run on the controller node?
+#- name: Block running openstack compute service list
+#  block:
+#    - name: Run openstack compute service list --service nova-compute
+#      ansible.builtin.command:
+#        argv: ["openstack", "compute", "service", "list", "--service", "nova-compute"]
+#      register : result
+#
+#    - name: Print the result of openstack compute service list --service nova-compute
+#      ansible.builtin.debug:
+#        msg: "{{ result.stdout.split('\n') }}"
 

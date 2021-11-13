@@ -21,8 +21,8 @@
     - name: Install packages for Nova compute service for each compute node
       include: install_packages/main.yml
 
-    #- name: Configure /etc/nova/nova.conf
-    #  include: set_configuration/main.yml
+    - name: Configure /etc/nova/nova.conf
+      include: set_configuration/main.yml
 
     # TODO:Testing "openstack compute service list --service nova-compute" from controller node
     #
