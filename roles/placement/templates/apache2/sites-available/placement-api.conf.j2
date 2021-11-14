@@ -1,7 +1,7 @@
 Listen 8778
 
 <VirtualHost *:8778>
-    WSGIScriptAlias / /usr/local/bin/placement-api
+    WSGIScriptAlias / /usr/bin/placement-api
     WSGIDaemonProcess placement-api processes=5 threads=1 user=placement group=placement display-name=%{GROUP}
     WSGIProcessGroup placement-api
     WSGIApplicationGroup %{GLOBAL}
