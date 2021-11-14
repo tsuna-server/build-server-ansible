@@ -1,13 +1,24 @@
 ---
+#- name: Install packages of placement-api
+#  apt:
+#    name:
+#      - placement-api
+#      - python3-pip
+
 - name: Install packages of placement-api
   apt:
     name:
-      - placement-api
       - python3-pip
+
+- name: Install placement from PyPI
+  pip:
+    name:
+      - openstack-placement
+      - pymysql
 
 - name: Set /etc/placement/placement.conf
   ansible.builtin.template:
-    src: placement/placement.conf.j2
+    src: placement/PyPI/placement.conf.j2
     dest: /etc/placement/placement.conf
     owner: root
     group: placement

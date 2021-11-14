@@ -12,5 +12,5 @@
 - name: Install packages of Nova compute node
   apt:
     name:
-      - nova-api
+      - nova-compute
   when: "'controllers' not in group_names"

@@ -1,20 +1,21 @@
 ---
 # This instruction only support installing placement from PyPI so far
-- name: Include create_dbs/main.yml
-  include: create_dbs/main.yml
+- name: Block of installing placement from PyPI
+  block:
+    - name: Include create_dbs/main.yml
+      include: create_dbs/main.yml
 
-- name: Include create_openstack_services/main.yml
-  include: create_openstack_services/main.yml
+    - name: Include create_openstack_services/main.yml
+      include: create_openstack_services/main.yml
 
-- name: Include create_endpoints/main.yml
-  include: create_endpoints/main.yml
+    - name: Include create_endpoints/main.yml
+      include: create_endpoints/main.yml
 
-- name: Include prepare_openstack_services/main.yml
-  include: prepare_openstack_services/main.yml
+    - name: Include prepare_openstack_services/main.yml
+      include: prepare_openstack_services/main.yml
 
-- name: Include verify_installation/main.yml
-  include: verify_installation/main.yml
+    - name: Include verify_installation/main.yml
+      include: verify_installation/main.yml
 
-- name: Include prepare_wsgi_environments/main.yml
-  include: prepare_wsgi_environments/main.yml
-
+    - name: Include prepare_wsgi_environments/main.yml
+      include: prepare_wsgi_environments/main.yml
