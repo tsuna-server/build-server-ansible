@@ -11,6 +11,30 @@
       - pymysql
       - uwsgi
 
+- name: Group placement should be existed
+  ansible.builtin.group:
+    name: placement
+    state: present
+    gid: 128
+
+- name: User placement should be existed
+  ansible.builtin.user:
+    name: placement
+    shell: /bin/false
+    group: placement
+    home: /var/lib/placement
+    create_home: no
+    uid: 119
+
+- name: Create a directory /etc/placement for Placement
+  ansible.builtin.file:
+    path: /etc/placement
+    state: directory
+    owner: placement
+    group: placement
+    mode: '0644'
+    comment: "User for OpenStack Placement"
+
 - name: Set /etc/placement/placement.conf
   ansible.builtin.template:
     src: placement/PyPI/placement.conf.j2
@@ -29,7 +53,6 @@
 
 - name: Sync database for placement
   ansible.builtin.command:
-    #argv: ["placement-manage", "db", "sync"]
     argv: ["su", "-s", "/bin/sh", "-c", "placement-manage db sync", "placement"]
   when: not flag_file.stat.exists
 
