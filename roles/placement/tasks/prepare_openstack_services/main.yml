@@ -25,15 +25,15 @@
     home: /var/lib/placement
     create_home: no
     uid: 119
+    comment: "User for OpenStack Placement"
 
 - name: Create a directory /etc/placement for Placement
   ansible.builtin.file:
     path: /etc/placement
     state: directory
-    owner: placement
+    owner: root
     group: placement
-    mode: '0644'
-    comment: "User for OpenStack Placement"
+    mode: '0750'
 
 - name: Set /etc/placement/placement.conf
   ansible.builtin.template:
@@ -41,7 +41,7 @@
     dest: /etc/placement/placement.conf
     owner: root
     group: placement
-    mode: 0640
+    mode: '0640'
     backup: yes
   notify:
     - Restart apache2
