@@ -11,7 +11,7 @@
     name: "{{ item }}"
     state: restarted
   with_items:
-    - nova-api
+    - nova-compute
   when: template_result.changed
 
 - name: Block of sync DB for Nova compute nodes
