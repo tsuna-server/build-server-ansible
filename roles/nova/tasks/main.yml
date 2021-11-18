@@ -11,20 +11,26 @@
     - name: Include create_endpoints/main.yml
       include: create_endpoints/main.yml
 
-    - name: Include prepare_openstack_services/main.yml
-      include: prepare_openstack_services/main.yml
+    ##- name: Include prepare_openstack_services/main.yml
+    ##  include: prepare_openstack_services/main.yml
+
+    - name: Include install_packages/main.yml for controllers
+      include: install_packages/main.yml
+
+    - name: Include set_configuration/main.yml for controllers
+      include: set_configuration/main.yml
+
   when: "'controllers' in group_names"
 
 # Instructions for Nova compute nodes
 - name: A block to build Nova for computes nodes
   block:
-    - name: Install packages for Nova compute service for each compute node
+    - name: Include install_packages/main.yml for computes
       include: install_packages/main.yml
 
-    - name: Configure /etc/nova/nova.conf
+    - name: Include set_configuration/main.yml for computes
       include: set_configuration/main.yml
 
     # TODO:Testing "openstack compute service list --service nova-compute" from controller node
-    #
   when: "'computes' in group_names"
 

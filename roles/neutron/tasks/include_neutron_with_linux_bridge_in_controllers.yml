@@ -1,0 +1,8 @@
+---
+- name: Include role-functions to create DB for Placement
+  include_role:
+    name: functions
+    tasks_from: create_db/main.yml
+  vars:
+    openstack_service_name: "neutron"
+

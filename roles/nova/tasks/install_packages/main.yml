@@ -8,9 +8,8 @@
       - nova-scheduler
   when: "'controllers' in group_names"
 
-# Packages to install by default
 - name: Install packages of Nova compute node
   apt:
     name:
       - nova-compute
-  when: "'controllers' not in group_names"
+  when: "'computes' not in group_names"

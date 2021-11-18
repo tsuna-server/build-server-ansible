@@ -3,19 +3,23 @@
   set_fact:
     network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'OVN' != group_vars.openstack.network.plugin %}linux_bridge{% else %}ovn{% endif %}"
 
-# For network plugin OVN
-- name: Block neutron
-  block:
-    - name: Include install neutron with plugin OVN
-      include: include_install_neutron_with_ovn.yml
-      when: "group_vars.openstack.network.plugin == 'OVN'"
-    - name:
-  when: "'network ' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network"
+- name: Checking detection of Neutron network plugin variable
+  ansible.builtin.fail:
+    msg: "Could not find a variable \"group_vars.openstack.network.plugin\""
+  when: "'network ' not in group_vars.openstack and 'plugin' not in group_vars.openstack.network"
 
-# For network plugin Linux Bridge
-- name: Include install neutron with plugin Linux Bridge
-  include: include_install_neutron_with_linux_bridge.yml
-  when: "group_vars.openstack.network.plugin != 'OVN'"
+- name: Checking detection of Neutron network plugin value
+  ansible.builtin.fail:
+    msg: "Unknown Neutron network plugin (group_vars.openstack.network.plugin == {{ group_vars.openstack.network.plugin }}) was found."
+  when: "group_vars.openstack.network.plugin != 'Linux Bridge' and group_vars.openstack.network.plugin != 'OVN'"
 
+# Configure network plugin for OVN
+- name: Include include_neutron_with_ovn.yml
+  include: include_neutron_with_ovn.yml
+  when: "group_vars.openstack.network.plugin == 'OVN'"
 
+# Configure network plugin for Linux Bridge
+- name: Include include_neutron_with_linux_bridge.yml
+  include: include_neutron_with_linux_bridge.yml
+  when: "group_vars.openstack.network.plugin == 'Linux Bridge'"
 
