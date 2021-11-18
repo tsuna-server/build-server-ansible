@@ -5,7 +5,7 @@
   include: include_neutron_with_linux_bridge_in_controllers.yml
   when: "'controllers' in group_names"
 
-- name: Include include_neutron_with_linux_bridge_in_controllers.yml
+- name: Include include_neutron_with_linux_bridge_in_computes.yml
   include: include_neutron_with_linux_bridge_in_computes.yml
   when: "'computes' in group_names"
 

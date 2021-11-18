@@ -1,25 +1,19 @@
 ---
 - name: Determin which network driver will be used
   set_fact:
-    network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'OVN' != group_vars.openstack.network.plugin %}linux_bridge{% else %}ovn{% endif %}"
-
-- name: Checking detection of Neutron network plugin variable
-  ansible.builtin.fail:
-    msg: "Could not find a variable \"group_vars.openstack.network.plugin\""
-  when: "'network ' not in group_vars.openstack and 'plugin' not in group_vars.openstack.network"
+    network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'Linux Bridge' == group_vars.openstack.network.plugin %}Linux Bridge{% else %}{{ group_vars.openstack.network.plugin }}{% endif %}"
 
 - name: Checking detection of Neutron network plugin value
   ansible.builtin.fail:
-    msg: "Unknown Neutron network plugin (group_vars.openstack.network.plugin == {{ group_vars.openstack.network.plugin }}) was found."
-  when: "group_vars.openstack.network.plugin != 'Linux Bridge' and group_vars.openstack.network.plugin != 'OVN'"
-
-# Configure network plugin for OVN
-- name: Include include_neutron_with_ovn.yml
-  include: include_neutron_with_ovn.yml
-  when: "group_vars.openstack.network.plugin == 'OVN'"
+    msg: "Unknown Neutron network plugin. 'Linux Bridge' or 'OVN' is only allowd in group_vars.openstack.network.plugin. (group_vars.openstack.network.plugin == {{ group_vars.openstack.network.plugin }}) was found."
+  when: "'Linux Bridge' != {{ network_plugin }} and 'OVN' != {{ network_plugin }}"
 
 # Configure network plugin for Linux Bridge
 - name: Include include_neutron_with_linux_bridge.yml
   include: include_neutron_with_linux_bridge.yml
-  when: "group_vars.openstack.network.plugin == 'Linux Bridge'"
+  when: "'Linux Bridge' == network_plugin"
 
+# Configure network plugin for OVN
+- name: Include include_neutron_with_ovn.yml
+  include: include_neutron_with_ovn.yml
+  when: "'OVN' == network_plugin"
