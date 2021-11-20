@@ -6,7 +6,7 @@
 - name: Checking detection of Neutron network plugin value
   ansible.builtin.fail:
     msg: "Unknown Neutron network plugin. 'Linux Bridge' or 'OVN' is only allowd in group_vars.openstack.network.plugin. (group_vars.openstack.network.plugin == {{ group_vars.openstack.network.plugin }}) was found."
-  when: "'Linux Bridge' != {{ network_plugin }} and 'OVN' != {{ network_plugin }}"
+  when: "'Linux Bridge' != network_plugin and 'OVN' != network_plugin"
 
 # Configure network plugin for Linux Bridge
 - name: Include include_neutron_with_linux_bridge.yml
