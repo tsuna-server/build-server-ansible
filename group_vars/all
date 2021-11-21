@@ -2,14 +2,20 @@ group_vars:
   hosts:
     controllers:
       - names: ["dev-private-router01.openstack.example.com", "dev-private-router01"]
-        ip: 192.168.2.1
+        management:
+          ip: 192.168.2.1
+        interface:
+          provider: enp1s0
     computes:
       - names: ["dev-compute01.openstack.example.com", "dev-compute01"]
-        ip: 192.168.2.11
+        management:
+          ip: 192.168.2.11
       - names: ["dev-compute02.openstack.example.com", "dev-compute02"]
-        ip: 192.168.2.12
+        management:
+          ip: 192.168.2.12
       - names: ["dev-compute03.openstack.example.com", "dev-compute03"]
-        ip: 192.168.2.13
+        management:
+          ip: 192.168.2.13
 
     ## >>>>> Deprecated section from here. It will be removed in the future >>>>>
     ## Define IP addresses in management
@@ -122,7 +128,6 @@ group_vars:
       - name: placement
         user: placement
         password: secret
-
   nova:
     user: nova
     group: nova
@@ -141,6 +146,24 @@ group_vars:
       - name: nova
       - name: nova_cell0
 
+  neutron:
+    user: neutron
+    group: neutron
+    password: secret
+    service:
+      name: neutron
+      description: "OpenStack Neutron"
+      type: network
+    dbs:
+      - name: neutron
+        user: neutron
+        password: secret
+    endpoints:
+      default:
+        regions:
+          - name: RegionOne
+            url: "http://openstack-controller-node01:9696"
+
   openstack:
     admin_user_name: admin
     admin_project_name: admin
@@ -152,6 +175,8 @@ group_vars:
     region:
       # Create default region
       name: RegionOne
+    network:
+      plugin: "Linux Bridge"
 
     # Domains belonging in this array will all be created except that "default" domain.
     domains:
