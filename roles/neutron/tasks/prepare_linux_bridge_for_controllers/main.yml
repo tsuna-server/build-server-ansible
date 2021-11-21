@@ -11,7 +11,7 @@
 
 - name: Set /etc/neutron/neutron.conf
   ansible.builtin.template:
-    src: controllers/neutron/neutron.conf
+    src: controllers/neutron/neutron.conf.j2
     dest: /etc/neutron/neutron.conf
     owner: root
     group: neutron
@@ -22,10 +22,34 @@
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini
   ansible.builtin.template:
-    src: controllers/neutron/plugins/ml2/ml2_conf.ini
+    src: controllers/neutron/plugins/ml2/ml2_conf.ini.j2
     dest: /etc/neutron/plugins/ml2/ml2_conf.ini
     owner: root
     group: neutron
     mode: '0640'
     backup: yes
+
+- name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+  ansible.builtin.template:
+    src: controllers/neutron/plugins/ml2/linuxbridge_agent.ini.j2
+    dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+
+- name: Set /etc/sysctl.d/br_netfilter.conf
+  ansible.builtin.copy:
+    src: controllers/etc/sysctl.d/br_netfilter.conf
+    dest: /etc/sysctl.d/br_netfilter.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: no
+  register: result
+
+- name: Reload sysctl configs
+  ansible.builtin.command:
+    argv: ["sysctl", "--system"]
+  when: result.changed
 
