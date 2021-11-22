@@ -17,8 +17,9 @@
     group: neutron
     mode: '0640'
     backup: yes
-  #notify:
-  #  - Restart apache2
+  notify:
+    - Restart nova-compute
+    - Restart neutron-linuxbridge-agent
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini
   ansible.builtin.template:
@@ -28,6 +29,9 @@
     group: neutron
     mode: '0640'
     backup: yes
+  notify:
+    - Restart nova-compute
+    - Restart neutron-linuxbridge-agent
 
 - name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini
   ansible.builtin.template:
@@ -37,19 +41,44 @@
     group: neutron
     mode: '0640'
     backup: yes
+  notify:
+    - Restart nova-compute
+    - Restart neutron-linuxbridge-agent
 
-- name: Set /etc/sysctl.d/br_netfilter.conf
-  ansible.builtin.copy:
-    src: controllers/etc/sysctl.d/br_netfilter.conf
-    dest: /etc/sysctl.d/br_netfilter.conf
-    owner: root
-    group: root
-    mode: '0644'
-    backup: no
-  register: result
+#- name: Set /etc/sysctl.d/br_netfilter.conf
+#  ansible.builtin.copy:
+#    src: controllers/etc/sysctl.d/br_netfilter.conf
+#    dest: /etc/sysctl.d/br_netfilter.conf
+#    owner: root
+#    group: root
+#    mode: '0644'
+#    backup: no
+#  register: result
+#
+#- name: Reload sysctl configs
+#  ansible.builtin.command:
+#    argv: ["sysctl", "--system"]
+#  when: result.changed
 
-- name: Reload sysctl configs
-  ansible.builtin.command:
-    argv: ["sysctl", "--system"]
-  when: result.changed
+- name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+- name: Set net.bridge.bridge-nf-call-iptables in /etc/sysctl.d/br_netfilter.conf
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+# It assumed that /etc/nova/nova.conf was already modified in the role nova
+
+- name: Run notified handlers of Neutron
+  meta: flush_handlers
+
 
