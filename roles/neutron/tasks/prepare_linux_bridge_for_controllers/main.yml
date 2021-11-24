@@ -1,5 +1,5 @@
 ---
-- name: Install packages of neutron for controllers
+- name: Install packages of neutron for controllers of Neutron with Linux Bridge
   apt:
     name:
       - neutron-server
@@ -9,7 +9,7 @@
       - neutron-dhcp-agent
       - neutron-metadata-agent
 
-- name: Set /etc/neutron/neutron.conf
+- name: Set /etc/neutron/neutron.conf of Neutron with Linux Bridge
   ansible.builtin.template:
     src: controllers/neutron/neutron.conf.j2
     dest: /etc/neutron/neutron.conf
@@ -18,8 +18,9 @@
     mode: '0640'
     backup: yes
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_neutron_conf
 
-- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini
+- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with Linux Bridge
   ansible.builtin.template:
     src: controllers/neutron/plugins/ml2/ml2_conf.ini.j2
     dest: /etc/neutron/plugins/ml2/ml2_conf.ini
@@ -28,8 +29,9 @@
     mode: '0640'
     backup: yes
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_ml2_conf
 
-- name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+- name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
     src: controllers/neutron/plugins/ml2/linuxbridge_agent.ini.j2
     dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
@@ -38,6 +40,7 @@
     mode: '0640'
     backup: yes
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_linuxbridge_agent_ini
 
 #- name: Set /etc/sysctl.d/br_netfilter.conf
 #  ansible.builtin.copy:
@@ -54,7 +57,7 @@
 #    argv: ["sysctl", "--system"]
 #  when: result.changed
 
-- name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf
+- name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
   ansible.posix.sysctl:
     name: net.bridge.bridge-nf-call-ip6tables
     value: '1'
@@ -62,7 +65,7 @@
     sysctl_file: /etc/sysctl.d/br_netfilter.conf
     reload: yes
 
-- name: Set net.bridge.bridge-nf-call-iptables in /etc/sysctl.d/br_netfilter.conf
+- name: Set net.bridge.bridge-nf-call-iptables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
   ansible.posix.sysctl:
     name: net.bridge.bridge-nf-call-iptables
     value: '1'
@@ -70,7 +73,7 @@
     sysctl_file: /etc/sysctl.d/br_netfilter.conf
     reload: yes
 
-- name: Set /etc/neutron/l3_agent.ini
+- name: Set /etc/neutron/l3_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
     src: controllers/neutron/l3_agent.ini.j2
     dest: /etc/neutron/l3_agent.ini
@@ -79,8 +82,9 @@
     mode: '0640'
     backup: yes
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_l3_agent_ini
 
-- name: Set /etc/neutron/dhcp_agent.ini
+- name: Set /etc/neutron/dhcp_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
     src: controllers/neutron/dhcp_agent.ini.j2
     dest: /etc/neutron/dhcp_agent.ini
@@ -89,13 +93,34 @@
     mode: '0640'
     backup: yes
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: dhcp_agent_ini
 
 # It assumed that /etc/nova/nova.conf was already modified in the role nova
 
-- name: Populate DB for neutron.conf, ml2_conf.ini
-  ansible.builtin.command:
-    argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
+- name: Block of hooks of neutron with Linux Bridge
+  block:
+    - name: Populate DB for neutron.conf, ml2_conf.ini
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
 
-- name: Run notified handlers of Neutron
-  meta: flush_handlers
+    - name: Run notified handlers of Neutron
+      meta: flush_handlers
+
+    - name: Run "openstack network agent list --agent-type=dhcp"
+      ansible.builtin.command:
+        argv: ["openstack", "network", "agent", "list", "--agent-type=dhcp"]
+      register: result
+
+    - name: Print the result of "openstack network agent list --agent-type=dhcp"
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+    - name: Result "openstack network agent list --agent-type=metadata"
+      ansible.builtin.command:
+        argv: ["openstack", "network", "agent", "list", "--agent-type=metadata"]
+      register: result
+
+    - name: Print the result of "openstack network agent list --agent-type=metadata"
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
 
