@@ -1,4 +1,36 @@
 ---
+# Neutron for controller node
+- name: Restart nova-api
+  ansible.builtin.systemd:
+    state: restarted
+    name: nova-compute
+
+- name: Restart neutron-server
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-server
+
+- name: Restart neutron-linuxbridge-agent
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-linuxbridge-agent
+
+- name: Restart neutron-dhcp-agent
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-dhcp-agent
+
+- name: Restart neutron-metadata-agent
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-metadata-agent
+
+- name: Restart neutron-l3-agent
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-l3-agent
+
+# Neutron for compute node
 - name: Restart nova-compute
   ansible.builtin.systemd:
     state: restarted

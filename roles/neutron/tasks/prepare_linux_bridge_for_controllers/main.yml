@@ -17,9 +17,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify:
-    - Restart nova-compute
-    - Restart neutron-linuxbridge-agent
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini
   ansible.builtin.template:
@@ -29,9 +27,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify:
-    - Restart nova-compute
-    - Restart neutron-linuxbridge-agent
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
 
 - name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini
   ansible.builtin.template:
@@ -41,9 +37,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify:
-    - Restart nova-compute
-    - Restart neutron-linuxbridge-agent
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
 
 #- name: Set /etc/sysctl.d/br_netfilter.conf
 #  ansible.builtin.copy:
@@ -84,9 +78,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify:
-    - Restart nova-compute
-    - Restart neutron-linuxbridge-agent
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
 
 - name: Set /etc/neutron/dhcp_agent.ini
   ansible.builtin.template:
@@ -96,9 +88,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify:
-    - Restart nova-compute
-    - Restart neutron-linuxbridge-agent
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
 
 # It assumed that /etc/nova/nova.conf was already modified in the role nova
 
