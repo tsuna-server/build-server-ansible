@@ -76,9 +76,36 @@
     sysctl_file: /etc/sysctl.d/br_netfilter.conf
     reload: yes
 
+- name: Set /etc/neutron/l3_agent.ini
+  ansible.builtin.template:
+    src: controllers/neutron/l3_agent.ini.j2
+    dest: /etc/neutron/l3_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify:
+    - Restart nova-compute
+    - Restart neutron-linuxbridge-agent
+
+- name: Set /etc/neutron/dhcp_agent.ini
+  ansible.builtin.template:
+    src: controllers/neutron/dhcp_agent.ini.j2
+    dest: /etc/neutron/dhcp_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify:
+    - Restart nova-compute
+    - Restart neutron-linuxbridge-agent
+
 # It assumed that /etc/nova/nova.conf was already modified in the role nova
+
+- name: Populate DB for neutron.conf, ml2_conf.ini
+  ansible.builtin.command:
+    argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
 
 - name: Run notified handlers of Neutron
   meta: flush_handlers
-
 

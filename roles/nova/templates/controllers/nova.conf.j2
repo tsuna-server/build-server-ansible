@@ -3488,7 +3488,7 @@ username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
 {% if group_vars.openstack.network.plugin == 'OVN' -%}
 service_metadata_proxy = true
-metadata_proxy_shared_secret = p@ssw0rd
+metadata_proxy_shared_secret = {{ group_vars.openstack.metadata.proxy.shared_secret }}
 {%- endif %}
 
 
