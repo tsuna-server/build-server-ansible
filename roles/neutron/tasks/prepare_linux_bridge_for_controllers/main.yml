@@ -123,4 +123,5 @@
     - name: Print the result of "openstack network agent list --agent-type=metadata"
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
+  when: result_neutron_conf.changed or result_ml2_conf.changed or result_linuxbridge_agent_ini.changed or result_l3_agent_ini.changed or dhcp_agent_ini.changed
 
