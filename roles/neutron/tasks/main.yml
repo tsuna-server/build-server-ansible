@@ -1,4 +1,9 @@
 ---
+- name: Checking detection of Neutron network plugin value
+  ansible.builtin.fail:
+    msg: "Network plugin 'OVN' is not supported currently. It will be supported near future."
+  when: "'OVN' == network_plugin"
+
 - name: Determin which network driver will be used
   set_fact:
     network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'Linux Bridge' == group_vars.openstack.network.plugin %}Linux Bridge{% else %}{{ group_vars.openstack.network.plugin }}{% endif %}"
@@ -13,7 +18,8 @@
   include: include_neutron_with_linux_bridge.yml
   when: "'Linux Bridge' == network_plugin"
 
-# Configure network plugin for OVN
-- name: Include include_neutron_with_ovn.yml
-  include: include_neutron_with_ovn.yml
-  when: "'OVN' == network_plugin"
+# TODO: Network plugin "OVN" is not supported yet
+# # Configure network plugin for OVN
+# - name: Include include_neutron_with_ovn.yml
+#   include: include_neutron_with_ovn.yml
+#   when: "'OVN' == network_plugin"
