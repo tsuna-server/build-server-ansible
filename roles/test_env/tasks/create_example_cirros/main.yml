@@ -12,10 +12,15 @@
     path: "{{ iso_cirros_file_path }}"
   register: flag_file
 
-- name: Download cirros image
+- name: Download cirros image (timeout == 600 sec, retries == 10)
   get_url:
     url: "{{ group_vars.glance.examples.cirros.image_url }}"
     dest: "{{ iso_cirros_file_path }}"
+    timeout: 600
+  retries: 10
+  delay: 2
+  register: result
+  until: result.rc == 0
   when: not flag_file.stat.exists
 
 - name: Check Glance example image of cirros has already created
@@ -36,4 +41,3 @@
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking.rc == 0
-
