@@ -1,5 +1,5 @@
 ---
-- name: Install packages of neutron for controllers of Neutron with Linux Bridge
+- name: Install packages of Neutron for controllers of Neutron with Linux Bridge
   apt:
     name:
       - neutron-server

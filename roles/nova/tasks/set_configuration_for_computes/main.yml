@@ -1,0 +1,9 @@
+- name: Set /etc/nova/nova.conf
+  ansible.builtin.template:
+    src: "computes/nova.conf.j2"
+    dest: /etc/nova/nova.conf
+    owner: root
+    group: nova
+    mode: 0640
+    backup: yes
+

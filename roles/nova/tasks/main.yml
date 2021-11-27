@@ -14,23 +14,22 @@
     ##- name: Include prepare_openstack_services/main.yml
     ##  include: prepare_openstack_services/main.yml
 
-    - name: Include install_packages/main.yml for controllers
-      include: install_packages/main.yml
+    - name: Include install_packages_for_controllers/main.yml for controllers
+      include: install_packages_controllers/main.yml
 
-    - name: Include set_configuration/main.yml for controllers
-      include: set_configuration/main.yml
+    - name: Include set_configuration_for_controllers/main.yml for controllers
+      include: set_configuration_for_controllers/main.yml
 
   when: "'controllers' in group_names"
 
 # Instructions for Nova compute nodes
 - name: A block to build Nova for computes nodes
   block:
-    - name: Include install_packages/main.yml for computes
-      include: install_packages/main.yml
+    - name: Include install_packages_for_computes/main.yml for computes
+      include: install_packages_for_computes/main.yml
 
-    - name: Include set_configuration/main.yml for computes
-      include: set_configuration/main.yml
+    - name: Include set_configuration_for_computes/main.yml for computes
+      include: set_configuration_for_computes/main.yml
 
     # TODO:Testing "openstack compute service list --service nova-compute" from controller node
   when: "'computes' in group_names"
-

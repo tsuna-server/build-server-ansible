@@ -1,4 +1,3 @@
 ---
-- name: Debug
-  ansible.builtin.debug:
-    msg: "TODO: This is include_neutron_with_linux_bridge_in_computes.yml"
+- name: Include prepare_linux_bridge_for_computes/main
+  include: prepare_linux_bridge_for_computes/main.yml

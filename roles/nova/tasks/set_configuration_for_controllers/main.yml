@@ -1,6 +1,18 @@
 ---
-# These instructions assumes that a variable "template_result" that containing the result of the editing nova.conf was already declared.
+- name: Set /etc/nova/nova.conf
+  ansible.builtin.template:
+    src: "controllers/nova.conf.j2"
+    dest: /etc/nova/nova.conf
+    owner: root
+    group: nova
+    mode: 0640
+    backup: yes
+  register: template_result
 
+# Sync DB after the configuration has been set
+##- name: Include sync_db_for_nova_controllers.yml
+##  include: sync_db_for_nova_controllers.yml
+##  when: "'controllers' in group_names"
 - name: Check a flag that means setting config and syncing db for Nova controllers was finished
   stat:
     path: /root/.ansible_sync_db_for_nova_controllers_was_finished
@@ -48,4 +60,3 @@
     - nova-conductor
     - nova-novncproxy
   when: template_result.changed
-
