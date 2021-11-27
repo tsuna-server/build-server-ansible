@@ -5,4 +5,5 @@
     - { role: ntp, tags: ['always']}
     - { role: add_openstack_repository, tags: ['always']}
     - { role: nova, tags: ['always']}
+    - { role: neutron, tags: ['always']}
 
