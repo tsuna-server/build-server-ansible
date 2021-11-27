@@ -1,3 +1,0 @@
----
-- name: Include prepare_linux_bridge_for_computes/main
-  include: prepare_linux_bridge_for_computes/main.yml
