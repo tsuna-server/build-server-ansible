@@ -6,4 +6,7 @@
     group: nova
     mode: 0640
     backup: yes
+  nofity: Restart nova-compute
 
+- name: Run notified handlers of Nova for computes
+  meta: flush_handlers
