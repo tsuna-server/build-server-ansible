@@ -13,6 +13,7 @@
     - { role: placement, tags: ['always']}
     - { role: nova, tags: ['always']}
     - { role: neutron, tags: ['always']}
+    - { role: horizon, tags: ['always']}
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
