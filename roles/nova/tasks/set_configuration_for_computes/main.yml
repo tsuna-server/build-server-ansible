@@ -12,3 +12,34 @@
 
 - name: Run notified handlers of Nova for computes
   meta: flush_handlers
+
+# Sync DB for nova-compute
+- name: Check a flag that means setting config and syncing db for Nova computes was finished
+  stat:
+    path: /root/.ansible_sync_db_for_nova_computes_was_finished
+  register: flag_file
+
+- name: Block of sync DB for Nova compute nodes
+  block:
+    - name: Sync Nova database for compute nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 discover_hosts --verbose", "nova"]
+      notify: Restart nova-compute
+
+    - name: Print the result of syncing Nova DB for compute nodes
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: not flag_file.stat.exists and 'computes' in group_names
+
+- name: Create a flag that means setting config and syncing db for Nova controllers was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_sync_db_for_nova_computes_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Run notified handlers of Nova for computes
+  meta: flush_handlers
+

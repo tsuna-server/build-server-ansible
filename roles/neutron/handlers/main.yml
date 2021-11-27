@@ -3,7 +3,7 @@
 - name: Restart nova-api
   ansible.builtin.systemd:
     state: restarted
-    name: nova-compute
+    name: nova-api
 
 - name: Restart neutron-server
   ansible.builtin.systemd:

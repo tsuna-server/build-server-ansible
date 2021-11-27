@@ -15,7 +15,7 @@
     ##  include: prepare_openstack_services/main.yml
 
     - name: Include install_packages_for_controllers/main.yml for controllers
-      include: install_packages_controllers/main.yml
+      include: install_packages_for_controllers/main.yml
 
     - name: Include set_configuration_for_controllers/main.yml for controllers
       include: set_configuration_for_controllers/main.yml
