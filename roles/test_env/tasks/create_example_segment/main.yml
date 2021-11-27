@@ -1,0 +1,9 @@
+---
+# Create private network
+
+- name: Include do_create_network.yml
+  include: do_create_network.yml
+  loop_control:
+    loop_var: network
+  loop: "{{ group_vars.openstack.examples.networks }}"
+
