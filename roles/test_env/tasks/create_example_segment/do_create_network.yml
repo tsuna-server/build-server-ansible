@@ -26,7 +26,17 @@
         argv: ["openstack", "network", "create", "--mtu", "{{ mtu }}" "{{ network.name }}"]
       register: result
 
-    - name: Print the result of creating Placement image
+    - name: Print the result of creating network
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+    - name: Get network list
+      ansible.builtin.command:
+        argv: ["openstack", "network", "list"]
+      register: result
+
+    - name: Print the result of list network
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking_network.rc == 0
+
