@@ -1,4 +1,5 @@
-- name: Set /etc/nova/nova.conf
+---
+- name: Set /etc/nova/nova.conf for computes
   ansible.builtin.template:
     src: "computes/nova.conf.j2"
     dest: /etc/nova/nova.conf
@@ -6,7 +7,8 @@
     group: nova
     mode: 0640
     backup: yes
-  nofity: Restart nova-compute
+  notify:
+    - Restart nova-compute
 
 - name: Run notified handlers of Nova for computes
   meta: flush_handlers
