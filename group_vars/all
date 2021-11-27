@@ -1,21 +1,27 @@
 group_vars:
   hosts:
     controllers:
-      - names: ["dev-private-router01.openstack.example.com", "dev-private-router01"]
+      - names: ["dev-controller01", "dev-controller01.openstack.example.com"]
         management:
           ip: 192.168.2.1
-        interface:
-          provider: enp1s0
+        provider:
+          interface: br0
     computes:
-      - names: ["dev-compute01.openstack.example.com", "dev-compute01"]
+      - names: ["dev-compute01", "dev-compute01.openstack.example.com"]
         management:
           ip: 192.168.2.11
-      - names: ["dev-compute02.openstack.example.com", "dev-compute02"]
+        provider:
+          interface: enp1s0
+      - names: ["dev-compute02", "dev-compute02.openstack.example.com"]
         management:
           ip: 192.168.2.12
-      - names: ["dev-compute03.openstack.example.com", "dev-compute03"]
+        provider:
+          interface: enp1s0
+      - names: ["dev-compute03", "dev-compute03.openstack.example.com"]
         management:
           ip: 192.168.2.13
+        provider:
+          interface: enp1s0
 
     ## >>>>> Deprecated section from here. It will be removed in the future >>>>>
     ## Define IP addresses in management
@@ -162,9 +168,12 @@ group_vars:
       default:
         regions:
           - name: RegionOne
-            url: "http://openstack-controller-node01:9696"
+            url: "http://dev-controller01:9696"
 
   openstack:
+    metadata:
+      proxy:
+        shared_secret: "p@ssw0rd"
     admin_user_name: admin
     admin_project_name: admin
     admin_password: secret
@@ -177,6 +186,11 @@ group_vars:
       name: RegionOne
     network:
       plugin: "Linux Bridge"
+    # You can set this parameter like below if you want to specify OVN as a network plugin.
+    # You should also specify a parameter "password" for using shared secret.
+    #network:
+    #  plugin: "OVN"
+    #  password: secret
 
     # Domains belonging in this array will all be created except that "default" domain.
     domains:
@@ -192,6 +206,8 @@ group_vars:
           - name: placement
             password: secret
           - name: nova
+            password: secret
+          - name: neutron
             password: secret
         projects:
           # Service which set "primary: true" is a primary service that never duplicated in this list.
@@ -227,5 +243,8 @@ group_vars:
             domain: default
             project: service
           - user: placement
+            domain: default
+            project: service
+          - user: neutron
             domain: default
             project: service
