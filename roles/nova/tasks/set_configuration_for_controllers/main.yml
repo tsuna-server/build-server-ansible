@@ -31,12 +31,12 @@
         - "nova-manage cell_v2 create_cell --name=cell1 --verbose"
         - "nova-manage db sync"
 
-    - name: Check the result of syncing Nova DB compute nodes
+    - name: Check the result of syncing Nova DB controller nodes
       ansible.builtin.command:
         argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 list_cells", "nova"]
       register: result
 
-    - name: Print the result of syncing Nova DB for compute nodes
+    - name: Print the result of syncing Nova DB for controller nodes
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: not flag_file.stat.exists
