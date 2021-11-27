@@ -7,6 +7,9 @@ dev-compute01
 dev-compute02
 dev-compute03
 
-[all:children]
+[default:children]
 controllers
 computes
+
+[all:children]
+default
