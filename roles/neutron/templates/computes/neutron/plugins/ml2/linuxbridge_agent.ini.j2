@@ -187,6 +187,12 @@
 
 
 [linux_bridge]
+{% set glob_flag = {'found': False} -%}
+physical_interface_mappings = provider:{% for group_key, group_value in group_vars.hosts.items() if glob_flag.found != True -%}
+  {% for host_element in group_value if inventory_hostname in host_element.names -%}
+    {% if loop.index <= 1 -%}{% set _ = glob_flag.update({'found': True}) %}{{ host_element.interface.provider }}{%- endif %}
+  {%- endfor %}
+{%- endfor %}
 
 #
 # From neutron.ml2.linuxbridge.agent
@@ -222,6 +228,8 @@
 
 
 [securitygroup]
+enable_security_group = true
+firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
 #
 # From neutron.ml2.linuxbridge.agent
@@ -245,6 +253,15 @@
 
 
 [vxlan]
+enable_vxlan = true
+{% set glob_flag = {'found': False} -%}
+local_ip = {% for group_key, group_value in group_vars.hosts.items() if glob_flag.found != True -%}
+  {% for host_element in group_value if inventory_hostname in host_element.names -%}
+    {% if loop.index <= 1 -%}{% set _ = glob_flag.update({'found': True}) %}{{ host_element.management.ip }}{%- endif %}
+  {%- endfor %}
+{%- endfor %}
+
+l2_population = true
 
 #
 # From neutron.ml2.linuxbridge.agent

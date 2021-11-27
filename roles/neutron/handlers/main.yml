@@ -36,8 +36,3 @@
     state: restarted
     name: nova-compute
 
-- name: Restart neutron-linuxbridge-agent
-  ansible.builtin.systemd:
-    state: restarted
-    name: neutron-linuxbridge-agent
-

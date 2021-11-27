@@ -42,21 +42,7 @@
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
   register: result_linuxbridge_agent_ini
 
-#- name: Set /etc/sysctl.d/br_netfilter.conf
-#  ansible.builtin.copy:
-#    src: controllers/etc/sysctl.d/br_netfilter.conf
-#    dest: /etc/sysctl.d/br_netfilter.conf
-#    owner: root
-#    group: root
-#    mode: '0644'
-#    backup: no
-#  register: result
-#
-#- name: Reload sysctl configs
-#  ansible.builtin.command:
-#    argv: ["sysctl", "--system"]
-#  when: result.changed
-
+# Set br_netfilter.conf to set bridge-nf-call-iptables
 - name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
   ansible.posix.sysctl:
     name: net.bridge.bridge-nf-call-ip6tables
