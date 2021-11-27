@@ -1,4 +1,5 @@
 ---
+# TODO: Network plugin "OVN" is not supported yet
 - name: Checking detection of Neutron network plugin value
   ansible.builtin.fail:
     msg: "Network plugin 'OVN' is not supported currently. It will be supported near future."
