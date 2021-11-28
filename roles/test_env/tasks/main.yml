@@ -4,6 +4,9 @@
     - name: Include create_example_cirros/main.yml to create test environment
       include: create_example_cirros/main.yml
 
-    - name: Include create_example_segment/main.yml to create test environment
-      include: create_example_segment/main.yml
+    - name: Include create_example_network/main.yml to create test environment
+      include: create_example_network/main.yml
+
+    - name: Include create_example_subnet/main.yml to create test environment
+      include: create_example_subnet/main.yml
   when: group_vars.openstack.examples.images.cirros.create == true

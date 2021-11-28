@@ -23,7 +23,7 @@
   block:
     - name: Create a network
       ansible.builtin.command:
-        argv: ["openstack", "network", "create", "--mtu", "{{ mtu }}" "{{ network.name }}"]
+        argv: ["openstack", "network", "create", "--mtu", "{{ mtu }}", "{{ network.name }}"]
       register: result
 
     - name: Print the result of creating network
@@ -39,4 +39,4 @@
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking_network.rc == 0
-
+# 

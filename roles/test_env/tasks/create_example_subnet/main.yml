@@ -1,0 +1,8 @@
+---
+# Create example subnet
+
+- name: Include do_create_subnet.yml
+  include: do_create_subnet.yml
+  loop_control:
+    loop_var: subnet
+  loop: "{{ group_vars.openstack.examples.subnets }}"

@@ -1,7 +1,7 @@
 ---
 - name: Declare iso file image name
   set_fact:
-    iso_cirros_file_name: "{{ group_vars.glance.examples.cirros.image_url.split('/')[-1] }}"
+    iso_cirros_file_name: "{{ group_vars.openstack.examples.images.cirros.image_url.split('/')[-1] }}"
 
 - name: Declare iso file path
   set_fact:
@@ -12,15 +12,13 @@
     path: "{{ iso_cirros_file_path }}"
   register: flag_file
 
-- name: Download cirros image (timeout == 600 sec, retries == 10)
+- name: Download cirros image (timeout == 300 sec, retries == 3)
   get_url:
-    url: "{{ group_vars.glance.examples.cirros.image_url }}"
+    url: "{{ group_vars.openstack.examples.images.cirros.image_url }}"
     dest: "{{ iso_cirros_file_path }}"
-    timeout: 600
-  retries: 10
+    timeout: 300
+  retries: 3
   delay: 2
-  register: result
-  until: result.rc == 0
   when: not flag_file.stat.exists
 
 - name: Check Glance example image of cirros has already created

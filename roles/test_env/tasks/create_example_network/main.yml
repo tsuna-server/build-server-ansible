@@ -1,5 +1,5 @@
 ---
-# Create private network
+# Create example network
 
 - name: Include do_create_network.yml
   include: do_create_network.yml
