@@ -15,7 +15,7 @@
     msg: "network.name == \"{{ network.name }}\", network.mtu == \"{{ mtu }}\""
 
 - name: Check the network has already existed or not
-  ansible.builtin.script: ./check_duplicate_network.sh "{{ network.name }}" "{{ mtu }}"
+  ansible.builtin.script: ./check_duplicate_network.sh "{{ network.name }}"
   register: result_of_checking_network
   failed_when: ( result_of_checking_network.rc not in [0, 1] )
 
