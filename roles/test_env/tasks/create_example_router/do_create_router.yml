@@ -54,5 +54,5 @@
     - name: Print the list of the router
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
-  when: result_of_checking_router.rc == 0
+  #when: result_of_checking_router.rc == 0
 

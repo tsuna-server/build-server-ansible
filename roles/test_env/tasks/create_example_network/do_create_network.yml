@@ -21,10 +21,30 @@
 
 - name: Block of create network
   block:
-    - name: Create a network
+    # Add an external option if a configuration of the network indicate as external
+    - name: Determine the network is indicated whether external or not
+      set_fact:
+        is_external: "{% if 'external' in network and network.external == True %}True{% else %}False{% endif %}"
+
+    - name: Create a network as private
       ansible.builtin.command:
         argv: ["openstack", "network", "create", "--mtu", "{{ mtu }}", "{{ network.name }}"]
-      register: result
+      register: result_of_create_network
+      when: is_external == False
+
+    - name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeebug
+      ansible.builtin.debug:
+        msg: result_of_create_network
+
+    - name: Create a network as external
+      ansible.builtin.command:
+        argv: ["openstack", "network", "create", "--provider-network-type", "flat", "--mtu", "{{ mtu }}", "--provider-physical-network", "provider", "--external", "{{ network.name }}"]
+      register: result_of_create_network
+      when: is_external == True
+
+    - name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeebug
+      ansible.builtin.debug:
+        msg: result_of_create_network
 
     - name: Print the result of creating network
       ansible.builtin.debug:
@@ -39,4 +59,3 @@
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking_network.rc == 0
-# 

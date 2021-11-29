@@ -27,8 +27,6 @@
 #  ansible.builtin.debug:
 #    msg: "subnet.name==\"{{ subnet.name }}\", subnet.pool.start==\"{{ subnet.pool.start }}\", subnet.pool.end==\"{{ subnet.pool.end }}\",subnet.dns==\"{{ dns_servers }}\""
 
-
-
 - name: Print a subnet that will be created in this section
   ansible.builtin.debug:
     msg: "subnet.name==\"{{ subnet.name }}\", subnet.pool.start==\"{{ subnet.pool.start }}\", subnet.pool.end==\"{{ subnet.pool.end }}\"{% if 'dns' in subnet %},subnet.dns==\"{{ subnet.dns }}\"{% endif %}"
@@ -62,8 +60,8 @@
       ansible.builtin.debug:
         msg: "Command: {{ command_array }}"
 
-    - name: Create a subnet
-      ansible.builtin.command:
-        argv: "{{ command_array }}"
-      register: result
+    #- name: Create a subnet
+    #  ansible.builtin.command:
+    #    argv: "{{ command_array }}"
+    #  register: result
   when: result_of_checking_subnet.rc == 0
