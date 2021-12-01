@@ -95,14 +95,11 @@ group_vars:
       #    - name: RegionOne
       #      url: "http://dev-private-router01:9292"
     dbs:
-      # "user:" and "password:" can be abbreviated
+      # "user:" and "password:" can be abbreviated.
+      # group_vars.glance.user and group_vars.glance.password will be used if abbreviate them.
       - name: glance
         user: glance
         password: secret
-    examples:
-      cirros:
-        create: true
-        image_url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
 
   placement:
     user: placement
@@ -248,3 +245,70 @@ group_vars:
           - user: neutron
             domain: default
             project: service
+
+    examples:
+      images:
+        cirros:
+          create: true
+          image_url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+      networks:
+        # MTU must be less than or equals 1450.
+        - name: public
+          mtu: 1450
+          external: True
+          #
+          # "provider.physical.network" and "provider.network.type" will be passed as a value of option
+          # "--provider-physical-network" and "--provider-network-type" of a command "openstack network create".
+          # These options will connect virtual networks to the physical interface (ex: enp1s0) by refering
+          # the configurations in the file "ml2_conf.ini" and "linuxbridge_agent.ini".
+          #
+          #   * /etc/neutron/plugins/ml2/ml2_conf.ini
+          #   [ml2_type_flat]
+          #   flat_networks = provider
+          # 
+          #   * /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+          #   [linux_bridge]
+          #   physical_interface_mappings = provider:br0
+          #
+          # "provider.physical.network" is an optional parameter(default: "provider").
+          # "provider.network.type" is an optional parameter(default: "flat").
+          #
+          provider:
+            physical:
+              network: provider
+            network:
+              type: flat
+        - name: private
+          mtu: 1400
+      subnets:
+        # Value of "network" must be existed in "group_vars.openstack.examples.networks[].name".
+        # Option "pool" will be ignored if you set "external: True" in subnet.
+        - name: public_subnet
+          pool:
+            start: 172.31.230.2
+            end: 172.31.230.254
+          subnet:
+            range: 172.31.0.0/16
+          network: public
+        - name: private_subnet
+          pool:
+            start: 192.168.255.2
+            end: 192.168.255.254
+          subnet:
+            range: 192.168.255.0/24
+          # Key "dns" is optional. DNS servers in the segment will not be set if you do not specify it.
+          dns:
+            - 172.31.0.1
+            - 8.8.8.8
+            - 8.8.4.4
+          network: private
+      routers:
+        # NOTE: public_router is not necessary because it already connected in external network.
+        - name: private_router
+          # Network name that packets will through to the internet.
+          # It must be existed in "group_vars.openstack.examples.networks[].name".
+          external_gateway: public
+          # Subnet that this router will be blonging in.
+          # It must be existed in "group_vars.openstack.examples.subnets[].name"
+          subnet: private_subnet
+
