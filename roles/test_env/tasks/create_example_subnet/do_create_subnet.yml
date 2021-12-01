@@ -35,9 +35,7 @@
       set_fact:
         command_array: []
 
-    # Is the subnet should be created as external?
-    ##subnet.network in group_vars.openstack.networks[].external
-
+    # Build a command for internal subnet #################################################################
     - name: Block of building a commant to create internal subnet
       block:
         - name: Determine DNS servers if subnet.dns was existed
@@ -55,10 +53,7 @@
             command_array: "{{ ['openstack', 'subnet', 'create', '--network', '{{ subnet.network }}', '--allocation-pool', 'start={{ subnet.pool.start }},end={{ subnet.pool.end }}', '--subnet-range', '{{ subnet.subnet.range }}'] + dns_servers + ['{{ subnet.name }}'] }}"
       when: "subnet.network not in external_network_list"
 
-    - name: dddddddddddddddddddddddddddddddddddddddddddddddd
-      ansible.builtin.debug:
-        msg: "subnet.pool.start={{ subnet.pool.start }}"
-
+    # Build a command for external subnet #################################################################
     - name: Block of building a command to create external subnet
       block:
         - name: Build a command to create an external subnet
@@ -70,8 +65,8 @@
       ansible.builtin.debug:
         msg: "Command: {{ command_array }}"
 
-    #- name: Create a subnet
-    #  ansible.builtin.command:
-    #    argv: "{{ command_array }}"
-    #  register: result
+    - name: Run a command to create a subnet
+      ansible.builtin.command:
+        argv: "{{ command_array }}"
+      register: result
   when: result_of_checking_subnet.rc == 0

@@ -1,11 +1,11 @@
 ---
 - name: Block of test_env
   block:
-    #- name: Include create_example_cirros/main.yml to create test environment
-    #  include: create_example_cirros/main.yml
+    - name: Include create_example_cirros/main.yml to create test environment
+      include: create_example_cirros/main.yml
 
-    #- name: Include create_example_network/main.yml to create test environment
-    #  include: create_example_network/main.yml
+    - name: Include create_example_network/main.yml to create test environment
+      include: create_example_network/main.yml
 
     - name: Include create_example_subnet/main.yml to create test environment
       include: create_example_subnet/main.yml
