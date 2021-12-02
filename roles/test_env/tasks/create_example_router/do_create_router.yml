@@ -12,10 +12,10 @@
   ansible.builtin.debug:
     msg: "router.name == \"{{ router.name }}\", router.subnet == \"{{ router.subnet }}\"{% if 'external_gateway' in router %}, router.external_gateway == \"{{ router.external_gateway }}\"{% endif %}"
 
-#- name: Check the router has already existed or not
-#  ansible.builtin.script: ./check_duplicate_router.sh "{{ router.name }}"
-#  register: result_of_checking_router
-#  failed_when: ( result_of_checking_router.rc no in [0, 1] )
+- name: Check the router has already existed or not
+  ansible.builtin.script: ./check_duplicate_router.sh "{{ router.name }}"
+  register: result_of_checking_router
+  failed_when: ( result_of_checking_router.rc no in [0, 1] sh
 
 - name: Block of create router
   block:
