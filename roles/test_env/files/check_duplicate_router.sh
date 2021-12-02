@@ -14,7 +14,7 @@ main() {
         return 2
     }
 
-    output="$(glance router list)" || {
+    output="$(openstack router list)" || {
         echo "ERROR: Failed to get Neutron router" >&2
         return 2
     }

@@ -15,7 +15,7 @@
 - name: Check the router has already existed or not
   ansible.builtin.script: ./check_duplicate_router.sh "{{ router.name }}"
   register: result_of_checking_router
-  failed_when: ( result_of_checking_router.rc no in [0, 1] sh
+  failed_when: result_of_checking_router.rc not in [0, 1]
 
 - name: Block of create router
   block:
@@ -54,5 +54,5 @@
     - name: Print the list of the router
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
-  #when: result_of_checking_router.rc == 0
+  when: result_of_checking_router.rc == 0
 
