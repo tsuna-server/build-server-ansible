@@ -12,4 +12,7 @@
 
     - name: Include create_example_router/main.yml to create test environment
       include: create_example_router/main.yml
+
+    - name: Include test_created_network/main.yml to test environment
+      include: test_created_network/main.yml
   when: group_vars.openstack.examples.images.cirros.create == true
