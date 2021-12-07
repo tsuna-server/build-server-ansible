@@ -8,6 +8,7 @@
       - neutron-l3-agent
       - neutron-dhcp-agent
       - neutron-metadata-agent
+      - neutron-fwaas-common
 
 - name: Set /etc/neutron/neutron.conf of Neutron with Linux Bridge
   ansible.builtin.template:
