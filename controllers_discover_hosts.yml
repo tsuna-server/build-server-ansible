@@ -2,4 +2,4 @@
 - hosts: controllers
   become: yes
   roles:
-    - { role: nova_discover_hosts, tags: ['always'] }
+    - { role: nova_discover_hosts, tags: ['role_discover_hosts'] }

@@ -2,18 +2,7 @@
 - hosts: controllers
   become: yes
   roles:
-    - ntp
-    - sql
-    - mq
-    - memcached
-    - etcd
-    - add_openstack_repository
-    - keystone
-    - glance
-    - placement
-    - nova
-    - neutron
-    - horizon
+    - { role: test_env, tags: ['role_test_env']}
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
