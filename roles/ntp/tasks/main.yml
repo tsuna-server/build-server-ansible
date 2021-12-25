@@ -1,40 +1,43 @@
 ---
-- name: Install packages for ntp services
-  apt:
-    name:
-      - chrony
-    update_cache: yes
+- name: This is a ntp role
+  ansible.builtin.command: /bin/true
 
-- name: Determin config of chrony
-  ansible.builtin.set_fact:
-    chrony_config: "{% if 'controllers' in group_names %}allow {{ group_vars.ntp.ip.allow }}{% else %}server {{ group_vars.ntp.ip.server }} iburst{% endif %}"
-
-- name: Configure /etc/chrony/chrony.conf
-  ansible.builtin.template:
-    src: chrony.conf.j2
-    dest: /etc/chrony/chrony.conf
-    group: root
-    owner: root
-    mode: '0644'
-  notify: Restart chrony
-  register: result_of_chrony_config
-
-- name: Run notified handler of NTP
-  meta: flush_handlers
-
-- name: chrony should be enabled
-  ansible.builtin.systemd:
-    enabled: yes
-    name: chrony
-
-- name: Block of checking chrony state
-  block:
-    - name: Check the state of synchronization of the NTP
-      ansible.builtin.command:
-        argv: ["chronyc", "sources"]
-      register: result_of_chrony_state
-      failed_when: ( result_of_chrony_state.rc not in [0, 1] )
-    - name: Print the result of state of the NTP
-      ansible.builtin.debug:
-        msg: "{{ result_of_chrony_state.stdout.split('\n') }}"
-  when: result_of_chrony_config.changed
+#- name: Install packages for ntp services
+#  apt:
+#    name:
+#      - chrony
+#    update_cache: yes
+#
+#- name: Determin config of chrony
+#  ansible.builtin.set_fact:
+#    chrony_config: "{% if 'controllers' in group_names %}allow {{ group_vars.ntp.ip.allow }}{% else %}server {{ group_vars.ntp.ip.server }} iburst{% endif %}"
+#
+#- name: Configure /etc/chrony/chrony.conf
+#  ansible.builtin.template:
+#    src: chrony.conf.j2
+#    dest: /etc/chrony/chrony.conf
+#    group: root
+#    owner: root
+#    mode: '0644'
+#  notify: Restart chrony
+#  register: result_of_chrony_config
+#
+#- name: Run notified handler of NTP
+#  meta: flush_handlers
+#
+#- name: chrony should be enabled
+#  ansible.builtin.systemd:
+#    enabled: yes
+#    name: chrony
+#
+#- name: Block of checking chrony state
+#  block:
+#    - name: Check the state of synchronization of the NTP
+#      ansible.builtin.command:
+#        argv: ["chronyc", "sources"]
+#      register: result_of_chrony_state
+#      failed_when: ( result_of_chrony_state.rc not in [0, 1] )
+#    - name: Print the result of state of the NTP
+#      ansible.builtin.debug:
+#        msg: "{{ result_of_chrony_state.stdout.split('\n') }}"
+#  when: result_of_chrony_config.changed

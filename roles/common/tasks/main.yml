@@ -1,18 +1,22 @@
-- name: Upgrade all current packages
-  apt:
-    upgrade: full
-    update_cache: yes
 
-- name: Install common packages
-  apt:
-    name:
-      - jq
+- name: This is a common role
+  ansible.builtin.command: /bin/true
 
-- name: Check reboot was required
-  stat:
-    path: /var/run/reboot-required
-  register: file_reboot_required
+#- name: Upgrade all current packages
+#  apt:
+#    upgrade: full
+#    update_cache: yes
 
-- name: Reboot machine if required
-  reboot:
-  when: file_reboot_required.stat.exists
+#- name: Install common packages
+#  apt:
+#    name:
+#      - jq
+#
+#- name: Check reboot was required
+#  stat:
+#    path: /var/run/reboot-required
+#  register: file_reboot_required
+#
+#- name: Reboot machine if required
+#  reboot:
+#  when: file_reboot_required.stat.exists
