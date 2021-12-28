@@ -5,7 +5,7 @@ group_vars:
         management:
           ip: 192.168.2.1
         provider:
-          interface: br0
+          interface: enp1s0
     computes:
       - names: ["dev-compute01", "dev-compute01.openstack.example.com"]
         management:
@@ -175,7 +175,8 @@ group_vars:
     admin_project_name: admin
     admin_password: secret
     package:
-      repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
+      #repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
+      repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/xena main'
       keyserver: keyserver.ubuntu.com
       id: 5EDB1B62EC4926EA
     region:
