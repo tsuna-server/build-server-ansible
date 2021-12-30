@@ -17,7 +17,7 @@
   register: result_of_checking_router
   failed_when: result_of_checking_router.rc not in [0, 1]
 
-- name: Block of create router
+- name: Block of creating router
   block:
     - name: Create a router
       ansible.builtin.command:

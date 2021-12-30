@@ -3,4 +3,9 @@
   include: do_create_flavor.yml
   loop_control:
     loop_var: flavor
+    extended: yes
   loop: "{{ group_vars.openstack.examples.flavors }}"
+
+- name: Include do_list_flavor.yml
+  include: do_list_flavor.yml
+
