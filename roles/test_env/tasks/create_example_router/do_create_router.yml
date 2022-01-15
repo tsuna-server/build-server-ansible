@@ -55,4 +55,3 @@
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking_router.rc == 0
-

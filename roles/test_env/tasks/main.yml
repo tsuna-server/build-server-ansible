@@ -18,4 +18,12 @@
 
     - name: Include test_create_flavor/main.yml to create test environment
       include: create_example_flavor/main.yml
+
+    - name: Include test_create_security_group/main.yml to create test security group environment
+      include: create_example_security_group/main.yml
+
+    # Create security groups
+    #
+    # The instruction is succeeded and skip the instruction as success if an error message like below was show when adding a security rule.
+    # "Error while executing command: ConflictException: 409, Security group rule already exists. Rule id is <uuid>."
   when: group_vars.openstack.examples.images.cirros.create == true

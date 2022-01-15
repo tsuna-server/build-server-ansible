@@ -28,7 +28,6 @@
   register: result_of_checking_subnet
   failed_when: ( result_of_checking_subnet.rc not in [0, 1] )
 
-
 - name: Block of creating subnet
   block:
     - name: Initialize a variable command_array

@@ -1,0 +1,6 @@
+---
+- name: Include do_create_security_group.yml
+  include: do_create_security_group.yml
+  loop_control:
+    loop_var: group
+  loop: "{{ group_vars.openstack.examples.security.groups }}"
