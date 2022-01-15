@@ -1,5 +1,5 @@
 ---
-# This instruction assumes some variables already declared.
+# This instruction assumes some variables should already be declared.
 # group:
 #   An object of the group that will be added
 # group.name:
@@ -25,8 +25,9 @@
         argv: ["openstack", "security", "group", "create", "{{ group.name }}", "--description", "{{ group.description }}"]
   when: result_of_checking_subnet.rc == 0
 
-#- name: Include do_create_a_rule.yml
-#  include: do_create_a_rule.yml
-#    loop_var: rule
-#  loop: "{{ group.rules }}"
+- name: Include do_create_rule.yml
+  include: do_create_rule.yml
+  loop_control:
+    loop_var: rule
+  loop: "{{ group.rules }}"
 

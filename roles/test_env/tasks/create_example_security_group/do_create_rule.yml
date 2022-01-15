@@ -1,0 +1,15 @@
+---
+# This instruction assumes some variables should already be declared.
+# rule:
+#   A rule of the security group that will be added.
+#   It will be given to the command "openstack security group rule create" as raw.
+# group.name:
+#   Name of the security group that the rule will be added in.
+- name: Print a rule that will be added the rule
+  ansible.builtin.debug:
+    msg: "group.name==\"{{ group.name }}\", rule==\"{{ rule }}\""
+
+#- name: Add a rule
+#  ansible.builtin.command:
+#    argv: []
+
