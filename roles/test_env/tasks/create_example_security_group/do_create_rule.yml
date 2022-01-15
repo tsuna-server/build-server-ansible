@@ -3,13 +3,28 @@
 # rule:
 #   A rule of the security group that will be added.
 #   It will be given to the command "openstack security group rule create" as raw.
+# rule.value:
+#   A value of the rule that will be added in this security group.
 # group.name:
 #   Name of the security group that the rule will be added in.
 - name: Print a rule that will be added the rule
   ansible.builtin.debug:
-    msg: "group.name==\"{{ group.name }}\", rule==\"{{ rule }}\""
+    msg: "group.name==\"{{ group.name }}\", rule==\"{{ rule.value }}\""
 
-#- name: Add a rule
+- name: Create a command array to add the rule
+  set_fact:
+    #command_to_add_rule: ["openstack", "security", "group", "rule", "create"] + "{{ group.name }}"
+    command_to_add_rule: "{{ ['openstack', 'security', 'group', 'rule', 'create'] + rule.value + [group.name] }}"
+
+
+- name: deeeeeeeeebut
+  ansible.builtin.shell: "echo \"SESSION_ID=${SESSION_ID}, OS_USERNAME=${OS_USERNAME}\""
+  register: result
+- name: deeeeeeeeeeeeebug
+  ansible.builtin.debug:
+    msg: "{{ result.stdout }}"
+
+#- name: Add a rule to the group
 #  ansible.builtin.command:
-#    argv: []
+#    argv: "{{ command_to_add_rule }}"
 

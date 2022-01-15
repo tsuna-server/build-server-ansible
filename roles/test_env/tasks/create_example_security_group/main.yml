@@ -1,4 +1,7 @@
 ---
+- name: Create a cache file of project-list
+  ansible.builtin.script: ./create_project_list_cache_file.sh
+
 - name: Include do_create_security_group.yml
   include: do_create_security_group.yml
   loop_control:
