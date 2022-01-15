@@ -4,6 +4,8 @@ main() {
     local target_router_name="$1"
     local router_name
 
+    # PROJECT_LIST_CACHE_FILE
+
     [[ -z "$target_router_name" ]] && {
         echo "Usage: $0 <target_router_name>"
         return 2

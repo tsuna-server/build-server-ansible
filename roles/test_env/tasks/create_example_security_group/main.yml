@@ -7,3 +7,4 @@
   loop_control:
     loop_var: group
   loop: "{{ group_vars.openstack.examples.security.groups }}"
+

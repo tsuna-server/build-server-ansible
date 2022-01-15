@@ -12,7 +12,7 @@
 - name: Check whether the security group is already existed
   ansible.builtin.script: ./check_duplicate_security_group.sh "{{ group.name }}"
   register: result_of_checking_security_group
-  failed_when: ( result_of_checking_subnet.rc not in [0, 1] )
+  failed_when: ( result_of_checking_security_group.rc not in [0, 1] )
 
 - name: Block of creating a security group
   block:
@@ -23,7 +23,7 @@
     - name: Create a security group if it was not already existed
       ansible.builtin.command:
         argv: ["openstack", "security", "group", "create", "{{ group.name }}", "--description", "{{ group.description }}"]
-  when: result_of_checking_subnet.rc == 0
+  when: result_of_checking_security_group.rc == 0
 
 - name: Include do_create_rule.yml
   include: do_create_rule.yml

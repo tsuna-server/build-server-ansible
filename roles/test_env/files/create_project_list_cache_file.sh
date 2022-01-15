@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
 main() {
-    if [[ -z "$SESSION_ID" ]]; then
-        echo "ERROR: Failed to create a cache file of project-list due to undefined of an environment variable \"SESSION_ID\". It is empty." >&2
-        return 2
-    fi
 
     local id name output
-    local cache_file="/tmp/${PREFIX_PROJECT_LIST_FILE}${SESSION_ID}"
+    local cache_file="/tmp/${PROJECT_LIST_CACHE_FILE}"
     # Example output:
     # +----------------------------------+-----------+
     # | ID                               | Name      |
@@ -16,10 +12,13 @@ main() {
     # | eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee | myproject |
     # | dddddddddddddddddddddddddddddddd | service   |
     # +----------------------------------+-----------+
-    output="$(openstack project list)"
+    output="$(openstack project list)" || {
+        echo "ERROR: Failed to get project list with a command \"openstack project list\"" >&2
+        return 2
+    }
 
     # FIXME: There is a security risk to remove a file by using variable without any checks
-    rm -f "/tmp/${PREFIX_PROJECT_LIST_FILE}"*
+    rm -f "/tmp/${PROJECT_LIST_CACHE_FILE}"
 
     echo -n "declare -A CACHE_OF_PROJECT_LIST=(" >> "${cache_file}"
     while read id _ name; do
@@ -28,6 +27,8 @@ main() {
         echo -n "[${name}]=${id} " >> "${cache_file}"
     done < <(tail +4 <<< "$output" | head -n -1 | cut -d '|' -f 2,3)
     echo ")" >> "${cache_file}"
+
+    return 0
 }
 
 main "$@"
