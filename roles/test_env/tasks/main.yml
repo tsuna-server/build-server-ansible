@@ -1,32 +1,24 @@
 ---
-- name: Block of test_env
-  block:
-    - name: Include create_example_network/main.yml to create test environment
-      include: create_example_network/main.yml
+- name: Include create_example_network/main.yml to create test environment
+  include: create_example_network/main.yml
 
-    - name: Include create_example_subnet/main.yml to create test environment
-      include: create_example_subnet/main.yml
+- name: Include create_example_subnet/main.yml to create test environment
+  include: create_example_subnet/main.yml
 
-    - name: Include create_example_router/main.yml to create test environment
-      include: create_example_router/main.yml
+- name: Include create_example_router/main.yml to create test environment
+  include: create_example_router/main.yml
 
-    - name: Include created_network/main.yml to create test environment
-      include: create_example_network/main.yml
+- name: Include created_network/main.yml to create test environment
+  include: create_example_network/main.yml
 
-    - name: Include create_flavor/main.yml to create test environment
-      include: create_example_flavor/main.yml
+- name: Include create_flavor/main.yml to create test environment
+  include: create_example_flavor/main.yml
 
-    - name: Include create_security_group/main.yml to create test security group environment
-      include: create_example_security_group/main.yml
+- name: Include create_security_group/main.yml to create test security group environment
+  include: create_example_security_group/main.yml
 
-    - name: Include create_ssh_key/main.yml to create test ssh key
-      include: create_ssh_key/main.yml
+- name: Include create_ssh_key/main.yml to create test ssh key
+  include: create_ssh_key/main.yml
 
-    - name: Include create_example_cirros/main.yml to create test environment
-      include: create_example_cirros/main.yml
-
-    # Create security groups
-    #
-    # The instruction is succeeded and skip the instruction as success if an error message like below was show when adding a security rule.
-    # "Error while executing command: ConflictException: 409, Security group rule already exists. Rule id is <uuid>."
-  when: group_vars.openstack.examples.images.cirros.create == true
+- name: Include create_example_cirros/main.yml to create test environment
+  include: create_example_cirros/main.yml

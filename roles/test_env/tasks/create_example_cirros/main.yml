@@ -22,7 +22,7 @@
   when: not flag_file.stat.exists
 
 - name: Check Glance example image of cirros has already created
-  ansible.builtin.script: ./check_duplicate_glance_image.sh cirros
+  ansible.builtin.script: ./check_duplicate_glance_image.sh "{{ group_vars.openstack.examples.images[0].name }}"
   register: result_of_checking
   failed_when: ( result_of_checking.rc not in [0, 1] )
 
@@ -30,7 +30,7 @@
   block: 
     - name: Create Glance image of cirros
       ansible.builtin.command:
-        argv: ["openstack", "image", "create", "--disk-format", "qcow2", "--container-format", "bare", "--public", "--file", "./{{ iso_cirros_file_path }}", "{{ group_vars.openstack.examples.images[0].name }}"]
+        argv: ["openstack", "image", "create", "--disk-format", "qcow2", "--container-format", "bare", "--public", "--file", "{{ iso_cirros_file_path }}", "{{ group_vars.openstack.examples.images[0].name }}"]
 
     - name: List Glance images
       ansible.builtin.command:
@@ -55,7 +55,7 @@
 
     - name: Create an instance
       ansible.builtin.command:
-        argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}", "{{ group_vars.openstack.examples.instances[0].name }}"
+        argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}", "{{ group_vars.openstack.examples.instances[0].name }}"]
 
     - name: Get an instance list after new one was created
       ansible.builtin.command:
