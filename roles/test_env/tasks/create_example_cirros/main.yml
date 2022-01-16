@@ -1,7 +1,7 @@
 ---
 - name: Declare iso file image name
   set_fact:
-    iso_cirros_file_name: "{{ group_vars.openstack.examples.images.cirros.image_url.split('/')[-1] }}"
+    iso_cirros_file_name: "{{ group_vars.openstack.examples.images[0].url.split('/')[-1] }}"
 
 - name: Declare iso file path
   set_fact:
@@ -14,7 +14,7 @@
 
 - name: Download cirros image (timeout == 300 sec, retries == 3)
   get_url:
-    url: "{{ group_vars.openstack.examples.images.cirros.image_url }}"
+    url: "{{ group_vars.openstack.examples.images[0].url }}"
     dest: "{{ iso_cirros_file_path }}"
     timeout: 300
   retries: 3
@@ -30,12 +30,40 @@
   block: 
     - name: Create Glance image of cirros
       ansible.builtin.command:
-        argv: ["glance", "image-create", "--name", "cirros", "--file", "{{ iso_cirros_file_path }}", "--disk-format", "qcow2", "--container-format", "bare", "--visibility", "public"]
+        argv: ["openstack", "image", "create", "--disk-format", "qcow2", "--container-format", "bare", "--public", "--file", "./{{ iso_cirros_file_path }}", "{{ group_vars.openstack.examples.images[0].name }}"]
+
     - name: List Glance images
       ansible.builtin.command:
-        argv: ["glance", "image-list"]
+        argv: ["openstack", "image", "list"]
       register: result
+
     - name: Print the result of creating Glance image
       ansible.builtin.debug:
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking.rc == 0
+
+- name: Check whether the instance is already declared or not
+  ansible.builtin.script: ./check_duplicate_glance_image.sh cirros
+  register: result
+  failed_when: (result.rc not in [0, 1])
+
+- name: Block of creating an instance
+  block:
+    - name: Print an instance that will be created
+      ansible.builtin.debug:
+        msg: "instance_name={{ group_vars.openstack.examples.instances[0].name }}, image={{ group_vars.openstack.examples.instances[0].image.name }}, network={{ group_vars.openstack.examples.instances[0].network }}"
+
+    - name: Create an instance
+      ansible.builtin.command:
+        argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}", "{{ group_vars.openstack.examples.instances[0].name }}"
+
+    - name: Get an instance list after new one was created
+      ansible.builtin.command:
+        argv: ["openstack", "server", "list"]
+      register: result
+
+    - name: Print an instance list after new one was created
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: result.rc == 1
+
