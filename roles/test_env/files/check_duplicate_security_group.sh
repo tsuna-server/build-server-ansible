@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
 main() {
-    local target_security_group_name="$1"
+    local target_security_group="$1"
     local target_project="$2"
     local id name project_id target_project_id
 
-    # PROJECT_LIST_CACHE_FILE
-
-    [[ -z "$target_security_group_name" ]] && {
-        echo "Usage: $0 <target_security_group_name>"
+    if [[ -z "$target_security_group" ]] || [[ -z "$target_project" ]]; then
+        echo "Usage: $0 <target_security_group> <target_project>"
         return 2
-    }
+    fi
     [[ -z ${PROJECT_LIST_CACHE_FILE} ]] && {
         echo "ERROR: This script requires environment variable \"PROJECT_LIST_CACHE_FILE\" to load where the cache file is in." >&2
         return 2
@@ -41,7 +39,7 @@ main() {
         return 2
     fi
 
-    echo "Target project ID is: $target_project_id"
+    echo "INFO: Target project ID was detected: ${target_project_id}."
 
     output="$(openstack security group list)" || {
         echo "ERROR: Failed to get Neutron router" >&2
@@ -52,11 +50,14 @@ main() {
         id="${id%\\n}"
         name="${name%\\n}"
         project_id="${project_id%\\n}"
-        echo "security_group_name=${name}, security_group_id=${id}, project_id=${project_id}"
-        if [[ "$name" == "$target_security_group_name" ]] && [[ "$project_id" == "$target_project_id" ]]; then
+        echo "security_group=${name}, security_group_id=${id}, project_id=${project_id}"
+        if [[ "$name" == "$target_security_group" ]] && [[ "$project_id" == "$target_project_id" ]]; then
+            echo "INFO: Security group \"${target_security_group}\" is already registerd in a project \"${target_project}\"."
             return 1
         fi
     done < <(tail +4 <<< "$output" | head -n -1 | cut -d '|' -f 2,3,5)
+
+    echo "INFO: Security group \"${target_security_group}\" is NOT registerd yet in a project \"${target_project}\"."
 
     return 0
 }
