@@ -10,7 +10,7 @@
 #   Rules of the security group that will be created in this security group.
 
 - name: Check whether the security group is already existed
-  ansible.builtin.script: ./check_duplicate_security_group.sh "{{ group.name }}"
+  ansible.builtin.script: ./check_duplicate_security_group.sh "{{ group.name }}" "admin"
   register: result_of_checking_security_group
   failed_when: ( result_of_checking_security_group.rc not in [0, 1] )
 
