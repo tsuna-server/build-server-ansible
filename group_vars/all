@@ -252,6 +252,7 @@ group_vars:
         cirros:
           create: true
           image_url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+
       networks:
         # MTU must be less than or equals 1450.
         - name: public
@@ -281,6 +282,7 @@ group_vars:
               type: flat
         - name: private
           mtu: 1400
+
       subnets:
         # Value of "network" must be existed in "group_vars.openstack.examples.networks[].name".
         # Option "pool" will be ignored if you set "external: True" in subnet.
@@ -303,6 +305,7 @@ group_vars:
             - 8.8.8.8
             - 8.8.4.4
           network: private
+
       routers:
         # NOTE: public_router is not necessary because it already connected in external network.
         - name: private_router
@@ -313,3 +316,29 @@ group_vars:
           # It must be existed in "group_vars.openstack.examples.subnets[].name"
           subnet: private_subnet
 
+      flavors:
+        - id: 1
+          name: m1.tiny
+          ram: 512
+          disk: 1
+          vcpus: 1
+        - id: 2
+          name: m1.midium
+          ram: 1024
+          disk: 4
+          vcpus: 1
+
+      security:
+        groups:
+          - name: permit_all
+            description: "Allow all ports"
+            rules:
+              - value: ["--protocol", "TCP", "--dst-port", "1:65535", "--remote-ip", "0.0.0.0/0"]
+              - value: ["--protocol", "ICMP", "--remote-ip", "0.0.0.0/0"]
+          - name: limited_access
+            description: "Allow base ports"
+            rules:
+              - value: ["--protocol", "ICMP", "--remote-ip", "0.0.0.0/0"]
+              - value: ["--protocol", "TCP", "--dst-port", "22", "--remote-ip", "0.0.0.0/0"]
+              - value: ["--protocol", "TCP", "--dst-port", "80", "--remote-ip", "0.0.0.0/0"]
+              - value: ["--protocol", "TCP", "--dst-port", "443", "--remote-ip", "0.0.0.0/0"]
