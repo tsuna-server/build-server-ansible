@@ -40,4 +40,3 @@
     argv: "{{ command_to_add_rule }}"
   register: result
   failed_when: '(result.rc != 0 and (result.rc == 1 and "Error while executing command: ConflictException: 409, Security group rule already exists." not in result.stderr)) or result.rc not in [0, 1]'
-

@@ -18,6 +18,14 @@ main() {
         return 2
     }
 
+    # Example output:
+    # +----------------------------------+-----------+-----------+-----------------------------------------------+---------+
+    # | ID                               | Name      | Domain ID | Description                                   | Enabled |
+    # +----------------------------------+-----------+-----------+-----------------------------------------------+---------+
+    # | ffffffffffffffffffffffffffffffff | admin     | default   | Bootstrap project for initializing the cloud. | True    |
+    # | eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee | myproject | default   | Demo Project                                  | True    |
+    # | dddddddddddddddddddddddddddddddd | service   | default   | Service Project                               | True    |
+    # +----------------------------------+-----------+-----------+-----------------------------------------------+---------+
     while read project _ domain; do
         domain="${domain%\\n}"
         project="${project%\\n}"

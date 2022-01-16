@@ -31,3 +31,12 @@
     loop_var: rule
   loop: "{{ group.rules }}"
 
+- name: Get security rules in the security group
+  ansible.builtin.command:
+    argv: ["openstack", "security", "group", "rule", "list", "{{ group.name }}"]
+  register: result
+
+- name: Print security rules in the security group
+  ansible.builtin.debug:
+    msg: "{{ (['Security rules in the security group \"' +  group.name + '\".'] + result.stdout.split('\n')) }}"
+

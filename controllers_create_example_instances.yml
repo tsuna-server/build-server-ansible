@@ -11,3 +11,5 @@
     OS_PROJECT_DOMAIN_NAME: Default
     OS_AUTH_URL: "{{ group_vars.keystone.auth_url }}"
     OS_IDENTITY_API_VERSION: 3
+    # Environment variables below will be used only in a role "test_env"
+    PROJECT_LIST_CACHE_FILE: "ansible_openstack_project_list"
