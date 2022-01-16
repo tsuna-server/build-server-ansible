@@ -6,7 +6,8 @@ main() {
     local output subnet_name
 
     if [[ -z "$target_subnet_name" ]]; then
-        echo "$0 <subnet_name>"
+        echo "Usage: $0 <subnet_name>" >&2
+        return 2
     fi
 
     output="$(openstack subnet list)" || {
