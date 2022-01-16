@@ -249,10 +249,16 @@ group_vars:
 
     examples:
       images:
-        cirros:
-          create: true
-          image_url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
-
+        # TODO: This instruction support only 1 image currently.
+        - name: "example_cirros"
+          url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+      instances:
+        - name: "cirros01"
+          flavor: "m1.tiny"
+          network: "private"
+          # Specify an image which created from.
+          image:
+            name: "example_cirros"
       networks:
         # MTU must be less than or equals 1450.
         - name: public
