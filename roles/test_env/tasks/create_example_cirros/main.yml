@@ -44,8 +44,8 @@
 
 - name: Check whether the instance is already declared or not
   ansible.builtin.script: ./check_duplicate_glance_image.sh cirros
-  register: result
-  failed_when: (result.rc not in [0, 1])
+  register: result_check_instance
+  failed_when: (result_check_instance.rc not in [0, 1])
 
 - name: Block of creating an instance
   block:
@@ -60,10 +60,10 @@
     - name: Get an instance list after new one was created
       ansible.builtin.command:
         argv: ["openstack", "server", "list"]
-      register: result
+      register: result_get_an_instance_list
 
     - name: Print an instance list after new one was created
       ansible.builtin.debug:
-        msg: "{{ result.stdout.split('\n') }}"
-  when: result.rc == 1
+        msg: "{{ result_get_an_instance_list.stdout.split('\n') }}"
+  when: result_check_instance.rc == 0
 
