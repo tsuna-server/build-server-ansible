@@ -69,3 +69,15 @@ You can run this ansible-playbook easily by using it.
     develop dev-private-router01
 ```
 
+## Run with docker with specified options
+You can specify options with docker like below.
+
+```
+# docker run --rm \
+    --add-host dev-private-router01:<IP> \
+    --volume ${PWD}:/opt/ansible \
+    --volume /path/to/private-key:/private-key \
+    -ti tsutomu/build-server-ansible \
+    develop dev-private-router01
+```
+
