@@ -12,6 +12,8 @@
     - glance
     - placement
     - nova
+    - neutron
+    - horizon
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"

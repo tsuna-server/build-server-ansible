@@ -1,0 +1,8 @@
+---
+- hosts: computes
+  become: yes
+  roles:
+    - ntp
+    - add_openstack_repository
+    - nova
+    - neutron

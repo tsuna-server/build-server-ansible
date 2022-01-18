@@ -1,0 +1,8 @@
+---
+- name: Install packages of Nova controller node
+  apt:
+    name:
+      - nova-api
+      - nova-conductor
+      - nova-novncproxy
+      - nova-scheduler

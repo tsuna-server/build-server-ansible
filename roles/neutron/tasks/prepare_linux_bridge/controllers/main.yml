@@ -1,0 +1,149 @@
+---
+- name: Install packages of Neutron for controllers of Neutron with Linux Bridge
+  apt:
+    name:
+      - neutron-server
+      - neutron-plugin-ml2
+      - neutron-linuxbridge-agent
+      - neutron-l3-agent
+      - neutron-dhcp-agent
+      - neutron-metadata-agent
+      - neutron-fwaas-common
+
+- name: Set /etc/neutron/neutron.conf of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/neutron.conf.j2
+    dest: /etc/neutron/neutron.conf
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_neutron_conf
+
+- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/plugins/ml2/ml2_conf.ini.j2
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_ml2_conf
+
+- name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/plugins/ml2/linuxbridge_agent.ini.j2
+    dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_linuxbridge_agent_ini
+
+# Set br_netfilter.conf to set bridge-nf-call-iptables
+- name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+- name: Set net.bridge.bridge-nf-call-iptables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+- name: Set /etc/neutron/l3_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/l3_agent.ini.j2
+    dest: /etc/neutron/l3_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_l3_agent_ini
+
+- name: Set /etc/neutron/dhcp_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/dhcp_agent.ini.j2
+    dest: /etc/neutron/dhcp_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: dhcp_agent_ini
+
+- name: Set /etc/neutron/metadata_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/metadata_agent.ini.j2
+    dest: /etc/neutron/metadata_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: metadata_agent_ini
+
+# It assumed that /etc/nova/nova.conf was already modified in the role nova
+
+- name: Check a flag that means post prepares were finished successfully
+  stat:
+    path: /root/.ansible_neutron_post_prepare_linux_bridge_for_controllers_has_finished
+  register: flag_file
+
+- name: Block post prepare Linux Bridge for controllers
+  block:
+    - name: Populate DB for neutron.conf ml2_conf.ini
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
+      when: result_neutron_conf.changed or result_ml2_conf.changed or result_linuxbridge_agent_ini.changed or result_l3_agent_ini.changed or dhcp_agent_ini.changed or metadata_agent_ini.changed
+
+    - name: Run notified handlers of Neutron
+      meta: flush_handlers
+
+    # Retry "openstack network agent list" because it may fail due to early to execute a command after restart process.
+    - name: Run "openstack network agent list --agent-type=dhcp"
+      ansible.builtin.command:
+        argv: ["openstack", "network", "agent", "list", "--agent-type=dhcp"]
+      retries: 10
+      delay: 2
+      register: result
+      until: result.rc == 0
+
+    - name: Print the result of "openstack network agent list --agent-type=dhcp"
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+    - name: Result "openstack network agent list --agent-type=metadata"
+      ansible.builtin.command:
+        argv: ["openstack", "network", "agent", "list", "--agent-type=metadata"]
+      retries: 3
+      delay: 1
+      register: result
+      until: result.rc == 0
+
+    - name: Print the result of "openstack network agent list --agent-type=metadata"
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+  # TODO: The conditional should check whether this section was succeeded previously or not.
+  when: result_neutron_conf.changed or result_ml2_conf.changed or result_linuxbridge_agent_ini.changed or result_l3_agent_ini.changed or dhcp_agent_ini.changed or metadata_agent_ini.changed or not flag_file.stat.exists
+
+- name: Create a flag that means post prepares were finished successfully
+  copy:
+    content: ""
+    dest: /root/.ansible_neutron_post_prepare_linux_bridge_for_controllers_has_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+

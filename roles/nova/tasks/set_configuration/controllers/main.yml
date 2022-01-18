@@ -1,0 +1,62 @@
+---
+- name: Set /etc/nova/nova.conf
+  ansible.builtin.template:
+    src: "controllers/nova.conf.j2"
+    dest: /etc/nova/nova.conf
+    owner: root
+    group: nova
+    mode: 0640
+    backup: yes
+  register: template_result
+
+# Sync DB after the configuration has been set
+##- name: Include sync_db_for_nova_controllers.yml
+##  include: sync_db_for_nova_controllers.yml
+##  when: "'controllers' in group_names"
+- name: Check a flag that means setting config and syncing db for Nova controllers was finished
+  stat:
+    path: /root/.ansible_sync_db_for_nova_controllers_was_finished
+  register: flag_file
+
+- name: Block of sync DB for Nova controller nodes
+  block:
+    # There are no patterns to detect options to sync DB.
+    # So they are written as hard coded so far.
+    - name: Sync Nova database for controller nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "{{ item }}", "{{ group_vars.nova.user }}"]
+      loop:
+        - "nova-manage api_db sync"
+        - "nova-manage cell_v2 map_cell0"
+        - "nova-manage cell_v2 create_cell --name=cell1 --verbose"
+        - "nova-manage db sync"
+
+    - name: Check the result of syncing Nova DB controller nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "nova-manage cell_v2 list_cells", "nova"]
+      register: result
+
+    - name: Print the result of syncing Nova DB for controller nodes
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means setting config and syncing db for Nova controllers was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_sync_db_for_nova_controllers_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: Restart services for Nova controllers
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nova-api
+    - nova-scheduler
+    - nova-conductor
+    - nova-novncproxy
+  when: template_result.changed

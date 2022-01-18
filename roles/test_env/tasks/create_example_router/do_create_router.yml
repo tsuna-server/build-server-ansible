@@ -1,0 +1,57 @@
+---
+# This instruction assumes a variable `router` was already declared.
+#   router.name:
+#     Router name that will be created in this section
+#   router.external_gateway (optional):
+#     Network name that this router will send as next hop to the internet.
+#     The name of value must existed as OpenStack network.
+#   router.subnet:
+#     Subnet name that this router belonging in.
+
+- name: Print a router that will be created in this section
+  ansible.builtin.debug:
+    msg: "router.name == \"{{ router.name }}\", router.subnet == \"{{ router.subnet }}\"{% if 'external_gateway' in router %}, router.external_gateway == \"{{ router.external_gateway }}\"{% endif %}"
+
+- name: Check the router has already existed or not
+  ansible.builtin.script: ./check_duplicate_router.sh "{{ router.name }}"
+  register: result_of_checking_router
+  failed_when: result_of_checking_router.rc not in [0, 1]
+
+- name: Block of creating router
+  block:
+    - name: Create a router
+      ansible.builtin.command:
+        argv: ["openstack", "router", "create", "{{ router.name }}"]
+      register: result
+
+    - name: Print the result of creating router
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+    - name: Set a gateway to the router
+      ansible.builtin.command:
+        argv: ["openstack", "router", "set", "--external-gateway", "{{ router.external_gateway }}", "{{ router.name }}"]
+      register: result
+
+    - name: Print the result of setting a gateway
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+    - name: Add a router to subnet
+      ansible.builtin.command:
+        argv: ["openstack", "router", "add", "subnet", "{{ router.name }}", "{{ router.subnet }}"]
+      register: result
+
+    - name: Print the result of adding a router
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+
+    - name: Get the list of the router
+      ansible.builtin.command:
+        argv: ["openstack", "router", "list"]
+      register: result
+
+    - name: Print the list of the router
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: result_of_checking_router.rc == 0

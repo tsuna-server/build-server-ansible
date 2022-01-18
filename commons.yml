@@ -1,6 +1,6 @@
 ---
-- hosts: private_routers
+- hosts: all
   become: yes
   roles:
     - common
-    - hosts
+    - { role: hosts, tags: ['role_hosts']}

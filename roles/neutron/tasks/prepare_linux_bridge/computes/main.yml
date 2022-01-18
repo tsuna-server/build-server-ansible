@@ -1,0 +1,44 @@
+- name: Install packages of Neutron for computes of Neutron with Linux Bridge
+  apt:
+    name:
+      - neutron-linuxbridge-agent
+
+- name: Set /etc/neutron/neutron.conf of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: computes/neutron/neutron.conf.j2
+    dest: /etc/neutron/neutron.conf
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-compute", "Restart neutron-linuxbridge-agent"]
+  register: result_neutron_conf
+
+- name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: computes/neutron/plugins/ml2/linuxbridge_agent.ini.j2
+    dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-compute", "Restart neutron-linuxbridge-agent"]
+  register: result_linuxbridge_agent_ini
+
+# Set br_netfilter.conf to set bridge-nf-call-iptables
+- name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+- name: Set net.bridge.bridge-nf-call-iptables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+

@@ -1,0 +1,71 @@
+---
+# This instruction assumes some variables were already declared.
+#   * subnet
+#     An information abount the subnets.
+#       subnet.name:
+#         Subnet name that will be created in this section
+#       subnet.pool.start:
+#         Start address of this subnet.
+#       subnet.pool.end:
+#         End address of this subnet.
+#       subnet.dns (optional):
+#         DNS servers that this subnet will use.
+#         8.8.8.8 will be used by default if this value was undefined.
+#       subnet.network:
+#         Network name that this subnet will be belonging in.
+#         Network named value of "subnet.network" must be existed otherwise this instruction will fail.
+#
+#   * external_network_list
+#     List of external networks.
+#       ex) ["public", "private", "management"]
+
+- name: Print a subnet that will be created in this section
+  ansible.builtin.debug:
+    msg: "subnet.name==\"{{ subnet.name }}\", subnet.pool.start==\"{{ subnet.pool.start }}\", subnet.pool.end==\"{{ subnet.pool.end }}\"{% if 'dns' in subnet %},subnet.dns==\"{{ subnet.dns }}\"{% endif %}"
+
+- name: Check the subnet has already existed or not
+  ansible.builtin.script: ./check_duplicate_subnet.sh "{{ subnet.name }}"
+  register: result_of_checking_subnet
+  failed_when: ( result_of_checking_subnet.rc not in [0, 1] )
+
+- name: Block of creating subnet
+  block:
+    - name: Initialize a variable command_array
+      set_fact:
+        command_array: []
+
+    # Build a command for internal subnet #################################################################
+    - name: Block of building a commant to create internal subnet
+      block:
+        - name: Determine DNS servers if subnet.dns was existed
+          set_fact:
+            dns_servers: "{% if 'dns' in subnet and subnet.dns|length > 0 %}{{ subnet.dns }}{% else %}[]{% endif %}"
+
+        - name: Join dns variable to execute
+          set_fact:
+            #converted_dns_servers: "{{ dns_servers | join(' --dns-nameserver ') | split(' ') }}"
+            dns_servers: "{{ ['--dns-nameserver'] + (dns_servers | join(' --dns-nameserver ') | split(' ')) }}"
+          when: dns_servers|length > 0
+
+        - name: Build a command to create an internal subnet
+          set_fact:
+            command_array: "{{ ['openstack', 'subnet', 'create', '--network', '{{ subnet.network }}', '--allocation-pool', 'start={{ subnet.pool.start }},end={{ subnet.pool.end }}', '--subnet-range', '{{ subnet.subnet.range }}'] + dns_servers + ['{{ subnet.name }}'] }}"
+      when: "subnet.network not in external_network_list"
+
+    # Build a command for external subnet #################################################################
+    - name: Block of building a command to create external subnet
+      block:
+        - name: Build a command to create an external subnet
+          set_fact:
+            command_array: "{{ ['openstack', 'subnet', 'create', '--network', '{{ subnet.network }}', '--allocation-pool', 'start={{ subnet.pool.start }},end={{ subnet.pool.end }}', '--no-dhcp', '--subnet-range', '{{ subnet.subnet.range }}', '{{ subnet.name }}'] }}"
+      when: "subnet.network in external_network_list"
+
+    - name: Print a command that will be executed to create a subnet
+      ansible.builtin.debug:
+        msg: "Command: {{ command_array }}"
+
+    - name: Run a command to create a subnet
+      ansible.builtin.command:
+        argv: "{{ command_array }}"
+      register: result
+  when: result_of_checking_subnet.rc == 0

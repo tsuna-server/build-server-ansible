@@ -1,0 +1,29 @@
+---
+- name: Install packages of Horizon for controllers
+  apt:
+    name:
+      - openstack-dashboard
+
+- name: Set /etc/openstack-dashboard/local_settings.py for Horizon
+  ansible.builtin.template:
+    src: openstack-dashboard/local_settings.py.j2
+    dest: /etc/openstack-dashboard/local_settings.py
+    owner: root
+    group: horizon
+    mode: '0640'
+    backup: yes
+  notify: ["Restart apache2"]
+
+- name: Set /etc/apache2/conf-available/openstack-dashboard.conf for Horizon
+  ansible.builtin.template:
+    src: apache2/conf-available/openstack-dashboard.conf.j2
+    dest: /etc/apache2/conf-available/openstack-dashboard.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  notify: ["Restart apache2"]
+
+- name: Run notified handlers of Horizon
+  meta: flush_handlers
+

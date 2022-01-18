@@ -1,0 +1,6 @@
+- name: Include role-functions to create OpenStack Service
+  include_role:
+    name: functions
+    tasks_from: create_openstack_service/main.yml
+  vars:
+    openstack_service_name: "neutron"

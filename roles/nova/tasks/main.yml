@@ -1,5 +1,6 @@
 ---
-- name: A block for OpenStack Compute service
+# Instructions for Nova controller nodes
+- name: A block to build Nova for controller nodes
   block:
     - name: Include create_dbs/main.yml
       include: create_dbs/main.yml
@@ -10,8 +11,24 @@
     - name: Include create_endpoints/main.yml
       include: create_endpoints/main.yml
 
-    - name: Include prepare_openstack_services/main.yml
-      include: prepare_openstack_services/main.yml
+    ##- name: Include prepare_openstack_services/main.yml
+    ##  include: prepare_openstack_services/main.yml
 
-# TODO: Create instructions to build WSGI environment from package manager
+    - name: Include install_packages/controllers/main.yml for controllers
+      include: install_packages/controllers/main.yml
 
+    - name: Include set_configuration/controllers/main.yml for controllers
+      include: set_configuration/controllers/main.yml
+  when: "'controllers' in group_names"
+
+# Instructions for Nova compute nodes
+- name: A block to build Nova for computes nodes
+  block:
+    - name: Include install_packages/computes/main.yml for computes
+      include: install_packages/computes/main.yml
+
+    - name: Include set_configuration/computes/main.yml for computes
+      include: set_configuration/computes/main.yml
+
+    # TODO:Testing "openstack compute service list --service nova-compute" from controller node
+  when: "'computes' in group_names"

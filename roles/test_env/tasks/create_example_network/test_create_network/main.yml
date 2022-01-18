@@ -1,0 +1,13 @@
+---
+- name: Print the list namespaces
+  ansible.builtin.command:
+    argv: ["ip", "netns", "show"]
+  retries: 90
+  delay: 2
+  register: result
+  until: result.stdout != ""
+
+- name: Print the result of list namespaces
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+

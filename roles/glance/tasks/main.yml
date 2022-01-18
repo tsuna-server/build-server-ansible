@@ -10,6 +10,3 @@
 
 - name: Include prepare_openstack_service/main.yml
   include: prepare_openstack_service/main.yml
-
-- name: Include create_example_cirros/main.yml
-  include: create_example_cirros/main.yml

@@ -1,0 +1,42 @@
+---
+# This instruction assumes some variables should already be declared.
+# rule:
+#   A rule of the security group that will be added.
+#   It will be given to the command "openstack security group rule create" as raw.
+# rule.value:
+#   A value of the rule that will be added in this security group.
+# group.name:
+#   Name of the security group that the rule will be added in.
+- name: Print a rule that will be added the rule
+  ansible.builtin.debug:
+    msg: "group.name==\"{{ group.name }}\", rule==\"{{ rule.value }}\""
+
+- name: Create a command array to add the rule
+  set_fact:
+    command_to_add_rule: "{{ ['openstack', 'security', 'group', 'rule', 'create'] + rule.value + [group.name] }}"
+
+# The instruction will be considerd as success even if its returns code 1 and output a message like below.
+# > Error while executing command: ConflictException: 409, Security group rule already exists. Rule id is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+# The message means the rule is already registerd.
+#
+# Conditional patterns are ...
+# [SUCCESS] 0 with "any message":        (false and (false and true)) or false
+#                                        (false and (false))          or false
+#                                        (false)                      or false => false
+#
+# [ERROR]   1 with "any message":        (true  and (true and true))  or false
+#                                        (true  and (true))           or false
+#                                        (true)                       or false => true
+#
+# [SUCCESS] 1 with "ConfilictException": (true  and (true and false)) or false
+#                                        (true  and (false))          or false
+#                                        (false)                      or false => false
+#
+# [ERROR]   2 with "any  message":       (true  and (false and true)) or true
+#                                        (true  and (flase))          or true
+#                                        (false)                      or true  => true
+- name: Add a rule to the group
+  ansible.builtin.command:
+    argv: "{{ command_to_add_rule }}"
+  register: result
+  failed_when: '(result.rc != 0 and (result.rc == 1 and "Error while executing command: ConflictException: 409, Security group rule already exists." not in result.stderr)) or result.rc not in [0, 1]'
