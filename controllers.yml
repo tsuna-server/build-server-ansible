@@ -2,18 +2,18 @@
 - hosts: controllers
   become: yes
   roles:
-    - ntp
-    - sql
-    - mq
-    - memcached
-    - etcd
-    - add_openstack_repository
-    - keystone
-    - glance
-    - placement
-    - nova
-    - neutron
-    - horizon
+    - { role: ntp, tags: ['role_ntp']}
+    - { role: sql, tags: ['role_sql']}
+    - { role: mq, tags: ['role_mq']}
+    - { role: memcached, tags: ['role_memcached']}
+    - { role: etcd, tags: ['role_etcd']}
+    - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
+    - { role: add_keystone, tags: ['role_keystone']}
+    - { role: glance, tags: ['role_glance']}
+    - { role: placement, tags: ['role_placement']}
+    - { role: nova, tags: ['role_nova']}
+    - { role: neutron, tags: ['role_neutron']}
+    - { role: horizon, tags: ['role_horizon']}
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
