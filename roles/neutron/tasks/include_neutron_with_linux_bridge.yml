@@ -4,7 +4,7 @@
 - name: Block of Neutron with Linux Bridge for controllers
   block:
     - name: Include create_dbs/main.yml
-      include: create_dbs/main.yml
+      include: common/create_dbs/main.yml
 
     - name: Include create_openstack_services/main.yml
       include: create_openstack_services/main.yml
