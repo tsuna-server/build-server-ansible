@@ -2,7 +2,7 @@
 - hosts: computes
   become: yes
   roles:
-    - ntp
-    - add_openstack_repository
-    - nova
-    - neutron
+    - { role: ntp, tags: ['role_ntp']}
+    - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
+    - { role: nova, tags: ['role_nova']}
+    - { role: neutron, tags: ['role_neutron']}
