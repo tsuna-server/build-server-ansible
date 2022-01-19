@@ -1,4 +1,22 @@
 ---
-- name: Debug
-  ansible.builtin.debug:
-    msg: "This is OVN"
+- name: Block of Neutron with OVN for controllers
+  block:
+    - name: Include common/create_dbs/main.yml
+      include: common/create_dbs/main.yml
+
+    - name: Include common/create_openstack_services/main.yml
+      include: common?create_openstack_services/main.yml
+
+    - name: Include common/create_endpoints/main.yml
+      include: common/create_endpoints/main.yml
+
+    #- name: Include prepare_ovn/controllers/main.yml
+    #  include: prepare_ovn/controllers/main.yml
+  when: "'controllers' in group_names"
+
+- name: Block of Neutron with OVN for computes
+  block:
+    - name: Include prepare_linux_bridge/computes/main
+      include: prepare_linux_bridge/computes/main.yml
+  when: "'computes' in group_names"
+
