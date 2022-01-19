@@ -2,5 +2,5 @@
 - hosts: all
   become: yes
   roles:
-    - common
+    - { role: common, tags: ['role_common']}
     - { role: hosts, tags: ['role_hosts']}
