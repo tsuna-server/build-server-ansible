@@ -1,4 +1,26 @@
 ---
-- name: TODO Controller of OVN Neutron
-  ansible.builtin.debug:
-    msg: "TODO Controller of OVN Neutron"
+- name: Install packages of Neutron for controllers of Neutron with OVN
+  apt:
+    name:
+      - neutron-server
+      - neutron-plugin-ml2
+      - neutron-l3-agent
+      - neutron-metadata-agent
+      - neutron-openvswitch-agent
+      - ovn-common
+      - ovn-host
+      - ovn-central
+      - ovn-controller-vtep
+      - ovn-ic
+      - ovn-ic-db
+      - ovn-docker
+
+- name: Restart ovs-vswitchd
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovs-vswitchd
+
+# ovn-nbctl set-connection ptcp:6641:192.168.2.71 -- set connection . inactivity_probe=60000
+# ovn-sbctl set-connection ptcp:6642:192.168.2.71 -- set connection . inactivity_probe=60000
+# ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6640:192.168.2.71
+
