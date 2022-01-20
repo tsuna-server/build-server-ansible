@@ -20,7 +20,29 @@
     state: restarted
     name: ovs-vswitchd
 
-# ovn-nbctl set-connection ptcp:6641:192.168.2.71 -- set connection . inactivity_probe=60000
-# ovn-sbctl set-connection ptcp:6642:192.168.2.71 -- set connection . inactivity_probe=60000
-# ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6640:192.168.2.71
+- name: Detect IP address from a first controller node in hosts
+  set_fact:
+    controller_ip: "{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}"
+
+# In a controller node, this instruction will detect an own IP address and set it as OVN controller
+- name: Fail if the instruction could not detect an IP of a controller
+  fail:
+    msg: "Failed to detect an IP of the controller node. There are no same host between \"group_vars\" and \"inventory_directory\"."
+  when: controller_ip | length == 0
+
+- name: Controller IP has detected
+  ansible.builtin.debug:
+    msg: "container_ip=\"{{ controller_ip }}\""
+
+- name: Set a connection to Northbound DB for OVN
+  ansible.builtin.command:
+    argv: ["ovn-nbctl", "set-connection", "ptcp:6641:{{ controller_ip }}", "--", "set", "connection", ".", "inactivity_probe=60000"]
+
+- name: Set a connection to Southbound DB for OVN
+  ansible.builtin.command:
+    argv: ["ovn-sbctl", "set-connection", "ptcp:6642:{{ controller_ip }}", "--", "set", "connection", ".", "inactivity_probe=60000"]
+
+- name: Add remote Open vSwitch daemon
+  ansible.builtin.command:
+    argv: ["ovs-appctl", "-t", "ovsdb-server", "ovsdb-server/add-remote", "ptcp:6640:{{ controller_ip }}"]
 
