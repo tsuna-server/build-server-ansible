@@ -1,0 +1,5 @@
+---
+- name: Install packages of Neutron for computes of Neutron with Linux Bridge
+  apt:
+    name:
+      - neutron-linuxbridge-agent

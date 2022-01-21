@@ -24,6 +24,12 @@
 
 - name: Block of Neutron with Linux Bridge for computes
   block:
-    - name: Include prepare_linux_bridge/computes/main
-      include: prepare_linux_bridge/computes/main.yml
+    - name: Include prepare_linux_bridge/computes/install_packages.yml
+      include: prepare_linux_bridge/computes/install_packages.yml
+
+    - name: Include prepare_linux_bridge/computes/set_sysctl.yml
+      include: prepare_linux_bridge/computes/set_sysctl.yml
+
+    - name: Include prepare_linux_bridge/computes/set_configurations.yml
+      include: prepare_linux_bridge/computes/set_configurations.yml
   when: "'computes' in group_names"
