@@ -1,0 +1,12 @@
+- name: Install packages of Neutron for controllers of Neutron with Linux Bridge
+  apt:
+    name:
+      - neutron-server
+      - neutron-plugin-ml2
+      - neutron-linuxbridge-agent
+      - neutron-l3-agent
+      - neutron-dhcp-agent
+      - neutron-metadata-agent
+      - neutron-fwaas-common
+
+

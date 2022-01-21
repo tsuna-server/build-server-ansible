@@ -1,0 +1,86 @@
+---
+# Some configuration files will be shared among each roles(controller and compute) and each network driver(Linux Bridge and OVN).
+# Contents of each configurations are managed by Ansible template.
+- name: Set /etc/neutron/neutron.conf of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/neutron.conf.j2
+    dest: /etc/neutron/neutron.conf
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_neutron_conf
+
+- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/plugins/ml2/ml2_conf.ini.j2
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_ml2_conf
+
+- name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/plugins/ml2/linuxbridge_agent.ini.j2
+    dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_linuxbridge_agent_ini
+
+# Set br_netfilter.conf to set bridge-nf-call-iptables
+- name: Set net.bridge.bridge-nf-call-ip6tables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+- name: Set net.bridge.bridge-nf-call-iptables in /etc/sysctl.d/br_netfilter.conf of Neutron with Linux Bridge
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_set: yes
+    sysctl_file: /etc/sysctl.d/br_netfilter.conf
+    reload: yes
+
+- name: Set /etc/neutron/l3_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/l3_agent.ini.j2
+    dest: /etc/neutron/l3_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_l3_agent_ini
+
+- name: Set /etc/neutron/dhcp_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/dhcp_agent.ini.j2
+    dest: /etc/neutron/dhcp_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: dhcp_agent_ini
+
+- name: Set /etc/neutron/metadata_agent.ini of Neutron with Linux Bridge
+  ansible.builtin.template:
+    src: controllers/neutron/metadata_agent.ini.j2
+    dest: /etc/neutron/metadata_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: metadata_agent_ini
+
