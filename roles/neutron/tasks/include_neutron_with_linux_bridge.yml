@@ -15,8 +15,8 @@
     - name: Include prepare_linux_bridge/controllers/install_packages.yml
       include: prepare_linux_bridge/controllers/install_packages.yml
 
-    - name: Include prepare_linux_bridge/common/set_sysctl.yml
-      include: prepare_linux_bridge/common/set_sysctl.yml
+    - name: Include common/set_sysctl.yml
+      include: common/set_sysctl.yml
 
     - name: Include prepare_linux_bridge/controllers/set_configurations.yml
       include: prepare_linux_bridge/controllers/set_configurations.yml
@@ -27,8 +27,8 @@
     - name: Include prepare_linux_bridge/computes/install_packages.yml
       include: prepare_linux_bridge/computes/install_packages.yml
 
-    - name: Include prepare_linux_bridge/common/set_sysctl.yml
-      include: prepare_linux_bridge/common/set_sysctl.yml
+    - name: Include common/set_sysctl.yml
+      include: common/set_sysctl.yml
 
     - name: Include prepare_linux_bridge/computes/set_configurations.yml
       include: prepare_linux_bridge/computes/set_configurations.yml
