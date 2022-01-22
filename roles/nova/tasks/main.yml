@@ -11,9 +11,6 @@
     - name: Include create_endpoints/main.yml
       include: create_endpoints/main.yml
 
-    ##- name: Include prepare_openstack_services/main.yml
-    ##  include: prepare_openstack_services/main.yml
-
     - name: Include install_packages/controllers/main.yml for controllers
       include: install_packages/controllers/main.yml
 
@@ -29,6 +26,4 @@
 
     - name: Include set_configuration/computes/main.yml for computes
       include: set_configuration/computes/main.yml
-
-    # TODO:Testing "openstack compute service list --service nova-compute" from controller node
   when: "'computes' in group_names"
