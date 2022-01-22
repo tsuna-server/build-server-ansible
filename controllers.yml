@@ -8,7 +8,7 @@
     - { role: memcached, tags: ['role_memcached']}
     - { role: etcd, tags: ['role_etcd']}
     - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
-    - { role: add_keystone, tags: ['role_keystone']}
+    - { role: keystone, tags: ['role_keystone']}
     - { role: glance, tags: ['role_glance']}
     - { role: placement, tags: ['role_placement']}
     - { role: nova, tags: ['role_nova']}
