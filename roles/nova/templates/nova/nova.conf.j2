@@ -3,15 +3,12 @@ log_dir = /var/log/nova
 lock_path = /var/lock/nova
 state_path = /var/lib/nova
 
+{% if 'controllers' in group_names %}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
-{# Find an IP from the inventry_hostname -#}
-{% set glob_flag = {'found': False} -%}
-my_ip = {% for group_key, group_value in group_vars.hosts.items() if glob_flag.found != True -%}
-  {% for host_element in group_value if inventory_hostname in host_element.names -%}
-    {% if loop.index <= 1 -%}{% set _ = glob_flag.update({'found': True}) %}{{ host_element.management.ip }}{%- endif %}
-  {%- endfor %}
-{%- endfor %}
-
+my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% elif 'computes' in group_names %}
+transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
+{% endif %}
 #
 # From nova.conf
 #
@@ -887,6 +884,9 @@ my_ip = {% for group_key, group_value in group_vars.hosts.items() if glob_flag.f
 
 [api]
 auth_strategy = keystone
+{% if 'computes' in group_names %}
+my_ip = {{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% endif %}
 
 #
 # Options under this group are used to define Nova API.
@@ -1095,7 +1095,9 @@ auth_strategy = keystone
 
 
 [api_database]
+{% if 'controllers' in group_names %}
 connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/nova_api
+{% endif %}
 #
 # The *Nova API Database* is a separate database which is used for information
 # which is used across *cells*. This database is mandatory since the Mitaka
@@ -1685,7 +1687,9 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 
 
 [database]
+{% if 'controllers' in group_names %}
 connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/nova
+{% endif %}
 
 #
 # From oslo.db
@@ -5267,8 +5271,13 @@ password = p@ssw0rd
 
 [vnc]
 enabled = true
-server_listen = $my_ip
 server_proxyclient_address = $my_ip
+{% if 'controllers' in group_names %}
+server_listen = $my_ip
+{% elif 'computes' in group_names %}
+server_listen = 0.0.0.0
+novncproxy_base_url = http://openstack-controller-node01:6080/vnc_auto.html
+{% endif %}
 
 #
 # Virtual Network Computer (VNC) can be used to provide remote desktop
