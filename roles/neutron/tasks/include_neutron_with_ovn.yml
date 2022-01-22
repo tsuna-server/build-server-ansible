@@ -1,14 +1,14 @@
 ---
 - name: Block of Neutron with OVN for controllers
   block:
-    - name: Include common/create_dbs/main.yml
-      include: common/create_dbs/main.yml
+    - name: Include create_db/main.yml
+      include: create_db/main.yml
 
-    - name: Include common/create_openstack_services/main.yml
-      include: common/create_openstack_services/main.yml
+    - name: Include create_openstack_services/main.yml
+      include: create_openstack_services/main.yml
 
-    - name: Include common/create_endpoints/main.yml
-      include: common/create_endpoints/main.yml
+    - name: Include create_endpoints/main.yml
+      include: create_endpoints/main.yml
 
     - name: Include prepare_ovn/controllers/main.yml
       include: prepare_ovn/controllers/main.yml
@@ -16,10 +16,10 @@
 
 - name: Block of Neutron with OVN for computes
   block:
-    - name: Include prepare_linux_bridge/computes/install_packages.yml
-      include: prepare_linux_bridge/computes/install_packages.yml
+    #- name: Include prepare_linux_bridge/computes/install_packages.yml
+    #  include: prepare_linux_bridge/computes/install_packages.yml
 
-    - name: Include prepare_linux_bridge/computes/set_configurations.yml
-      include: prepare_linux_bridge/computes/set_configurations.yml
+    #- name: Include prepare_linux_bridge/computes/set_configurations.yml
+    #  include: prepare_linux_bridge/computes/set_configurations.yml
   when: "'computes' in group_names"
 
