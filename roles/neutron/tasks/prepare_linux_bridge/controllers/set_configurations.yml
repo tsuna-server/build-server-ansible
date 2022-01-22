@@ -3,7 +3,7 @@
 # Contents of each configurations are managed by Ansible template.
 - name: Set /etc/neutron/neutron.conf of Neutron with Linux Bridge
   ansible.builtin.template:
-    src: controllers/neutron/neutron.conf.j2
+    src: neutron/neutron.conf.j2
     dest: /etc/neutron/neutron.conf
     owner: root
     group: neutron
@@ -14,7 +14,7 @@
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with Linux Bridge
   ansible.builtin.template:
-    src: controllers/neutron/plugins/ml2/ml2_conf.ini.j2
+    src: neutron/plugins/ml2/ml2_conf.ini.j2
     dest: /etc/neutron/plugins/ml2/ml2_conf.ini
     owner: root
     group: neutron
@@ -25,7 +25,7 @@
 
 - name: Set /etc/neutron/plugins/ml2/linuxbridge_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
-    src: controllers/neutron/plugins/ml2/linuxbridge_agent.ini.j2
+    src: neutron/plugins/ml2/linuxbridge_agent.ini.j2
     dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
     owner: root
     group: neutron
@@ -36,7 +36,7 @@
 
 - name: Set /etc/neutron/l3_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
-    src: controllers/neutron/l3_agent.ini.j2
+    src: neutron/l3_agent.ini.j2
     dest: /etc/neutron/l3_agent.ini
     owner: root
     group: neutron
@@ -47,7 +47,7 @@
 
 - name: Set /etc/neutron/dhcp_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
-    src: controllers/neutron/dhcp_agent.ini.j2
+    src: neutron/dhcp_agent.ini.j2
     dest: /etc/neutron/dhcp_agent.ini
     owner: root
     group: neutron
@@ -58,7 +58,7 @@
 
 - name: Set /etc/neutron/metadata_agent.ini of Neutron with Linux Bridge
   ansible.builtin.template:
-    src: controllers/neutron/metadata_agent.ini.j2
+    src: neutron/metadata_agent.ini.j2
     dest: /etc/neutron/metadata_agent.ini
     owner: root
     group: neutron

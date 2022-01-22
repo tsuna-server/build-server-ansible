@@ -188,7 +188,11 @@
 
 [linux_bridge]
 {# "physical_interface_mappings" should be declaread both controllers and computes in the driver Linux Bridge -#}
+{% if 'controllers' in group_names %}
 physical_interface_mappings = provider:{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}
+{% elif 'computes' in group_names %}
+physical_interface_mappings = provider:{{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}
+{% endif %}
 
 #
 # From neutron.ml2.linuxbridge.agent
@@ -252,8 +256,11 @@ firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 [vxlan]
 {# These parameters should be declaread both controllers and computes in the driver Linux Bridge -#}
 enable_vxlan = true
-{% set glob_flag = {'found': False} -%}
+{% if 'controllers' in group_names %}
 local_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% elif 'computes' in group_names %}
+local_ip = {{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% endif %}
 l2_population = true
 
 #

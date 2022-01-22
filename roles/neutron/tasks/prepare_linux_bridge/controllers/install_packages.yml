@@ -8,5 +8,3 @@
       - neutron-dhcp-agent
       - neutron-metadata-agent
       - neutron-fwaas-common
-
-
