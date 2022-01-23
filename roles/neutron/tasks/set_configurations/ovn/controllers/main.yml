@@ -7,7 +7,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
   register: result_neutron_conf
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on controller
@@ -18,6 +18,6 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
   register: result_ml2_conf
 

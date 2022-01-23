@@ -1,0 +1,14 @@
+---
+- name: Install packages of Neutron for computes of Neutron with OVN
+  apt:
+    name:
+      - neutron-openvswitch-agent
+      - ovn-common
+      - ovn-host
+      - ovn-central
+      - ovn-controller-vtep
+
+- name: Restart ovs-vswitchd
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovs-vswitchd

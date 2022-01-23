@@ -1,0 +1,16 @@
+---
+- name: Set ovn-remote for compute node
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-remote=tcp:{{ group_vars.hosts.controllers[0].management.ip }}:6642"]
+
+- name: Set ovn-remote for compute node
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-encap-type=geneve,vxlan"]
+
+- name: Declare my IP for setting ovn-encap-ip
+  set_fact:
+    my_ip: "{{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}"
+
+- name: Set ovn-remote for compute node
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-encap-ip={{ my_ip }}"]

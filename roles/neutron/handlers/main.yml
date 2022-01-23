@@ -36,3 +36,33 @@
     state: restarted
     name: nova-compute
 
+# - Daemons for OVN are from here ----------------------------------
+- name: Restart ovsdb-server
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovsdb-server
+
+- name: Restart ovn-ovsdb-server-ic-nb
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-ovsdb-server-ic-nb
+
+- name: Restart ovn-ovsdb-server-ic-sb
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-ovsdb-server-ic-sb
+
+- name: Restart ovn-ovsdb-server-nb
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-ovsdb-server-nb
+
+- name: Restart ovn-ovsdb-server-sb
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-ovsdb-server-sb
+
+- name: Restart neutron-server
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-server
