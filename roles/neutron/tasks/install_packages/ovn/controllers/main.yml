@@ -1,0 +1,16 @@
+---
+- name: Install packages of Neutron for controllers of Neutron with OVN
+  apt:
+    name:
+      - neutron-server
+      - neutron-plugin-ml2
+      - neutron-l3-agent
+      - neutron-metadata-agent
+      - neutron-openvswitch-agent
+      - ovn-common
+      - ovn-host
+      - ovn-central
+      - ovn-controller-vtep
+      - ovn-ic
+      - ovn-ic-db
+      - ovn-docker

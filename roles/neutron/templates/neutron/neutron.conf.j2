@@ -3,8 +3,10 @@ core_plugin = ml2
 {% if 'Linux Bridge' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
 service_plugins = router
 allow_overlapping_ips = true
+{% elif 'OVN' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
+service_plugins = ovn-router
+allow_overlapping_ips = true
 {% endif %}
-{# "transport_url" and "auth_strategy" are common parameter among "Linux Bridge", "OVN" and "controllers", "computes" -#}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}
 auth_strategy = keystone
 
@@ -818,10 +820,8 @@ root_helper = "sudo /usr/bin/neutron-rootwrap /etc/neutron/rootwrap.conf"
 
 
 [database]
-{% if 'Linux Bridge' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
+{% if 'controllers' in group_names %}
 connection = mysql+pymysql://{{ group_vars.neutron.user }}:{{ group_vars.neutron.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/neutron
-{% elif 'Linux Bridge' == group_vars.openstack.network.plugin and 'computes' in group_names %}
-##connection = sqlite:////var/lib/neutron/neutron.sqlite
 {% endif %}
 
 #
@@ -1362,7 +1362,6 @@ password = {{ group_vars.neutron.password }}
 
 
 [oslo_concurrency]
-{# lock_path is a common parameter. -#}
 lock_path = /var/lib/neutron/tmp
 
 #

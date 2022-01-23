@@ -1,0 +1,23 @@
+---
+- name: Set /etc/neutron/neutron.conf of Neutron with OVN on controller
+  ansible.builtin.template:
+    src: neutron/neutron.conf.j2
+    dest: /etc/neutron/neutron.conf
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_neutron_conf
+
+- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on controller
+  ansible.builtin.template:
+    src: neutron/plugins/ml2/ml2_conf.ini.j2
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
+  register: result_ml2_conf
+
