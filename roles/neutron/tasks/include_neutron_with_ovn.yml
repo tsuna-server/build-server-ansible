@@ -10,34 +10,25 @@
     - name: Include create_endpoints/main.yml
       include: create_endpoints/main.yml
 
-    - name: Include install_packages/controllers/main.yml
-      include: install_packages/controllers/main.yml
+    - name: Include install_packages/ovn/controllers/main.yml
+      include: install_packages/ovn/controllers/main.yml
 
     - name: Include configure_ovn_db/main.yml
       include: configure_ovn_db/main.yml
 
     - name: Include set_configurations/ovn/controllers/main.yml
       include: set_configurations/ovn/controllers/main.yml
-
-    #- name: Include prepare_ovn/controllers/main.yml
-    #  include: prepare_ovn/controllers/main.yml
   when: "'controllers' in group_names"
 
 - name: Block of Neutron with OVN for computes
   block:
-    - name: Include install_packages/controllers/main.yml
-      include: install_packages/controllers/main.yml
+    - name: Include install_packages/ovn/computes/controllers/main.yml
+      include: install_packages/ovn/computes/main.yml
 
     - name: Include configure_ovs_services/main.yml
       include: configure_ovs_services/main.yml
 
     - name: Include set_configurations/ovn/computes/main.yml
       include: set_configurations/ovn/computes/main.yml
-
-    #- name: Include prepare_linux_bridge/computes/install_packages.yml
-    #  include: prepare_linux_bridge/computes/install_packages.yml
-
-    #- name: Include prepare_linux_bridge/computes/set_configurations.yml
-    #  include: prepare_linux_bridge/computes/set_configurations.yml
   when: "'computes' in group_names"
 
