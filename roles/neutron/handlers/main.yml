@@ -36,7 +36,7 @@
     state: restarted
     name: nova-compute
 
-# - Daemons for OVN are from here ----------------------------------
+# - Daemons for OVN of controller node ----------------------------------
 - name: Restart ovsdb-server
   ansible.builtin.systemd:
     state: restarted
@@ -66,3 +66,9 @@
   ansible.builtin.systemd:
     state: restarted
     name: neutron-server
+
+# - Daemons for OVN of compute node ----------------------------------
+- name: Restart ovn-controller
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-controller
