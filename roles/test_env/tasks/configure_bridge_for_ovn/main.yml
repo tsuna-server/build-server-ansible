@@ -1,0 +1,17 @@
+---
+- name: Set protocols of OVS bridge
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "bridge", "br-int", "protocols=OpenFlow13,OpenFlow15"]
+
+- name: Set external-ids.ovn-bridge-mappings of OVS
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-bridge-mappings=provider:br-provider"]
+
+- name: Declare provider interface name of this node (controller node)
+  set_fact:
+    provider_interface: "{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}"
+
+- name: Add port to OVS
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "--may-exist", "add-port", "br-provider", "{{ provider_interface }}"]
+

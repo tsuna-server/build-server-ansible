@@ -31,4 +31,3 @@
     - name: Include set_configurations/ovn/computes/main.yml
       include: set_configurations/ovn/computes/main.yml
   when: "'computes' in group_names"
-

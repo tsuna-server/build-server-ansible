@@ -1,4 +1,14 @@
 ---
+
+- name: Determin which network driver will be used. Linux Bridge or OVN are only supported so far.
+  set_fact:
+    network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'Linux Bridge' == group_vars.openstack.network.plugin %}Linux Bridge{% else %}{{ group_vars.openstack.network.plugin }}{% endif %}"
+
+# Pre-bridge-configuration for OVN
+- name: Include configure_bridge_for_ovn/main.yml
+  include: configure_bridge_for_ovn/main.yml
+  when: "'Linux Bridge' != network_plugin and 'OVN' != network_plugin"
+
 - name: Include create_example_network/main.yml to create test environment
   include: create_example_network/main.yml
 

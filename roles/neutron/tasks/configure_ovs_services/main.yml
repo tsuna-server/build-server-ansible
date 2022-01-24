@@ -1,4 +1,7 @@
 ---
+# You can run the command "ovs-vsctl set open" duplicately even if this configuration is already registered.
+# You can run the command "ovs-vsctl list open_vswitch" and see the row "external_ids" if you want to confirm whether the configuration is already registerd or not.
+
 - name: Set ovn-remote for compute node
   ansible.builtin.command:
     argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-remote=tcp:{{ group_vars.hosts.controllers[0].management.ip }}:6642"]
