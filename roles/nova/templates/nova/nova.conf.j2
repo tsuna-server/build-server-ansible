@@ -9,6 +9,15 @@ my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', invento
 {% elif 'computes' in group_names %}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
 {% endif %}
+
+{% if 'Linux Bridge' == group_vars.openstack.network.plugin %}
+# For using Linux bridge.
+# Added vif parameters to prevent https://ask.openstack.org/en/question/26938/virtualinterfacecreateexception-virtual-interface-creation-failed/
+# Or see: https://web.archive.org/web/20201021171630/https://ask.openstack.org/en/question/26938/virtualinterfacecreateexception-virtual-interface-creation-failed/
+vif_plugging_is_fatal = false
+vif_plugging_timeout = 0
+{% endif %}
+
 #
 # From nova.conf
 #
@@ -1097,6 +1106,8 @@ my_ip = {{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_
 [api_database]
 {% if 'controllers' in group_names %}
 connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/nova_api
+{% else %}
+connection = sqlite:////var/lib/nova/nova_api.sqlite
 {% endif %}
 #
 # The *Nova API Database* is a separate database which is used for information
@@ -1689,6 +1700,8 @@ connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.passw
 [database]
 {% if 'controllers' in group_names %}
 connection = mysql+pymysql://{{ group_vars.nova.user }}:{{ group_vars.nova.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/nova
+{% else %}
+connection = sqlite:////var/lib/nova/nova.sqlite
 {% endif %}
 
 #
@@ -3482,8 +3495,6 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 {%- endfor %}
 username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
-service_metadata_proxy = true
-metadata_proxy_shared_secret = {{ group_vars.neutron.password }}
 
 #
 # Configuration options for neutron (network connectivity as a service).
@@ -5291,7 +5302,7 @@ server_proxyclient_address = $my_ip
 server_listen = $my_ip
 {% elif 'computes' in group_names %}
 server_listen = 0.0.0.0
-novncproxy_base_url = http://openstack-controller-node01:6080/vnc_auto.html
+novncproxy_base_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:6080/vnc_auto.html
 {% endif %}
 
 #
