@@ -1,23 +1,36 @@
 ---
-# This instruction assumes a variable `network` was already declared.
-#   network.name:
+# This instruction assumes a variable `tmp_network` was already declared.
+#   tmp_network.name:
 #     Network name that will be created in this section
-#   network.mtu (optional):
+#   tmp_network.mtu (optional):
 #     Maximum transmission unit(MTU) in the network.
 #     1450 will be applied by default if it was not declared.
 
 - name: Determine MTU of the network
   set_fact:
-    mtu: "{% if 'mtu' in network %}{{ network.mtu }}{% else %}1450{% endif %}"
+    mtu: "{% if 'mtu' in tmp_network %}{{ tmp_network.mtu }}{% else %}1450{% endif %}"
+
+- name: Re-set MTU of the network to the dictionary
+  set_fact:
+    network: "{{ tmp_network | combine( {'mtu': mtu} ) }}"
 
 - name: Print a network that will be created in this section
   ansible.builtin.debug:
-    msg: "network.name == \"{{ network.name }}\", network.mtu == \"{{ mtu }}\""
+    msg: "network={{ network }}"
 
 - name: Check the network has already existed or not
   ansible.builtin.script: ./check_duplicate_network.sh "{{ network.name }}"
   register: result_of_checking_network
   failed_when: ( result_of_checking_network.rc not in [0, 1] )
+
+#### # Create a external or internal network
+#### - name: Include do_create_external_network.yml
+####   include: do_create_external_network.yml
+####   when: "'external' in network and network.external == True"
+#### 
+#### - name: Include do_create_internal_network.yml
+####   include: do_create_internal_network.yml
+####   when: "'external' not in network or ('external' in network and network.external != False)"
 
 - name: Block of create network
   block:
@@ -26,28 +39,34 @@
       set_fact:
         is_external: "{% if 'external' in network and network.external == True %}True{% else %}False{% endif %}"
 
-    - name: Create a network as private
-      ansible.builtin.command:
-        argv: ["openstack", "network", "create", "--mtu", "{{ mtu }}", "{{ network.name }}"]
-      register: result_of_create_private_network
-      when: is_external == False
+    - name: Declare command variable to create new network
+      set_fact:
+        command: ["openstack", "network", "create", "--provider_network-type", "{{ network.provider.network.type }}", "--mtu", "{{ network.mtu }}"]
 
-    - name: Create a network as external
+    - name: Append options --external and --provider-physical-network to the command if the network is external
+      set_fact:
+        command: "{{ command + [\"--provider-physical-network\", \"provider\", \"--external\"] }}"
+      when: is_external
+
+    - name: Append an options --provider-segment to the command if the network is internal
+      set_fact:
+        command: "{{ command + [\"--provider-segment\", \"{{ network.provider_segment }}\"] }}"
+      when: not is_external
+
+    - name: Append an network name to the command
+      set_fact:
+        command: "{{ command + [\"{{ network.name }}\"] }}"
+
+    - name: Print a command will be run to create new network
+      ansible.builtin.debug:
+        msg: "command={{ command }}"
+
+    - name: Create a network
       ansible.builtin.command:
-        argv: ["openstack", "network", "create", "--provider-network-type", "flat", "--mtu", "{{ mtu }}", "--provider-physical-network", "provider", "--external", "{{ network.name }}"]
-      register: result_of_create_external_network
-      when: is_external == True
+        argv: "{{ command }}"
+      register: result_of_creating_network
 
     - name: Print the result of creating network
       ansible.builtin.debug:
-        msg: "{% if 'stdout' in result_of_create_private_network %}{{ result_of_create_private_network.stdout.split('\n') }}{% elif 'stdout' in result_of_create_external_network %}{{ result_of_create_external_network.stdout.split('\n') }}{% else %}(no output){% endif %}"
-
-    - name: Get network list
-      ansible.builtin.command:
-        argv: ["openstack", "network", "list"]
-      register: result
-
-    - name: Print the result of list network
-      ansible.builtin.debug:
-        msg: "{{ result.stdout.split('\n') }}"
+        msg: "{{ result_of_creating_network.stdout.split('\n') }}"
   when: result_of_checking_network.rc == 0
