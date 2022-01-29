@@ -68,11 +68,6 @@
   register: metadata_agent_ini
 
 # It assumed that /etc/nova/nova.conf was already modified in the role nova
-- name: Check a flag that means post prepares were finished successfully
-  stat:
-    path: /root/.ansible_neutron_post_prepare_linux_bridge_for_controllers_has_finished
-  register: flag_file
-
 - name: Block post configure Linux Bridge for controllers
   block:
     - name: Populate DB for neutron.conf ml2_conf.ini
@@ -109,5 +104,5 @@
         msg: "{{ result.stdout.split('\n') }}"
 
   # TODO: The conditional should check whether this section was succeeded previously or not.
-  when: result_neutron_conf.changed or result_ml2_conf.changed or result_linuxbridge_agent_ini.changed or result_l3_agent_ini.changed or dhcp_agent_ini.changed or metadata_agent_ini.changed or not flag_file.stat.exists
+  when: result_neutron_conf.changed or result_ml2_conf.changed or result_linuxbridge_agent_ini.changed or result_l3_agent_ini.changed or dhcp_agent_ini.changed or metadata_agent_ini.changed
 

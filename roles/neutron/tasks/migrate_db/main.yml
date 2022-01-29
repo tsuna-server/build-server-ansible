@@ -1,0 +1,11 @@
+---
+# Migrate DB for OVN
+
+- name: Check a flag that means "Migrate DB for OVN" has already finished
+  stat:
+    path: /root/.ansible_neutron_migrate_db_for_ovn_has_already_finished
+  register: flag_file
+
+- name: Migrate DB for OVN
+  ansible.builtin.command:
+    argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]

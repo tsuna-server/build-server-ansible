@@ -23,3 +23,7 @@
 - name: Include include_neutron_with_ovn.yml
   include: include_neutron_with_ovn.yml
   when: "'OVN' == network_plugin"
+
+- name: Run notified handlers of Neutron OVN
+  meta: flush_handlers
+
