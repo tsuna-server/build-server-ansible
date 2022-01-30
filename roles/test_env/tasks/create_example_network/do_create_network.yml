@@ -23,15 +23,6 @@
   register: result_of_checking_network
   failed_when: ( result_of_checking_network.rc not in [0, 1] )
 
-#### # Create a external or internal network
-#### - name: Include do_create_external_network.yml
-####   include: do_create_external_network.yml
-####   when: "'external' in network and network.external == True"
-#### 
-#### - name: Include do_create_internal_network.yml
-####   include: do_create_internal_network.yml
-####   when: "'external' not in network or ('external' in network and network.external != False)"
-
 - name: Block of create network
   block:
     # Add an external option if a configuration of the network indicate as external
@@ -41,21 +32,52 @@
 
     - name: Declare command variable to create new network
       set_fact:
-        command: ["openstack", "network", "create", "--provider_network-type", "{{ network.provider.network.type }}", "--mtu", "{{ network.mtu }}"]
+        command: []
 
-    - name: Append options --external and --provider-physical-network to the command if the network is external
-      set_fact:
-        command: "{{ command + [\"--provider-physical-network\", \"provider\", \"--external\"] }}"
-      when: is_external
+    # `openstack network create` command for Linux Bridge
+    - name: Block of declare command variable to create new network for Linux Bridge
+      block:
+        - name: Declare command variable to create new network
+          set_fact:
+            command: "{{ command + [\"openstack\", \"network\", \"create\"] }}"
 
-    - name: Append an options --provider-segment to the command if the network is internal
-      set_fact:
-        command: "{{ command + [\"--provider-segment\", \"{{ network.provider_segment }}\"] }}"
-      when: not is_external
+        - name: Append options to the command of the public network
+          set_fact:
+            command: "{{ command + [\"--provider-network-type\", \"{{ network.provider.network.type }}\", \"--provider-physical-network\", \"provider\", \"--external\"] }}"
+          when: is_external
 
-    - name: Append an network name to the command
-      set_fact:
-        command: "{{ command + [\"{{ network.name }}\"] }}"
+        - name: Append options to the command of the internal network
+          set_fact:
+            command: "{{ command + [\"--mtu\", \"1400\"] }}"
+          when: not is_external
+
+        - name: Append a network name to the command
+          set_fact:
+            command: "{{ command + [\"{{ network.name }}\"] }}"
+      when: "'Linux Bridge' == group_vars.openstack.network.plugin"
+
+    # `openstack network create` command for OVN
+    - name: Block of declare command variable to create new network for OVN
+      block:
+        - name: Declare command variable to create new network
+          set_fact:
+            #command: "{{ command + [\"openstack\", \"network\", \"create\", \"--provider-network-type\", \"{{ network.provider.network.type }}\", \"--mtu\", \"{{ network.mtu }}\"] }}"
+            command: "{{ command + [\"openstack\", \"network\", \"create\"] }}"
+
+        - name: Append options --external and --provider-physical-network to the command if the network is external
+          set_fact:
+            command: "{{ command + [\"--provider-network-type\", \"{{ network.provider.network.type }}\", \"--provider-physical-network\", \"provider\", \"--external\"] }}"
+          when: is_external
+
+        - name: Append options --provider-segment to the command if the network is internal
+          set_fact:
+            command: "{{ command + [\"--mtu\", \"{{ network.mtu }}\", \"--provider-network-type\", \"{{ network.provider.network.type }}\", \"--provider-segment\", \"{{ network.provider.network.segment }}\"] }}"
+          when: not is_external
+
+        - name: Append a network name to the command
+          set_fact:
+            command: "{{ command + [\"{{ network.name }}\"] }}"
+      when: "'OVN' == group_vars.openstack.network.plugin"
 
     - name: Print a command will be run to create new network
       ansible.builtin.debug:

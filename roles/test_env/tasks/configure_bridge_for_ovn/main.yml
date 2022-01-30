@@ -1,4 +1,5 @@
 ---
+# To check the bridge that is added this command is `ovs-vsctl list bridge br-int`.
 - name: Set protocols of OVS bridge
   ansible.builtin.command:
     argv: ["ovs-vsctl", "set", "bridge", "br-int", "protocols=OpenFlow13,OpenFlow15"]
