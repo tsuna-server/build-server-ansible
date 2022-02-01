@@ -3495,6 +3495,10 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 {%- endfor %}
 username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
+{% if 'OVN' == group_vars.openstack.network.plugin %}
+service_metadata_proxy = true
+metadata_proxy_shared_secret = p@ssw0rd
+{% endif %}
 
 #
 # Configuration options for neutron (network connectivity as a service).
