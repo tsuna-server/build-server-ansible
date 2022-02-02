@@ -48,7 +48,7 @@
 
         - name: Append options to the command of the internal network
           set_fact:
-            command: "{{ command + [\"--mtu\", \"1400\"] }}"
+            command: "{{ command + [\"--mtu\", \"{{ network.mtu }}\"] }}"
           when: not is_external
 
         - name: Append a network name to the command
@@ -83,6 +83,16 @@
       ansible.builtin.debug:
         msg: "command={{ command }}"
 
+    # Command expected are like bloew...
+    # * External network on controller node with Linux Bridge
+    #   openstack network create --provider-network-type flat --provider-physical-network provider --external <external network name>
+    # * Internal network on controller node with Linux Bridge
+    #   openstack network create --mtu 1400 <internal network name>
+    #
+    # * External network on controller node with OVN
+    #   openstack network create --provider-network-type flat --provider-physical-network provider --external <external network name>
+    # * Internal network on controller node with OVN
+    #   openstack network create --mtu 1400 --provider-network-type geneve --provider-segment 1011 <internal network name>
     - name: Create a network
       ansible.builtin.command:
         argv: "{{ command }}"
