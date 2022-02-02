@@ -1,6 +1,14 @@
 ---
 # To check the bridge that is added this command is `ovs-vsctl list bridge br-int`.
-- name: Set protocols of OVS bridge
+- name: Set protocols of OpenFlow to br-int
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "bridge", "br-int", "protocols=OpenFlow13,OpenFlow15"]
+
+- name: Add br-provider if not existed
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "--may-exist", "add-br", "br-provider"]
+
+- name: Set protocols of OpenFlow to br-provider
   ansible.builtin.command:
     argv: ["ovs-vsctl", "set", "bridge", "br-int", "protocols=OpenFlow13,OpenFlow15"]
 
@@ -15,4 +23,9 @@
 - name: Add port to OVS
   ansible.builtin.command:
     argv: ["ovs-vsctl", "--may-exist", "add-port", "br-provider", "{{ provider_interface }}"]
+
+- name: Enable chassis as gw on a controller node with network driver OVN
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-cms-options=\"enable-chassis-as-gw\""]
+  when: "'controllers' in group_names"
 
