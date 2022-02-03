@@ -10,7 +10,7 @@
     mode: '0640'
     backup: yes
   notify: ["Restart nova-api", "Restart neutron-server", "Restart neutron-linuxbridge-agent", "Restart neutron-dhcp-agent", "Restart neutron-metadata-agent", "Restart neutron-l3-agent"]
-  /egister: result_neutron_conf
+  register: result_neutron_conf
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with Linux Bridge
   ansible.builtin.template:
