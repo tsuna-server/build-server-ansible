@@ -260,7 +260,7 @@ max_header_size = 38
 
 [ml2_type_vlan]
 {% if 'OVN' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
-network_vlan_ranges = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.interface }}:11:1024
+network_vlan_ranges = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.interface }}:101:2048
 {% endif %}
 
 #
