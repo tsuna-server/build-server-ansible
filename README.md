@@ -23,20 +23,18 @@ If NO errors were reported then you can run Ansible without the option `--check`
 (venv) $ ansible-playbook -i production -l <hostname or group name> sites.yml
 ```
 
-## Patterns of tasks that you might want to run
-This section explains patterns of specifying tags and other options that you might want to run.
+# Tags
+This section explains patterns of specifying `--tags` (or `--skip-tags`) that you might want to specify frequently.
 
-### Run all tasks
-If you want to run all tasks in this ansible, you should not specify any tags.
-You can specify nodes of controller or compute at `<hostname or group name>`.
+## Specifying no tags -> Run all tasks
+If you want to run all tasks in this ansible, you can specify no tags.
 
 * Run all tasks
 ```
-$ # (Without any tags should be specified)
 $ ansible-playbook -i production -l <hostname or group name> sites.yml
 ```
 
-### Skip modifying hosts
+## Skip modifying hosts
 If you want to skip modifying `/etc/hosts` by this ansible-playbook because you already prepare it on your own for example, you can specify a tag like below.
 You can specify nodes of controller or compute at `<hostname or group name>`.
 
@@ -44,13 +42,25 @@ You can specify nodes of controller or compute at `<hostname or group name>`.
 $ ansible-playbook -i production -l <hostname or group name> --skip-tags role_hosts sites.yml
 ```
 
-### Run only discover_hosts
+## Run only discover_hosts
 If you want to run only a role `nova_discover_hosts` after you add a new compute node into a cluster that you already created, you can specify a tag like below.
 
 * Run only a role `nova_discover_hosts`
 ```
 $ ansible-playbook -i production -l <hostname or group name> --tags role_nova_discover_hosts
 ```
+
+**Note:**  
+If you want to add new compute that is not set up any OpenStack environment yet, you should run this ansible by specifying only compute node like below.
+```
+$ # This command assumes that you already set compute node as named "compute01".
+$ ansible-playbook -i production -l compute01 --skip-tags role_hosts sites.yml
+```
+
+This instruction will only be used if you already set compute node as OpenStack compute node but not belonging the OpenStack environment yet.
+
+Note: If you want to add new compute node from that is not to set up any OpenStack enfironment, you should run this ansible by spedifying only compute node like below.
+This instruction will be used rary.
 
 # Run with docker
 Docker container to run this ansible is already prepared.
@@ -65,12 +75,13 @@ You can run this ansible-playbook easily by using it.
     --add-host dev-private-router01:<IP> \
     --volume ${PWD}:/opt/ansible \
     --volume /path/to/private-key:/private-key \
-    -ti tsutomu/build-server-ansible \
-    develop dev-private-router01
+    -ti tsutomu/ansible-runner \
+    --user ubuntu -i production -l dev-private-router01:dev-compute01 site.yml
 ```
 
 ## Run with docker with specified options
 You can specify options with docker like below.
+You can spedify `--skip-tags` for example.
 
 ```
 # docker run --rm \
@@ -78,6 +89,6 @@ You can specify options with docker like below.
     --volume ${PWD}:/opt/ansible \
     --volume /path/to/private-key:/private-key \
     -ti tsutomu/build-server-ansible \
-    develop dev-private-router01
+    --user ubuntu -i production -l dev-private-router01:dev-compute01 --skip-tags role_hosts site.yml
 ```
 
