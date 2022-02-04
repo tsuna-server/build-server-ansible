@@ -5,21 +5,21 @@ This is a repository to build servers.
 ## On Python virtual env
 You can prepare an environment with Python virtualenv like below.
 
-```
+```shell
 $ . ./venv/bin/activate
 (venv) $ pip -r requirements.txt
 ```
 
 `ansible-playbook` can run with checking mode by adding `--check` option like below.
 
-```
+```shell
 (venv) $ ansible-playbook -i production -l [hostname or group name] --check sites.yml
 // Some options might be needed like `--ask-pass`, `--become` or `--ask-become-pass` depending on your environment.
 ```
 
 If NO errors were reported then you can run Ansible without the option `--check`.
 
-```
+```shell
 (venv) $ ansible-playbook -i production -l <hostname or group name> sites.yml
 ```
 
@@ -30,7 +30,7 @@ This section explains patterns of specifying `--tags` (or `--skip-tags`) that yo
 If you want to run all tasks in this ansible, you can specify no tags.
 
 * Run all tasks
-```
+```shell
 $ ansible-playbook -i production -l <hostname or group name> sites.yml
 ```
 
@@ -38,7 +38,7 @@ $ ansible-playbook -i production -l <hostname or group name> sites.yml
 If you want to skip modifying `/etc/hosts` by this ansible-playbook because you already prepare it on your own for example, you can specify a tag like below.
 You can specify nodes of controller or compute at `<hostname or group name>`.
 
-```
+```shell
 $ ansible-playbook -i production -l <hostname or group name> --skip-tags role_hosts sites.yml
 ```
 
@@ -46,13 +46,13 @@ $ ansible-playbook -i production -l <hostname or group name> --skip-tags role_ho
 If you want to run only a role `nova_discover_hosts` after you add a new compute node into a cluster that you already created, you can specify a tag like below.
 
 * Run only a role `nova_discover_hosts`
-```
+```shell
 $ ansible-playbook -i production -l <hostname or group name> --tags role_nova_discover_hosts
 ```
 
 **Note:**  
 If you want to add new compute that is not set up any OpenStack environment yet, you should run this ansible by specifying only compute node like below.
-```
+```shell
 $ # This command assumes that you already set compute node as named "compute01".
 $ ansible-playbook -i production -l compute01 --skip-tags role_hosts sites.yml
 ```
@@ -66,11 +66,11 @@ This instruction will be used rary.
 Docker container to run this ansible is already prepared.
 You can run this ansible-playbook easily by using it.
 
-```
+```shell
 # docker build -t tsutomu/build-server-ansible ./docker
 ```
 
-```
+```shell
 # docker run --rm \
     --add-host dev-private-router01:<IP> \
     --volume ${PWD}:/opt/ansible \
@@ -83,7 +83,7 @@ You can run this ansible-playbook easily by using it.
 You can specify options with docker like below.
 You can spedify `--skip-tags` for example.
 
-```
+```shell
 # docker run --rm \
     --add-host dev-private-router01:<IP> \
     --volume ${PWD}:/opt/ansible \
