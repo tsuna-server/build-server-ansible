@@ -1,5 +1,15 @@
+# An inventry file for development
 [controllers]
-private-router01
+controller01
 
-[commons:children]
+[computes]
+compute01
+compute02
+compute03
+
+[default:children]
 controllers
+computes
+
+[all:children]
+default
