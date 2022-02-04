@@ -1,25 +1,30 @@
 group_vars:
   hosts:
+    # Host names must much with inventory_hostname
     controllers:
       - names: ["dev-controller01", "dev-controller01.openstack.example.com"]
         management:
           ip: 192.168.2.1
+          interface: enp2s0
         provider:
           interface: enp1s0
     computes:
       - names: ["dev-compute01", "dev-compute01.openstack.example.com"]
         management:
           ip: 192.168.2.11
+          interface: enp2s0
         provider:
           interface: enp1s0
       - names: ["dev-compute02", "dev-compute02.openstack.example.com"]
         management:
           ip: 192.168.2.12
+          interface: enp2s0
         provider:
           interface: enp1s0
       - names: ["dev-compute03", "dev-compute03.openstack.example.com"]
         management:
           ip: 192.168.2.13
+          interface: enp2s0
         provider:
           interface: enp1s0
 
@@ -184,6 +189,7 @@ group_vars:
       name: RegionOne
     network:
       plugin: "Linux Bridge"
+      # plugin: "OVN"
     # You can set this parameter like below if you want to specify OVN as a network plugin.
     # You should also specify a parameter "password" for using shared secret.
     #network:
@@ -288,6 +294,14 @@ group_vars:
               type: flat
         - name: private
           mtu: 1400
+          provider:
+            network:
+              # Type should be specified as 'geneve' so far in private network if you chose network driver 'OVN'.
+              # Type will be ignored in private network if you chose network driver 'Linux Bridge'.
+              type: geneve
+              # segment: VLAN ID for VLAN networks or Tunnel ID for GENEVE networks.
+              #          If this network is private('external: False' or abbribiated), provider_segment is required.
+              segment: 101
 
       subnets:
         # Value of "network" must be existed in "group_vars.openstack.examples.networks[].name".
