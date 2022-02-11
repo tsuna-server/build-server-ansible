@@ -11,12 +11,12 @@
 # In a controller node, this instruction will detect an own IP address and set it as OVN controller
 - name: Fail if the instruction could not detect an IP of a controller
   fail:
-    msg: "Failed to detect an IP of the controller node. There are no same host between \"group_vars\" and \"inventory_directory\"."
+    msg: "Failed to detect an IP of the controller node. There are no same host between \"group_vars\" and \"inventory_hostname\"."
   when: controller_ip | length == 0
 
 - name: Controller IP has detected
   ansible.builtin.debug:
-    msg: "container_ip=\"{{ controller_ip }}\""
+    msg: "controller_ip=\"{{ controller_ip }}\""
 
 # The command "ovn-nbctl set-connection" can be run duplicately.
 # If you run this command duplicately, the config will be overwritten by the command that runs last.
