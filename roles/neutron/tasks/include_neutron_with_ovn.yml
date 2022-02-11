@@ -1,36 +1,36 @@
 ---
 - name: Block of Neutron with OVN for controllers
   block:
-    - name: Include create_db/main.yml
-      include: create_db/main.yml
+    #- name: Include create_db/main.yml
+    #  include: create_db/main.yml
 
-    - name: Include create_openstack_services/main.yml
-      include: create_openstack_services/main.yml
+    #- name: Include create_openstack_services/main.yml
+    #  include: create_openstack_services/main.yml
 
-    - name: Include create_endpoints/main.yml
-      include: create_endpoints/main.yml
+    #- name: Include create_endpoints/main.yml
+    #  include: create_endpoints/main.yml
 
-    - name: Include install_packages/ovn/controllers/main.yml
-      include: install_packages/ovn/controllers/main.yml
+    #- name: Include install_packages/ovn/controllers/main.yml
+    #  include: install_packages/ovn/controllers/main.yml
 
-    - name: Include configure_ovn_db/main.yml
-      include: configure_ovn_db/main.yml
+    #- name: Include configure_ovn_db/main.yml
+    #  include: configure_ovn_db/main.yml
 
-    #- name: Include set_configurations/ovn/controllers/main.yml
-    #  include: set_configurations/ovn/controllers/main.yml
+    - name: Include set_configurations/ovn/controllers/main.yml
+      include: set_configurations/ovn/controllers/main.yml
 
-    #- name: Include migrate_db/main.yml
-    #  include: migrate_db/main.yml
+    - name: Include migrate_db/main.yml
+      include: migrate_db/main.yml
   when: "'controllers' in group_names"
 
-#- name: Block of Neutron with OVN for computes
-#  block:
-#    - name: Include install_packages/ovn/computes/controllers/main.yml
-#      include: install_packages/ovn/computes/main.yml
-#
-#    - name: Include configure_ovs_services/main.yml
-#      include: configure_ovs_services/main.yml
-#
-#    - name: Include set_configurations/ovn/computes/main.yml
-#      include: set_configurations/ovn/computes/main.yml
-#  when: "'computes' in group_names"
+- name: Block of Neutron with OVN for computes
+  block:
+    - name: Include install_packages/ovn/computes/controllers/main.yml
+      include: install_packages/ovn/computes/main.yml
+
+    - name: Include configure_ovs_services/main.yml
+      include: configure_ovs_services/main.yml
+
+    - name: Include set_configurations/ovn/computes/main.yml
+      include: set_configurations/ovn/computes/main.yml
+  when: "'computes' in group_names"
