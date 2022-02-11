@@ -2,5 +2,5 @@
 #- import_playbook: commons.yml
 - import_playbook: controllers.yml
 - import_playbook: computes.yml
-#- import_playbook: controllers_discover_hosts.yml
-#- import_playbook: controllers_create_example_instances.yml
+- import_playbook: controllers_discover_hosts.yml
+- import_playbook: controllers_create_example_instances.yml
