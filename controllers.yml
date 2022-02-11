@@ -12,8 +12,8 @@
     - { role: glance, tags: ['role_glance']}
     - { role: placement, tags: ['role_placement']}
     - { role: nova, tags: ['role_nova']}
-    - { role: neutron, tags: ['role_neutron']}
-    - { role: horizon, tags: ['role_horizon']}
+    #- { role: neutron, tags: ['role_neutron']}
+    #- { role: horizon, tags: ['role_horizon']}
   environment:
     OS_USERNAME: admin
     OS_PASSWORD: "{{ group_vars.openstack.admin_password }}"
