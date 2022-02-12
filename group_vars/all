@@ -28,18 +28,10 @@ group_vars:
         provider:
           interface: enp1s0
 
-    ## >>>>> Deprecated section from here. It will be removed in the future >>>>>
-    ## Define IP addresses in management
-    #dev-private-router01.openstack.example.com: 192.168.2.1
-    #dev-compute01.openstack.example.com: 192.168.2.11
-    #dev-compute02.openstack.example.com: 192.168.2.12
-    #dev-compute03.openstack.example.com: 192.168.2.13
-    ## <<<<< Deprecated section to here. It will be removed in the future <<<<<
-
   ntp:
     ip:
       allow: 192.168.2.0/24
-      server: dev-private-router01
+      server: dev-controller01
 
   sql:
     bind_address: 192.168.2.1
@@ -64,7 +56,7 @@ group_vars:
       keystone_conf:
         token:
           provider: fernet
-    auth_url: "http://dev-private-router01:5000/v3"
+    auth_url: "http://dev-controller01:5000/v3"
     dbs:
       # DB names for OpenStack services. User and password will be inherited from "group_vars.keystone.user" and "group_vars.keystone.password"
       - name: keystone
@@ -85,20 +77,20 @@ group_vars:
         regions:
           # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
           - name: RegionOne
-            url: "http://dev-private-router01:9292"
+            url: "http://dev-controller01:9292"
       #public:
       #  regions:
       #    # Endpoints will be created at these regions. Regions specified here must be existed at "group_vars.openstack.region.name"
       #    - name: RegionOne
-      #      url: "http://dev-private-router01:9292"
+      #      url: "http://dev-controller01:9292"
       #internal:
       #  regions:
       #    - name: RegionOne
-      #      url: "http://dev-private-router01:9292"
+      #      url: "http://dev-controller01:9292"
       #admin:
       #  regions:
       #    - name: RegionOne
-      #      url: "http://dev-private-router01:9292"
+      #      url: "http://dev-controller01:9292"
     dbs:
       # "user:" and "password:" can be abbreviated.
       # group_vars.glance.user and group_vars.glance.password will be used if abbreviate them.
@@ -119,19 +111,19 @@ group_vars:
       default:
         regions:
           - name: RegionOne
-            url: "http://dev-private-router01:8778"
+            url: "http://dev-controller01:8778"
       #public:
       #  regions:
       #    - name: RegionOne
-      #      url: "http://dev-private-router01:8778"
+      #      url: "http://dev-controller01:8778"
       #internal:
       #  regions:
       #    - name: RegionOne
-      #      url: "http://dev-private-router01:8778"
+      #      url: "http://dev-controller01:8778"
       #admin:
       #  regions:
       #    - name: RegionOne
-      #      url: "http://dev-private-router01:8778"
+      #      url: "http://dev-controller01:8778"
     dbs:
       - name: placement
         user: placement
@@ -148,7 +140,7 @@ group_vars:
       default:
         regions:
           - name: RegionOne
-            url: "http://dev-private-router01:8774/v2.1"
+            url: "http://dev-controller01:8774/v2.1"
     dbs:
       - name: nova_api
       - name: nova
