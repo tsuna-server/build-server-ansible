@@ -3,11 +3,13 @@
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 
 {% for dict_type, dict_value in group_vars.hosts.items() -%}
-{% for group in dict_value -%}
-{% if 'management' in group %}
-{{ group['management'].ip }}{% for host_name in group.names %} {{ host_name }}{% endfor %}{{ '' }}
-{% else %}
-{{ group['provider'].ip }}{% for host_name in group.names %} {{ host_name }}{% endfor %}{{ '' }}
-{% endif %}
-{%- endfor %}
+  {% for group in dict_value -%}
+    {% for host_name in group.names -%}
+      {% if 'management' in group -%}
+        {{ group['management'].ip + ' ' + host_name + '\n' }}
+      {%- elif 'provider' in group %}
+        {{ group['provider'].ip + ' ' + host_name + '\n' }}
+      {%- endif %}
+    {%- endfor %}
+  {%- endfor %}
 {%- endfor %}
