@@ -1,11 +1,11 @@
 # An inventry file for development
 [controllers]
-controller01
+dev-controller01
 
 [computes]
-compute01
-compute02
-compute03
+dev-compute01
+dev-compute02
+dev-compute03
 
 [default:children]
 controllers
