@@ -24,7 +24,6 @@
     group: placement
     home: /var/lib/placement
     create_home: no
-    uid: 119
     comment: "User for OpenStack Placement"
 
 - name: Create a directory /etc/placement for Placement
