@@ -63,21 +63,7 @@ Note: If you want to add new compute node from that is not to set up any OpenSta
 This instruction will be used rary.
 
 # Run with docker
-Docker container to run this ansible is already prepared.
-You can run this ansible-playbook easily by using it.
-
-```shell
-# docker build -t tsutomu/build-server-ansible ./docker
-```
-
-```shell
-# docker run --rm \
-    --add-host dev-private-router01:<IP> \
-    --volume ${PWD}:/opt/ansible \
-    --volume /path/to/private-key:/private-key \
-    -ti tsutomu/ansible-runner \
-    --user ubuntu -i production -l dev-private-router01:dev-compute01 site.yml
-```
+You can run this ansible-playbook easily by using `tsutomu/ansible-runner`.
 
 ## Run with docker with specified options
 You can specify options with docker like below.
@@ -88,7 +74,7 @@ You can spedify `--skip-tags` for example.
     --add-host dev-private-router01:<IP> \
     --volume ${PWD}:/opt/ansible \
     --volume /path/to/private-key:/private-key \
-    -ti tsutomu/build-server-ansible \
+    -ti tsutomu/ansible-runner \
     --user ubuntu -i production -l dev-private-router01:dev-compute01 --skip-tags role_hosts site.yml
 ```
 
