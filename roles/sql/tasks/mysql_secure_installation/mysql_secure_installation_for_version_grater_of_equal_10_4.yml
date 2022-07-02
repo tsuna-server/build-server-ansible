@@ -1,0 +1,9 @@
+-
+# From a version 10.4, instructions of mysql_secure_installation were changed.
+# * https://github.com/MariaDB/server/blob/10.4/scripts/mysql_secure_installation.sh
+- name: Make sure that NOBODY can access the server without a password
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "UPDATE mysql.user SET Password=PASSWORD('{{ group_vars.sql.password }}') WHERE User='root';"
