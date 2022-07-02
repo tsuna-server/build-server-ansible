@@ -13,8 +13,10 @@
 
 - name: Block of doing mysql_secure_installation
   block:
-    - name: mysql_secure_installation_for_version_grater_or_equal_10_4.yml
-      ansible.builtin.script: ./mysql_secure_installation_for_version_grater_or_equal_10_4.yml
+    - name: mysql_secure_installation_for_version_grater_or_equal_10_4.sh
+      ansible.builtin.script: ./mysql_secure_installation_for_version_grater_or_equal_10_4.sh
+      register: result_of_mysql_secure_installation
+      failed_when: result.rc not in [0]
   when: flag_file.stat.exists
 
 - name: Make sure that NOBODY can access the server without a password
