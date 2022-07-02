@@ -41,7 +41,10 @@ send \"\r\"
 
 expect \"Reload privilege tables now? [Y/n]\"
 send \"\r\"
-"
+"   || {
+        echo "ERROR: Failed to execute mysql_secure_installation"
+        exit 1
+    }
 
     DEBIAN_FRONTEND=noninteractive apt-get -y purge expect
 }
