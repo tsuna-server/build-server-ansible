@@ -1,6 +1,22 @@
 -
 # From a version 10.4, instructions of mysql_secure_installation were changed.
 # * https://github.com/MariaDB/server/blob/10.4/scripts/mysql_secure_installation.sh
+#
+# UPDATE mysql.global_priv SET priv=json_set(priv, '$.plugin', 'mysql_native_password', '$.authentication_string', PASSWORD('$esc_pass')) WHERE User='root';
+#
+
+- name: Check a flag that means set config and sync db was finished
+  stat:
+    path: /root/.ansible_mysql_secure_installation_was_finished
+  register: flag_file
+
+
+- name: Block of doing mysql_secure_installation
+  block:
+    - name: mysql_secure_installation_for_version_grater_or_equal_10_4.yml
+      ansible.builtin.script: ./mysql_secure_installation_for_version_grater_or_equal_10_4.yml
+  when: flag_file.stat.exists
+
 - name: Make sure that NOBODY can access the server without a password
   ansible.builtin.command:
     argv:
