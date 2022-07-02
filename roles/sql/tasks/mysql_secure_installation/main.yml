@@ -1,0 +1,8 @@
+---
+- name: Get a version of mariadb-server
+  ansible.builtin.script: ./get_version_number_of_mariadb.sh
+  register: result_of_version
+  failed_when: result.rc not in [0]
+
+
+
