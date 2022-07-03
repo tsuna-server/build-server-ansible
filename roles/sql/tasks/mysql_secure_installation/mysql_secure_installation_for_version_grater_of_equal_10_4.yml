@@ -27,3 +27,31 @@
       - -e
       - "FLUSH PRIVILEGES;"
 
+- name: Delete mysql anonymous users
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DELETE FROM mysql.global_priv WHERE User='';"
+
+- name: Delete mysql remote root user
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DELETE FROM mysql.global_priv WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+
+- name: Drop test database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DROP DATABASE IF EXISTS test;"
+
+- name: Remove privileges on test database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
+
