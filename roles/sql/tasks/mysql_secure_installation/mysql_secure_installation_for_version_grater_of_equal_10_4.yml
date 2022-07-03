@@ -1,4 +1,7 @@
 ---
+# This SQLs are referenced from mysql_secure_installation on mariadb 10.6
+# * https://github.com/MariaDB/server/blob/10.6/scripts/mysql_secure_installation.sh
+
 - name: Enable authentication with unix socket
   ansible.builtin.command:
     argv:
@@ -54,4 +57,11 @@
       - mysql
       - -e
       - "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
+
+- name: Remove privileges on test database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "FLUSH PRIVILEGES;"
 
