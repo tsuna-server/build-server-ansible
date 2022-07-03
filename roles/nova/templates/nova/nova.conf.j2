@@ -4280,7 +4280,7 @@ auth_type = password
 user_domain_name = Default
 auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/v3
 username = placement
-password = p@ssw0rd
+password = {{ group_vars.placement.password }}
 
 #
 # From nova.conf
