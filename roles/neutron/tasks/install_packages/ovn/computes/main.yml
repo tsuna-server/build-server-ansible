@@ -1,5 +1,5 @@
 ---
-- name: Install packages of Neutron for computes of Neutron with OVN
+- name: Install packages of Neutron for computes with OVN
   apt:
     name:
       - neutron-openvswitch-agent
