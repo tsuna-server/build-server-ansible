@@ -1,5 +1,5 @@
 ---
-- name: Install packages of Neutron for controllers of Neutron with OVN
+- name: Install packages of Neutron for controllers with OVN
   apt:
     name:
       - neutron-server
