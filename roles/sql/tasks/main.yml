@@ -29,7 +29,7 @@
     path: /root/.mysql_secure_installation_has_finished
   register: flag_file
 
-- include: mysql_secure_installation.yml
+- include: mysql_secure_installation/main.yml
   when: not flag_file.stat.exists
 
 - name: Create a flag that means mysql_secure_installation.yml was finished

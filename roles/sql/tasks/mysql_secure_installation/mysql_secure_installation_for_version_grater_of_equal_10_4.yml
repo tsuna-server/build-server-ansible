@@ -1,0 +1,67 @@
+---
+# This SQLs are referenced from mysql_secure_installation on mariadb 10.6
+# * https://github.com/MariaDB/server/blob/10.6/scripts/mysql_secure_installation.sh
+
+- name: Enable authentication with unix socket
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "UPDATE mysql.global_priv SET priv=json_set(priv, '$.password_last_changed', UNIX_TIMESTAMP(), '$.plugin', 'mysql_native_password', '$.authentication_string', 'invalid', '$.auth_or', json_array(json_object(), json_object('plugin', 'unix_socket'))) WHERE User='root';"
+
+- name: Flush privileges after enabling authentication with unix socket
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "FLUSH PRIVILEGES;"
+
+- name: Set the root password
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "UPDATE mysql.global_priv SET priv=json_set(priv, '$.plugin', 'mysql_native_password', '$.authentication_string', PASSWORD('{{ group_vars.sql.password }}')) WHERE User='root';"
+
+- name: Flush privileges after setting the root password
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "FLUSH PRIVILEGES;"
+
+- name: Delete mysql anonymous users
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DELETE FROM mysql.global_priv WHERE User='';"
+
+- name: Delete mysql remote root user
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DELETE FROM mysql.global_priv WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+
+- name: Drop test database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DROP DATABASE IF EXISTS test;"
+
+- name: Remove privileges on test database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
+
+- name: Remove privileges on test database
+  ansible.builtin.command:
+    argv:
+      - mysql
+      - -e
+      - "FLUSH PRIVILEGES;"
+

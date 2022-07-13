@@ -10,6 +10,17 @@
   notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
   register: result_neutron_conf
 
+- name: Set /etc/neutron/l3_agent.ini of Neutron with OVN
+  ansible.builtin.template:
+    src: neutron/l3_agent.ini.j2
+    dest: /etc/neutron/l3_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
+  register: result_l3_agent_ini
+
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on controller
   ansible.builtin.template:
     src: neutron/plugins/ml2/ml2_conf.ini.j2
@@ -24,4 +35,4 @@
 - name: Migrate DB for OVN if configurations were modified
   ansible.builtin.command:
     argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
-  when: result_neutron_conf.changed or result_ml2_conf.changed
+  when: result_neutron_conf.changed or result_ml2_conf.changed or result_l3_agent_ini

@@ -1,0 +1,22 @@
+---
+- name: Declare variables of version of mariadb-server
+  set_fact:
+    version_of_mariadb_10_4: "10.4"
+
+- name: Get a version of mariadb-server
+  ansible.builtin.script: ./get_version_number_of_mariadb.sh
+  register: result
+  failed_when: result.rc not in [0]
+
+- name: Print a version of mariadb-server
+  ansible.builtin.debug:
+    msg: "A version of mariadb-server is {{ result.stdout }}"
+
+- name: Do mysql_secure_installation for a version under 10.4
+  include: ./mysql_secure_installation_for_version_under_10_4.yml
+  when: result.stdout is version(version_of_mariadb_10_4, '<')
+
+- name: Do mysql_secure_installation for a version grater or equal 10.4
+  include: ./mysql_secure_installation_for_version_grater_of_equal_10_4.yml
+  when: result.stdout is version(version_of_mariadb_10_4, '>=')
+
