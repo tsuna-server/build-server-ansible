@@ -3495,9 +3495,9 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 {%- endfor %}
 username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
-{% if 'OVN' == group_vars.openstack.network.plugin %}
+{% if 'controllers' in group_names %}
 service_metadata_proxy = true
-metadata_proxy_shared_secret = p@ssw0rd
+metadata_proxy_shared_secret = {{ group_vars.neutron.password }}
 {% endif %}
 
 #
