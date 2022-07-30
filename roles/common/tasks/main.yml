@@ -11,6 +11,9 @@
   apt:
     name:
       - jq
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Check reboot was required
   stat:
