@@ -19,9 +19,17 @@
 
 - name: Block of creating router
   block:
+    - name: Create a command to create a router
+      set_fact:
+        command: ["openstack", "router", "create", "{{ router.name }}"]
+
+    - name: Print a command to create router
+      ansible.builtin.debug:
+        msg: "command={{ command }}"
+
     - name: Create a router
       ansible.builtin.command:
-        argv: ["openstack", "router", "create", "{{ router.name }}"]
+        argv: command
       register: result
 
     - name: Print the result of creating router

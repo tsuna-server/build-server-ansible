@@ -35,6 +35,11 @@
 # [ERROR]   2 with "any  message":       (true  and (false and true)) or true
 #                                        (true  and (flase))          or true
 #                                        (false)                      or true  => true
+
+- name: Print a commant adding a rule to the group
+  ansible.builtin.debug:
+    msg: "command={{ command_to_add_rule }}"
+
 - name: Add a rule to the group
   ansible.builtin.command:
     argv: "{{ command_to_add_rule }}"

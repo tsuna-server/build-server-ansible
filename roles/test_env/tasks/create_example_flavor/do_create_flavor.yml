@@ -12,7 +12,7 @@
 
 - name: Print a flavor that will be created in this section
   ansible.builtin.debug:
-    msg: "nuuummm -> \"{{ ansible_loop.index }}\", flavor.id == \"{{ flavor.id }}\", flavor.name == \"{{ flavor.name }}\", flavor.ram == \"{{ flavor.ram }}\", flavor.disk == \"{{ flavor.disk }}\", flavor.vcpus == \"{{ flavor.vcpus }}\""
+    msg: "loop_index -> \"{{ ansible_loop.index }}\", flavor.id == \"{{ flavor.id }}\", flavor.name == \"{{ flavor.name }}\", flavor.ram == \"{{ flavor.ram }}\", flavor.disk == \"{{ flavor.disk }}\", flavor.vcpus == \"{{ flavor.vcpus }}\""
 
 - name: Check the flavor has already existed or not
   ansible.builtin.script: ./check_duplicate_flavor.sh "{{ flavor.name }}"
