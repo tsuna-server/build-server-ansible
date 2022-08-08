@@ -1,9 +1,4 @@
 ---
-- name: Restart ovs-vswitchd
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovs-vswitchd
-
 - name: Detect IP address from a first controller node in hosts
   set_fact:
     controller_ip: "{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}"
