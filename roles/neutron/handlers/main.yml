@@ -72,3 +72,14 @@
   ansible.builtin.systemd:
     state: restarted
     name: ovn-controller
+
+- name: Restart openvswitch-switch
+  ansible.builtin.systemd:
+    state: restarted
+    name: openvswitch-switch
+
+- name: Restart ovn-host
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-host
+
