@@ -32,6 +32,17 @@
   notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
   register: result_ml2_conf
 
+- name: Set /etc/default/openvswitch-switch of Neutron with OVN on controller
+  ansible.builtin.template:
+    src: default/openvswitch-switch
+    dest: /etc/default/openvswitch-switch
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
+  register: result_openvswitch_switch
+
 - name: Migrate DB for OVN if configurations were modified
   ansible.builtin.command:
     argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
