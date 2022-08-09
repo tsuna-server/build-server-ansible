@@ -7,5 +7,19 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovn-controller"]
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
   register: result_neutron_conf
+
+- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on compute
+  ansible.builtin.template:
+    src: neutron/ml2_conf.ini
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
+  register: result_neutron_conf
+
+# TODO: Restart some services
+
