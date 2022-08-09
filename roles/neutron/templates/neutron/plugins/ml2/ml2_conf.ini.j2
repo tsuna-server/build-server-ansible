@@ -157,7 +157,7 @@ tenant_network_types = vxlan
 mechanism_drivers = linuxbridge,l2population
 extension_drivers = port_security
 {% elif 'OVN' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
-type_drivers = local,flat,vlan,geneve
+type_drivers = flat,geneve
 tenant_network_types = geneve
 mechanism_drivers = ovn
 extension_drivers = port_security
@@ -212,7 +212,11 @@ overlay_ip_version = 4
 
 
 [ml2_type_flat]
+{% if 'Linux Bridge' == group_vars.openstack.network.plugin %}
 flat_networks = provider
+{% elif 'OVN' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
+flat_networks = *
+{% endif %}
 
 #
 # From neutron.ml2
@@ -317,6 +321,7 @@ vni_ranges = 1:1000
 enable_ipset = true
 {% elif 'OVN' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
 enable_security_group = true
+firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 {% endif %}
 
 #
@@ -360,5 +365,5 @@ enable_security_group = true
 ovn_nb_connection = tcp:{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}:6641
 ovn_sb_connection = tcp:{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}:6642
 ovn_l3_scheduler = leastloaded
-ovn_metadata_enabled = True
+ovn_metadata_enabled = true
 {% endif %}
