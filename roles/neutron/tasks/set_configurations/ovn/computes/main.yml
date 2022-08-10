@@ -7,7 +7,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
   register: result_neutron_conf
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on compute
@@ -18,7 +18,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
   register: result_neutron_conf
 
 - name: Set /etc/neutron/neutron_ovn_metadata_agent.ini of Neutron with OVN on compute
@@ -29,7 +29,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
   register: result_neutron_conf
 
 - name: Set /etc/default/openvswitch-switch of Neutron with OVN on controller
@@ -40,7 +40,7 @@
     group: root
     mode: '0644'
     backup: yes
-  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
   register: result_openvswitch_switch
 
 - name: Create symbolic link to /etc/neutron/plugin.ini from /etc/neutron/plugins/ml2/ml2_conf.ini
@@ -48,4 +48,5 @@
     src: "/etc/neutron/plugins/ml2/ml2_conf.ini"
     dest: "/etc/neutron/plugin.ini"
     state: link
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
 
