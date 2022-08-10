@@ -31,6 +31,6 @@
     - name: Include set_configurations/ovn/computes/main.yml
       include: set_configurations/ovn/computes/main.yml
 
-    - name: Include configure_ovs_services/main.yml
-      include: configure_ovs_services/main.yml
+    - name: Include configure_ovs_services/computes/main.yml
+      include: configure_ovs_services/computes/main.yml
   when: "'computes' in group_names"
