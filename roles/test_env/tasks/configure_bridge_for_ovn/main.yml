@@ -4,32 +4,33 @@
 #  ansible.builtin.command:
 #    argv: ["ovs-vsctl", "set", "bridge", "br-int", "protocols=OpenFlow13,OpenFlow15"]
 
-- name: Add br-provider if not existed
-  ansible.builtin.command:
-    argv: ["ovs-vsctl", "--may-exist", "add-br", "br-provider"]
+#- name: Add br-provider if not existed
+#  ansible.builtin.command:
+#    argv: ["ovs-vsctl", "--may-exist", "add-br", "br-provider"]
 
 #- name: Set protocols of OpenFlow to br-provider
 #  ansible.builtin.command:
 #    argv: ["ovs-vsctl", "set", "bridge", "br-int", "protocols=OpenFlow13,OpenFlow15"]
 
-- name: Set external-ids.ovn-bridge-mappings of OVS
-  ansible.builtin.command:
-    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-bridge-mappings=provider:br-provider"]
+#- name: Set external-ids.ovn-bridge-mappings of OVS
+#  ansible.builtin.command:
+#    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-bridge-mappings=provider:br-provider"]
 
-- name: Declare host group
-  set_fact:
-    host_group: "{% if 'controllers' in group_names %}controllers{% elif 'computes' in group_names %}computes{% endif %}"
+#- name: Declare host group
+#  set_fact:
+#    host_group: "{% if 'controllers' in group_names %}controllers{% elif 'computes' in group_names %}computes{% endif %}"
 
-- name: Declare provider interface name of this node (controller node)
-  set_fact:
-    provider_interface: "{{ (group_vars.hosts[host_group]|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}"
+#- name: Declare provider interface name of this node (controller node)
+#  set_fact:
+#    provider_interface: "{{ (group_vars.hosts[host_group]|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}"
 
-- name: Add port to OVS
-  ansible.builtin.command:
-    argv: ["ovs-vsctl", "--may-exist", "add-port", "br-provider", "{{ provider_interface }}"]
+#- name: Add port to OVS
+#  ansible.builtin.command:
+#    argv: ["ovs-vsctl", "--may-exist", "add-port", "br-provider", "{{ provider_interface }}"]
 
-- name: Enable chassis as gw on a controller node with network driver OVN
-  ansible.builtin.command:
-    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-cms-options=\"enable-chassis-as-gw\""]
-  when: "'controllers' in group_names"
+# Is it needed to enable-chassis-as-gw?
+###- name: Enable chassis as gw on a controller node with network driver OVN
+###  ansible.builtin.command:
+###    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-cms-options=\"enable-chassis-as-gw\""]
+###  when: "'controllers' in group_names"
 
