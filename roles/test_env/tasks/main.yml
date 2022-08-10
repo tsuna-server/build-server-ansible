@@ -4,9 +4,9 @@
     network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'Linux Bridge' == group_vars.openstack.network.plugin %}Linux Bridge{% else %}{{ group_vars.openstack.network.plugin }}{% endif %}"
 
 # Pre-bridge-configuration for OVN
-- name: Include configure_bridge_for_ovn/main.yml
-  include: configure_bridge_for_ovn/main.yml
-  when: "'OVN' == network_plugin"
+##- name: Include configure_bridge_for_ovn/main.yml
+##  include: configure_bridge_for_ovn/main.yml
+##  when: "'OVN' == network_plugin"
 
 - name: Block create test env on controller node
   block:
