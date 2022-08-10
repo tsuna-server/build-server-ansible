@@ -34,3 +34,13 @@
     - name: Include configure_ovs_services/computes/main.yml
       include: configure_ovs_services/computes/main.yml
   when: "'computes' in group_names"
+
+- name: List network agents
+  anbile.builtin.command:
+    argv: ["openstack", "network", "agent", "list"]
+  register: result
+
+- name: Print the list network agents
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+
