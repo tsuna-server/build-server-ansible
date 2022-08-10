@@ -7,7 +7,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch"]
   register: result_neutron_conf
 
 - name: Set /etc/neutron/l3_agent.ini of Neutron with OVN
@@ -18,7 +18,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch"]
   register: result_l3_agent_ini
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on controller
@@ -29,7 +29,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch"]
   register: result_ml2_conf
 
 - name: Set /etc/default/openvswitch-switch of Neutron with OVN on controller
@@ -40,7 +40,7 @@
     group: root
     mode: '0644'
     backup: yes
-  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-ic-nb", "Restart ovn-ovsdb-server-ic-sb", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch"]
   register: result_openvswitch_switch
 
 - name: Migrate DB for OVN if configurations were modified
