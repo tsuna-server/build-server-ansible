@@ -32,5 +32,14 @@
   notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
   register: result_neutron_conf
 
-# TODO: Restart some services
+- name: Set /etc/default/openvswitch-switch of Neutron with OVN on controller
+  ansible.builtin.template:
+    src: default/openvswitch-switch
+    dest: /etc/default/openvswitch-switch
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
+  register: result_openvswitch_switch
 
