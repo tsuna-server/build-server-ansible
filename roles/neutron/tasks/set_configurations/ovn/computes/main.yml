@@ -43,3 +43,9 @@
   notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host"]
   register: result_openvswitch_switch
 
+- name: Create symbolic link to /etc/neutron/plugin.ini from /etc/neutron/plugins/ml2/ml2_conf.ini
+  file:
+    src: "/etc/neutron/plugins/ml2/ml2_conf.ini"
+    dest: "/etc/neutron/plugin.ini"
+    state: link
+
