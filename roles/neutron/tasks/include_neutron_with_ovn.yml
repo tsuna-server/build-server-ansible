@@ -36,7 +36,7 @@
   when: "'computes' in group_names"
 
 - name: List network agents
-  anbile.builtin.command:
+  ansible.builtin.command:
     argv: ["openstack", "network", "agent", "list"]
   register: result
 

@@ -5,4 +5,6 @@
   loop_control:
     loop_var: project
   loop: "{{ domain.projects }}"
-  when: '"rbac" in project'
+  when:
+    - '"projects" in domain'
+    - '"rbac" in project'

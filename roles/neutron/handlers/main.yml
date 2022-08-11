@@ -83,3 +83,8 @@
     state: restarted
     name: ovn-host
 
+- name: Restart neutron-ovn-metadata-agent
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-ovn-metadata-agent
+
