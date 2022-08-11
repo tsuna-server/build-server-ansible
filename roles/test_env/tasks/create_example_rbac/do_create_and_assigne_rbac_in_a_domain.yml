@@ -1,0 +1,8 @@
+---
+# TODO: This instruction supports "access_as_shared" only so far.
+- name: Include do_create_and_assigne_rbac_in_a_project.yml
+  include: do_create_and_assigne_rbac.yml
+  loop_control:
+    loop_var: project
+  loop: "{{ domain.projects }}"
+  when: '"rbac" in project'

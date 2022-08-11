@@ -1,0 +1,6 @@
+---
+- name: Include do_create_and_assigne_rbac.yml
+  include: do_create_and_assigne_rbac.yml
+  loop: "{{ project.rbac }}"
+
+

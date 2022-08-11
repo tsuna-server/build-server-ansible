@@ -1,0 +1,6 @@
+---
+# TODO: Create and assigne Role based Access Control(rbac) to a project.
+- name: Debug... A feature assigning a RBAC to a project in the future.
+  ansible.builtin.debug:
+    msg: "Assigne a RBAC \"{{ project }}\" {{ project.name }} in a domain {{ domain.name }}"
+
