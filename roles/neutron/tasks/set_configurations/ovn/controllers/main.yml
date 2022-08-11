@@ -7,7 +7,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch", "Migrate neutron db for ovn"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch", "Migrate neutron db for ovn", "Restart ovn-central", "Restart ovn-northd"]
 
 - name: Set /etc/neutron/l3_agent.ini of Neutron with OVN
   ansible.builtin.template:
@@ -27,7 +27,7 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch", "Migrate neutron db for ovn"]
+  notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch", "Migrate neutron db for ovn", "Restart ovn-central", "Restart ovn-northd"]
 
 - name: Set /etc/default/openvswitch-switch of Neutron with OVN on controller
   ansible.builtin.template:
@@ -42,3 +42,6 @@
 - name: Flush handlers of Neutron for OVN
   meta: flush_handlers
 
+# # TODO: 
+# - name: Reboot machine if required
+#   reboot:

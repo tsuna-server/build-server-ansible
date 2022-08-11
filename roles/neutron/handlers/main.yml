@@ -83,3 +83,12 @@
   ansible.builtin.command:
     argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
 
+- name: Restart ovn-central
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-central
+
+- name: Restart ovn-northd
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-northd
