@@ -39,9 +39,10 @@
     backup: yes
   notify: ["Restart ovsdb-server", "Restart ovn-ovsdb-server-nb", "Restart ovn-ovsdb-server-sb", "Restart neutron-server", "Restart openvswitch-switch"]
 
-- name: Flush handlers of Neutron for OVN
-  meta: flush_handlers
+#- name: Flush handlers of Neutron for OVN
+#  meta: flush_handlers
 
 # # TODO: 
-# - name: Reboot machine if required
-#   reboot:
+- name: Reboot OS after configure ovn
+  ansible.builtin.reboot:
+
