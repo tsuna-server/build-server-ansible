@@ -42,16 +42,6 @@
     state: restarted
     name: ovsdb-server
 
-- name: Restart ovn-ovsdb-server-ic-nb
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovn-ovsdb-server-ic-nb
-
-- name: Restart ovn-ovsdb-server-ic-sb
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovn-ovsdb-server-ic-sb
-
 - name: Restart ovn-ovsdb-server-nb
   ansible.builtin.systemd:
     state: restarted
