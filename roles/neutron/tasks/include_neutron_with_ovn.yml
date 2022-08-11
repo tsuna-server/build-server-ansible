@@ -16,6 +16,9 @@
     - name: Include set_configurations/ovn/controllers/main.yml
       include: set_configurations/ovn/controllers/main.yml
 
+    - name: Include configure_ovn_interfaces/ovn/controllers/main.yml
+      include: configure_ovn_interfaces/ovn/controllers/main.yml
+
     - name: Include configure_ovn_db/main.yml
       include: configure_ovn_db/main.yml
   when: "'controllers' in group_names"
