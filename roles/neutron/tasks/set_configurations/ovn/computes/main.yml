@@ -23,8 +23,8 @@
 
 - name: Set /etc/neutron/neutron_ovn_metadata_agent.ini of Neutron with OVN on compute
   ansible.builtin.template:
-    src: neutron/neutron_ovn_metadata_agent.ini
-    dest: /etc/neutron/neutron_ovn_metadata_agent.ini
+    src: neutron/neutron_ovn_metadata_agent.ini.j2
+    dest: /etc/neutron/neutron_ovn_metadata_agent.ini.j2
     owner: root
     group: neutron
     mode: '0640'
