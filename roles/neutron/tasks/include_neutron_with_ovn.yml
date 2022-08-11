@@ -18,9 +18,6 @@
 
     - name: Include configure_ovn_db/main.yml
       include: configure_ovn_db/main.yml
-
-    - name: Include migrate_db/main.yml
-      include: migrate_db/main.yml
   when: "'controllers' in group_names"
 
 - name: Block of Neutron with OVN for computes

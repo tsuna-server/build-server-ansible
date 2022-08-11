@@ -88,3 +88,8 @@
     state: restarted
     name: neutron-ovn-metadata-agent
 
+# - Migrate DB for neutron -------------------------------------------
+- name: Migrate neutron db for ovn
+  ansible.builtin.command:
+    argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
+

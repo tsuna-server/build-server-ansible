@@ -12,7 +12,7 @@
 
 - name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on compute
   ansible.builtin.template:
-    src: neutron/ml2_conf.ini
+    src: neutron/plugins/ml2/ml2_conf.ini.j2
     dest: /etc/neutron/plugins/ml2/ml2_conf.ini
     owner: root
     group: neutron
