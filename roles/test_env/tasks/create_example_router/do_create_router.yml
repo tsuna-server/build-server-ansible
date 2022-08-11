@@ -43,8 +43,8 @@
         argv: ["openstack", "router", "set", "--external-gateway", "{{ router.external_gateway }}", "{{ router.name }}"]
       register: result
 
-    - name: Reboot machine if required
-      reboot:
+    #- name: Reboot machine if required
+    #  reboot:
 
     - name: Print the result of setting a gateway
       ansible.builtin.debug:
