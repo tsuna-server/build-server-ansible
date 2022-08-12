@@ -50,3 +50,5 @@
     state: link
   notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
 
+- name: Flush handlers of Neutron for OVN
+  meta: flush_handlers
