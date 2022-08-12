@@ -29,7 +29,7 @@
 
     - name: Create a router
       ansible.builtin.command:
-        argv: command
+        argv: "{{ command }}"
       register: result
 
     - name: Print the result of creating router
