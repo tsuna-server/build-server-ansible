@@ -23,9 +23,3 @@
 - name: Include do_create_and_assign_rbac.yml
   include: do_create_and_assign_rbac.yml
   loop: "{{ network.rbac }}"
-
-- name: Print an information of RBAC that will be added
-  ansible.builtin.debug:
-    msg: "An information of RBAC will be added: domain.name={{ domain.name }}, project.name={{ project.name }}, network.name={{ network.name }}"
-
-

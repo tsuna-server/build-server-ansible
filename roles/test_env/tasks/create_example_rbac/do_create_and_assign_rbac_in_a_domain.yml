@@ -35,11 +35,6 @@
       when: '(result_of_network_list.stdout_lines | length > 0)'
   when: '(admin_projects_list | length < 1)'
 
-#- name: Create a list in order to add RBAC to admin project in "domain.projects" by default
-#  set_fact:
-#    target_rbac_projects: '{{ target_rbac_projects }} + {{ domain.projects }}'
-#  when: '("admin" not in domain.projects) and (networks_assign_rbac | length < 1)'
-
 - name: Append a projects from a config
   set_fact:
     target_rbac_projects: '{{ target_rbac_projects }} + {{ domain.projects }}'
