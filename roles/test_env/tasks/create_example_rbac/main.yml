@@ -1,7 +1,7 @@
 ---
-# Create and assigne Role Based Access(rbac)
-- name: Include do_create_and_assigne_rbac_in_a_domain.yml
-  include: do_create_and_assigne_rbac_in_a_domain.yml
+# Create and assign Role Based Access(rbac)
+- name: Include do_create_and_assign_rbac_in_a_domain.yml
+  include: do_create_and_assign_rbac_in_a_domain.yml
   loop_control:
     loop_var: domain
   loop: "{{ group_vars.openstack.domains }}"

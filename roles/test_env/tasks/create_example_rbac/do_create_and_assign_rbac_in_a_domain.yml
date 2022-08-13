@@ -9,10 +9,19 @@
   set_fact:
     admin_projects_list: "[{% for item in domain.projects if 'admin' in item.name %}{{ item }}{% if not loop.last %},{% endif %}{% endfor %}]"
 
-- name: Append interim project for admin into target_rbac_projects in order to add RBAC to it by default
-  set_fact:
-    target_rbac_projects: '{{ target_rbac_projects }} + [{"name": "admin", "rbac": ["access_as_shared"}]]'
+- name: Block of declaring target_rbac_projects for admin project if it was not declared in a config
+  block:
+    - name: Get a list of networks to assign RBACs to admin project
+      script
+      register: result_of_network_list
+    - name: Check whether the networks are existed or not
+    - name: Declare networks that have RBACs for an admin project
   when: '(admin_projects_list | length < 1)'
+
+#- name: Append interim project for admin into target_rbac_projects in order to add RBAC to it by default
+#  set_fact:
+#    target_rbac_projects: '{{ target_rbac_projects + [{"name": "admin", "rbac": {"networks": "access_as_shared"}}] }}'
+#  when: '(admin_projects_list | length < 1)'
 
 - name: Create a list in order to add RBAC to admin project in "domain.projects" by default
   set_fact:
@@ -23,8 +32,8 @@
   ansible.builtin.debug:
     msg: "{% for item in target_rbac_projects %}{{ item.name }}{% if not loop.last %},{% endif %}{% endfor %}"
 
-- name: Include do_create_and_assigne_rbac_in_a_project.yml
-  include: do_create_and_assigne_rbac_in_a_project.yml
+- name: Include do_create_and_assign_rbac_in_a_project.yml
+  include: do_create_and_assign_rbac_in_a_project.yml
   loop_control:
     loop_var: project
   loop: "{{ target_rbac_projects }}"
