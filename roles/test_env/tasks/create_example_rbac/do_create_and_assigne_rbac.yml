@@ -5,21 +5,33 @@
 #   project:
 #     A project that contains its name and networks for RBAC.
 #   network:
-#     A network that contains name of network(network.name) and actions list(network.actions[]).
+#     A network that contains its name and actions of RBAC.
 
 # TODO: Create and assigne Role based Access Control(rbac) to a project.
 - name: Print a RBAC to a project in the future.
   ansible.builtin.debug:
     msg: "Assigne a RBAC \"access_as_shared\" {{ project.name }} in a domain {{ domain.name }}"
 
-### TODO: Add a feature to protect
-##- name: Declare network ID to add RBAC
-##- name: Declare project ID to add RBAC
+- name: Get network ID to add RBAC
+  ansible.builtin.script: ./get_network_id.sh "{{ network_name }}"
+  register: result_of_network_id
+
+- name: Get project ID to add RBAC
+  ansible.builtin.script: ./get_project_id.sh "{{ project_id }}"
+  register: result_of_project_id
+
+- name: Declare network_id
+  set_fact:
+    network_id: "{{ result_of_network_id.stdout }}"
+    project_id: "{{ result_of_project_id.stdout }}"
+
+- name: Print a RBAC that will be added
+  ansible.builtin.debug:
+    msg: "Adding RBAC to network_id={{ network_id }}, project_id={{ project_id }}, actions={{ project.rbac.networks }}"
+
 ##
 ##- name: Add RBAC for the project
 ##  ansible.builtin.script: ./get_network_id.sh "{{ network }}" "{{ domain.name }}"
 
 # If a return code 1 and the output is "...An RBAC policy already exists with those values.", the instruction should be skipped because the rule is already registerd.
-
-
 
