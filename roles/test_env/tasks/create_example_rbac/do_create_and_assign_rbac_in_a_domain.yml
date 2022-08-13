@@ -12,7 +12,8 @@
 - name: Block of declaring target_rbac_projects for admin project if it was not declared in a config
   block:
     - name: Get a list of networks to assign RBACs to admin project
-      script
+      shell: "openstack network list --format json"
+      
       register: result_of_network_list
     - name: Check whether the networks are existed or not
     - name: Declare networks that have RBACs for an admin project
