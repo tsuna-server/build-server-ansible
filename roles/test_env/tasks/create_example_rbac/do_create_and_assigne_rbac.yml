@@ -1,6 +1,25 @@
 ---
+# Variables
+#   domain:
+#     A domain that contains its name(domain.name), projects(domain.projects), description(domain.description) etc.
+#   project:
+#     A project that contains its name and networks for RBAC.
+#   network:
+#     A network that contains name of network(network.name) and actions list(network.actions[]).
+
 # TODO: Create and assigne Role based Access Control(rbac) to a project.
-- name: Debug... A feature assigning a RBAC to a project in the future.
+- name: Print a RBAC to a project in the future.
   ansible.builtin.debug:
-    msg: "Assigne a RBAC \"{{ project }}\" {{ project.name }} in a domain {{ domain.name }}"
+    msg: "Assigne a RBAC \"access_as_shared\" {{ project.name }} in a domain {{ domain.name }}"
+
+### TODO: Add a feature to protect
+##- name: Declare network ID to add RBAC
+##- name: Declare project ID to add RBAC
+##
+##- name: Add RBAC for the project
+##  ansible.builtin.script: ./get_network_id.sh "{{ network }}" "{{ domain.name }}"
+
+# If a return code 1 and the output is "...An RBAC policy already exists with those values.", the instruction should be skipped because the rule is already registerd.
+
+
 

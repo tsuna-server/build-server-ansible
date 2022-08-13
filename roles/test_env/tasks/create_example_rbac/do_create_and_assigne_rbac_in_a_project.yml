@@ -1,4 +1,9 @@
 ---
 - name: Include do_create_and_assigne_rbac.yml
   include: do_create_and_assigne_rbac.yml
-  loop: "{{ project.rbac }}"
+  loop_control:
+    loop_var: network
+  loop: "{{ project.rbac.networks }}"
+  #when:
+    # TODO: Apply only projects that have RBAC "access_as_shard" so far.
+    #- '"access_as_shared" in project.rbac.networks'

@@ -5,7 +5,7 @@
   set_fact:
     target_rbac_projects: []
 
-- name: Fetch admin list then append them into temporary list
+- name: Declare a variable of admin project list
   set_fact:
     admin_projects_list: "[{% for item in domain.projects if 'admin' in item.name %}{{ item }}{% if not loop.last %},{% endif %}{% endfor %}]"
 
@@ -29,5 +29,5 @@
     loop_var: project
   loop: "{{ target_rbac_projects }}"
   # TODO: RBAC access_as_shard will be assigned in all projects so far.
-  ##when:
-  ##  - '"rbac" in project'
+  when:
+    - '"rbac" in project'
