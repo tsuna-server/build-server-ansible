@@ -1,10 +1,33 @@
 ---
 # TODO: This instruction supports "access_as_shared" only so far.
+#
+- name: Declare target_rbac_projects
+  set_fact:
+    target_rbac_projects: []
+
+- name: Fetch admin list then append them into temporary list
+  set_fact:
+    admin_projects_list: "[{% for item in domain.projects if 'admin' in item.name %}{{ item }}{% if not loop.last %},{% endif %}{% endfor %}]"
+
+- name: Append interim project for admin into target_rbac_projects in order to add RBAC to it by default
+  set_fact:
+    target_rbac_projects: '{{ target_rbac_projects }} + [{"name": "admin", "rbac": ["access_as_shared"}]]'
+  when: '(admin_projects_list | length < 1)'
+
+- name: Create a list in order to add RBAC to admin project in "domain.projects" by default
+  set_fact:
+    target_rbac_projects: '{{ target_rbac_projects }} + {{ domain.projects }}'
+  when: '"admin" not in domain.projects'
+
+- name: RBAC access_as_shard will be added in projects below by default(so far).
+  ansible.builtin.debug:
+    msg: "{% for item in target_rbac_projects %}{{ item.name }}{% if not loop.last %},{% endif %}{% endfor %}"
+
 - name: Include do_create_and_assigne_rbac_in_a_project.yml
   include: do_create_and_assigne_rbac.yml
   loop_control:
     loop_var: project
-  loop: "{{ domain.projects }}"
-  when:
-    - '"projects" in domain'
-    - '"rbac" in project'
+  loop: "{{ target_rbac_projects }}"
+  # TODO: RBAC access_as_shard will be assigned in all projects so far.
+  ##when:
+  ##  - '"rbac" in project'
