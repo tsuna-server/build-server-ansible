@@ -5,6 +5,9 @@ main() {
     declare -a network_id_list
     declare -a network_names_for_rbac
 
+    # TODO: Suppress warnings of the command "openstack".
+    export PYTHONWARNINGS="ignore"
+
     network_id_list=($(jq -r '.[].Name' <<< $(openstack network list --format json)))
     return_code=$?
     [ $return_code -ne 0 ] && {
@@ -13,7 +16,13 @@ main() {
     }
 
     for network_id in "${network_id_list[@]}"; do
-        network_name=$(jq -r 'select(.["router:external"] == false) | .name' <<< openstack network show --format json "${network_id}")
+        network_name=$(jq -r 'select(.["router:external"] == false) | .name' <<< $(openstack network show --format json "${network_id}"))
+        return_code=$?
+        [ $return_code -ne 0 ] && {
+            echo "ERROR: Failed to get details of network (id: ${network_id})." >&2
+            return 1
+        }
+
         if [ ! -z "${network_name}" ]; then
             network_names_for_rbac+=("${network_name}")
         fi

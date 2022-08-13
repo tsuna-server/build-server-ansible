@@ -12,11 +12,22 @@
 - name: Block of declaring target_rbac_projects for admin project if it was not declared in a config
   block:
     - name: Get a list of networks to assign RBACs to admin project
-      shell: "openstack network list --format json"
-      
+      script: get_list_of_networks.sh
       register: result_of_network_list
-    - name: Check whether the networks are existed or not
+
+    - name: Declare a variable admin_networks_to_add_rbacs
+      set_fact:
+        admin_networks_to_add_rbacs: []
+
+    - name: Declare a list of networks to add RBACs
+      set_fact:
+        admin_networks_to_add_rbacs: "{{ admin_networks_to_add_rbacs + [{ 'name': item, 'actions': ['access_as_shared'] }] }}"
+      with_items: "{{ result_of_network_list.stdout_lines }}"
+
     - name: Declare networks that have RBACs for an admin project
+      set_fact:
+        target_rbac_projects: '{{ target_rbac_projects + admin_networks_to_add_rbacs }}'
+      when: '(result_of_network_list.stdout_lines | length > 0)'
   when: '(admin_projects_list | length < 1)'
 
 #- name: Append interim project for admin into target_rbac_projects in order to add RBAC to it by default
@@ -27,7 +38,7 @@
 - name: Create a list in order to add RBAC to admin project in "domain.projects" by default
   set_fact:
     target_rbac_projects: '{{ target_rbac_projects }} + {{ domain.projects }}'
-  when: '"admin" not in domain.projects'
+  when: '("admin" not in domain.projects) and (networks_assign_rbac | length < 1)'
 
 - name: RBAC access_as_shard will be added in projects below by default(so far).
   ansible.builtin.debug:
