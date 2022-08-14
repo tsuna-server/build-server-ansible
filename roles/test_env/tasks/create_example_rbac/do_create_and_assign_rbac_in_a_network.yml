@@ -12,13 +12,13 @@
   register: result_of_network_id
 
 - name: Get project ID to add RBAC
-  ansible.builtin.script: ./get_project_id.sh "{{ rbac_project.name }}"
+  ansible.builtin.script: ./get_project_id.sh "{{ rbac_domain.name }}" "{{ rbac_project.name }}"
   register: result_of_project_id
 
 - name: Declare network_id
   set_fact:
-    rbac_network_id: "{{ result_of_network_id.stdout }}"
-    rbac_project_id: "{{ result_of_project_id.stdout }}"
+    rbac_network_id: "{{ result_of_network_id.stdout | trim }}"
+    rbac_project_id: "{{ result_of_project_id.stdout | trim }}"
 
 - name: Include do_create_and_assign_rbac.yml
   include: do_create_and_assign_rbac.yml
