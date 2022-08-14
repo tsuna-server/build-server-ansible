@@ -22,10 +22,8 @@
     - name: Include configure_ovn_db/main.yml
       include: configure_ovn_db/main.yml
 
-    # Check whether the Neutron is running correctly or not by executing the command openstack.
-    - name: List network agents
-      ansible.builtin.command:
-        argv: ["openstack", "network", "agent", "list"]
+    - name: Check whether the Neutron is running correctly after setting it
+      include: check_neutron_is_running/controllers/main.yml
   when: "'controllers' in group_names"
 
 - name: Block of Neutron with OVN for computes
