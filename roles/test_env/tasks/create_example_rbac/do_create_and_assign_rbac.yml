@@ -8,12 +8,18 @@
 #     A project that contains its name and networks for RBACs.
 #   rbac_network:
 #     A network that contains its name and actions for RBACs.
+#
+#   rbac_network_id:
+#     A network id for the network that the RBAC will be applied.
+#   rbac_project_id:
+#     A project id for the network that the RBAC will be applied.
 
 # TODO: Create and assign Role based Access Control(rbac) to a project.
 - name: Print a RBAC that will be added
   ansible.builtin.debug:
     msg: "An information of RBAC will be added: domain.name={{ rbac_domain.name }}, project.name={{ rbac_project.name }}, network.name={{ rbac_network.name }}, action={{ rbac_action }}"
 
-##- name: Add RBAC for the project
-##  ansible.builtin.script: ./get_network_id.sh "{{ network }}" "{{ domain.name }}"
+- name: Create RBAC
+  ansible.builtin.command:
+    argv: ["openstack", "network", "rbac", "create", "--target-project", "{{ rbac_project_id }}", "--type", "network", "--action", "{{ rbac_action }}" "{{ rbac_network_id }}"]
 
