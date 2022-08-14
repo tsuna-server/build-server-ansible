@@ -1,0 +1,4 @@
+---
+- name: Check whether the Neutorn is running
+  script: check_neutron_is_running.sh
+  register: neutron_result
