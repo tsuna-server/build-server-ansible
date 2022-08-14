@@ -5,3 +5,4 @@
   loop_control:
     loop_var: domain
   loop: "{{ group_vars.openstack.domains }}"
+  when: '"projects" in domain'

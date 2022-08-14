@@ -15,23 +15,23 @@
       script: get_list_of_networks.sh
       register: result_of_network_list
 
-    - name: Declare a variables admin_network_list_to_add_rbacs and admin_project_list_to_add_rbacs
+    - name: Declare a variables admin_networks_list_to_add_rbacs and admin_projects_list_to_add_rbacs
       set_fact:
-        admin_network_list_to_add_rbacs: []
-        admin_project_list_to_add_rbacs: []
+        admin_networks_list_to_add_rbacs: []
+        admin_projects_list_to_add_rbacs: []
 
     - name: Declare a list of networks for admin to add RBACs
       set_fact:
-        admin_network_list_to_add_rbacs: "{{ admin_network_list_to_add_rbacs + [{ 'name': item, 'actions': ['access_as_shared'] }] }}"
+        admin_networks_list_to_add_rbacs: "{{ admin_networks_list_to_add_rbacs + [{ 'name': item, 'actions': ['access_as_shared'] }] }}"
       with_items: "{{ result_of_network_list.stdout_lines }}"
 
     - name: Declare a variable of project for admin to add RBACs
       set_fact:
-        admin_project_list_to_add_rbacs: "{{ admin_project_list_to_add_rbacs + [{'name': 'admin', 'rbac': admin_network_list_to_add_rbacs}] }}"
+        admin_projects_list_to_add_rbacs: "{{ admin_projects_list_to_add_rbacs + [{'name': 'admin', 'rbac': admin_networks_list_to_add_rbacs}] }}"
 
     - name: Declare networks that have RBACs for an admin project
       set_fact:
-        target_rbac_projects: "{{ target_rbac_projects + admin_project_list_to_add_rbacs }}"
+        target_rbac_projects: "{{ target_rbac_projects + admin_projects_list_to_add_rbacs }}"
       when: '(result_of_network_list.stdout_lines | length > 0)'
   when: '(admin_projects_list | length < 1)'
 
