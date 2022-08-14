@@ -1250,7 +1250,7 @@ auth_type = password
 project_domain_name = Default
 user_domain_name = Default
 region_name = RegionOne
-project_name = project_name = {% for domain in group_vars.openstack.domains if domain.name.upper() == 'DEFAULT' -%}
+project_name = {% for domain in group_vars.openstack.domains if domain.name.upper() == 'DEFAULT' -%}
   {% for project in domain.projects if 'primary' in project and project.primary == true -%}
     {{ project.name }}{{ '\n' }}
   {%- endfor %}
