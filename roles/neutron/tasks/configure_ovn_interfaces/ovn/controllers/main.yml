@@ -4,7 +4,3 @@
     argv: ["ovs-vsctl", "add-br", "br-int"]
   when: '"br-int" not in ansible_interfaces'
 
-- name: Pause until the result of previous command was applied completely
-  pause:
-    seconds: 5
-

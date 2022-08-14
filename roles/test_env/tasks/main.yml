@@ -22,15 +22,15 @@
     - name: Include create_example_rbac/main.yml to create test environment
       include: create_example_rbac/main.yml
 
-    #- name: Include create_flavor/main.yml to create test environment
-    #  include: create_example_flavor/main.yml
+    - name: Include create_flavor/main.yml to create test environment
+      include: create_example_flavor/main.yml
 
-    #- name: Include create_security_group/main.yml to create test security group environment
-    #  include: create_example_security_group/main.yml
+    - name: Include create_security_group/main.yml to create test security group environment
+      include: create_example_security_group/main.yml
 
-    #- name: Include create_ssh_key/main.yml to create test ssh key
-    #  include: create_ssh_key/main.yml
+    - name: Include create_ssh_key/main.yml to create test ssh key
+      include: create_ssh_key/main.yml
 
-    #- name: Include create_example_cirros/main.yml to create test environment
-    #  include: create_example_cirros/main.yml
+    - name: Include create_example_cirros/main.yml to create test environment
+      include: create_example_cirros/main.yml
   when: "'controllers' in group_names"

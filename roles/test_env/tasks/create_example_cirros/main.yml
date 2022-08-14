@@ -53,17 +53,17 @@
       ansible.builtin.debug:
         msg: "instance_name={{ group_vars.openstack.examples.instances[0].name }}, image={{ group_vars.openstack.examples.instances[0].image.name }}, network={{ group_vars.openstack.examples.instances[0].network }}"
 
-    #- name: Create an instance
-    #  ansible.builtin.command:
-    #    argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}", "{{ group_vars.openstack.examples.instances[0].name }}"]
+    - name: Create an instance
+      ansible.builtin.command:
+        argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}", "{{ group_vars.openstack.examples.instances[0].name }}"]
 
-    #- name: Get an instance list after new one was created
-    #  ansible.builtin.command:
-    #    argv: ["openstack", "server", "list"]
-    #  register: result_get_an_instance_list
+    - name: Get an instance list after new one was created
+      ansible.builtin.command:
+        argv: ["openstack", "server", "list"]
+      register: result_get_an_instance_list
 
-    #- name: Print an instance list after new one was created
-    #  ansible.builtin.debug:
-    #    msg: "{{ result_get_an_instance_list.stdout.split('\n') }}"
+    - name: Print an instance list after new one was created
+      ansible.builtin.debug:
+        msg: "{{ result_get_an_instance_list.stdout.split('\n') }}"
   when: result_check_instance.rc == 0
 

@@ -36,9 +36,5 @@
     argv: ["ovs-appctl", "-t", "ovsdb-server", "ovsdb-server/add-remote", "ptcp:6640:{{ controller_ip }}"]
   notify: ["Restart ovn-central", "Restart ovn-northd", "Restart neutron-server", "Restart openvswitch-switch"]
 
-- name: Pause until the result of previous command was applied completely
-  pause:
-    seconds: 5
-
 - name: Flush handlers of Neutron for OVN
   meta: flush_handlers
