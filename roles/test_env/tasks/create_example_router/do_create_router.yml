@@ -46,18 +46,18 @@
     #- name: Reboot machine if required
     #  reboot:
 
-    - name: Print the result of setting a gateway
-      ansible.builtin.debug:
-        msg: "{{ result.stdout.split('\n') }}"
+    #- name: Print the result of setting a gateway
+    #  ansible.builtin.debug:
+    #    msg: "{{ result.stdout.split('\n') }}"
 
     - name: Add a router to subnet
       ansible.builtin.command:
         argv: ["openstack", "router", "add", "subnet", "{{ router.name }}", "{{ router.subnet }}"]
       register: result
 
-    - name: Print the result of adding a router
-      ansible.builtin.debug:
-        msg: "{{ result.stdout.split('\n') }}"
+    #- name: Print the result of adding a router
+    #  ansible.builtin.debug:
+    #    msg: "{{ result.stdout.split('\n') }}"
 
     - name: Get the list of the router
       ansible.builtin.command:
