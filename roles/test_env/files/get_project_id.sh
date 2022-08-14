@@ -4,7 +4,7 @@ main() {
     local project_name="$1"
     local return_code project_id
 
-    if [[ "$project_name" =~ ^[a-zA-Z_0-9]+$ ]]; then
+    if [[ ! "$project_name" =~ ^[a-zA-Z_0-9]+$ ]]; then
         echo "ERROR: A acript \"$0\" does not support a project_name \"${network_name}\"." >&2
         return 1
     fi
