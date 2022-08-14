@@ -3,6 +3,6 @@
 - name: Include do_create_and_assign_rbac_in_a_domain.yml
   include: do_create_and_assign_rbac_in_a_domain.yml
   loop_control:
-    loop_var: domain
+    loop_var: rbac_domain
   loop: "{{ group_vars.openstack.domains }}"
-  when: '"projects" in domain'
+  when: '"projects" in rbac_domain'

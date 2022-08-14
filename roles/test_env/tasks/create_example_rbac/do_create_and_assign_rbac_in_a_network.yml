@@ -1,27 +1,28 @@
 # Variables
-#   domain:
-#     A domain that contains its name(domain.name), projects(domain.projects), description(domain.description) etc.
-#   project:
-#     A project that contains its name and networks for RBAC.
-#   network:
-#     A network that contains its name and actions of RBACs.
+#   rbac_domain:
+#     A domain that contains its name(domain.name), projects(domain.projects), description(domain.description) etc for RBACs.
+#   rbac_project:
+#     A project that contains its name and networks for RBACs.
+#   rbac_network:
+#     A network that contains its name and actions for RBACs.
 
 # TODO: Add a feature to protect
 - name: Get network ID to add RBAC
-  ansible.builtin.script: ./get_network_id.sh "{{ network.name }}"
+  ansible.builtin.script: ./get_network_id.sh "{{ rbac_network.name }}"
   register: result_of_network_id
 
 - name: Get project ID to add RBAC
-  ansible.builtin.script: ./get_project_id.sh "{{ project.name }}"
+  ansible.builtin.script: ./get_project_id.sh "{{ rbac_project.name }}"
   register: result_of_project_id
 
 - name: Declare network_id
   set_fact:
-    network_id: "{{ result_of_network_id.stdout }}"
-    project_id: "{{ result_of_project_id.stdout }}"
+    rbac_network_id: "{{ result_of_network_id.stdout }}"
+    rbac_project_id: "{{ result_of_project_id.stdout }}"
 
 - name: Include do_create_and_assign_rbac.yml
   include: do_create_and_assign_rbac.yml
   loop_control:
-    loop_var: action
-  loop: "{{ network.actions }}"
+    loop_var: rbac_action
+  loop: "{{ rbac_network.actions }}"
+

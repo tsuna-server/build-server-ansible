@@ -10,14 +10,14 @@
 
 - name: Block create test env on controller node
   block:
-    #- name: Include create_example_network/main.yml to create test environment
-    #  include: create_example_network/main.yml
+    - name: Include create_example_network/main.yml to create test environment
+      include: create_example_network/main.yml
 
-    #- name: Include create_example_subnet/main.yml to create test environment
-    #  include: create_example_subnet/main.yml
+    - name: Include create_example_subnet/main.yml to create test environment
+      include: create_example_subnet/main.yml
 
-    #- name: Include create_example_router/main.yml to create test environment
-    #  include: create_example_router/main.yml
+    - name: Include create_example_router/main.yml to create test environment
+      include: create_example_router/main.yml
 
     - name: Include create_example_rbac/main.yml to create test environment
       include: create_example_rbac/main.yml
