@@ -1,7 +1,7 @@
 ---
 # Variables
-#   a_rbac:
-#     A name of
+#   action:
+#     A name of action in the RBAC.
 #   domain:
 #     A domain that contains its name(domain.name), projects(domain.projects), description(domain.description) etc.
 #   project:
@@ -12,7 +12,7 @@
 # TODO: Create and assign Role based Access Control(rbac) to a project.
 - name: Print a RBAC that will be added
   ansible.builtin.debug:
-    msg: "An information of RBAC will be added: domain.name={{ domain.name }}, project.name={{ project.name }}, network.name={{ network.name }}, action={{  }}"
+    msg: "An information of RBAC will be added: domain.name={{ domain.name }}, project.name={{ project.name }}, network.name={{ network.name }}, action={{ action }}"
 
 ##- name: Add RBAC for the project
 ##  ansible.builtin.script: ./get_network_id.sh "{{ network }}" "{{ domain.name }}"

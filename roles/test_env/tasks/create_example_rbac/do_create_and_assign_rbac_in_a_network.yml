@@ -22,4 +22,6 @@
 
 - name: Include do_create_and_assign_rbac.yml
   include: do_create_and_assign_rbac.yml
-  loop: "{{ network.rbac }}"
+  loop_control:
+    loop_var: action
+  loop: "{{ network.actions }}"
