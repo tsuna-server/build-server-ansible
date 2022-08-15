@@ -1,9 +1,4 @@
 ---
-- name: Restart ovs-vswitchd
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovs-vswitchd
-
 - name: Detect IP address from a first controller node in hosts
   set_fact:
     controller_ip: "{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}"
@@ -24,6 +19,7 @@
 - name: Set a connection to Northbound DB for OVN
   ansible.builtin.command:
     argv: ["ovn-nbctl", "set-connection", "ptcp:6641:{{ controller_ip }}", "--", "set", "connection", ".", "inactivity_probe=60000"]
+  notify: ["Restart ovn-central", "Restart ovn-northd", "Restart neutron-server", "Restart openvswitch-switch"]
 
 # The command "ovn-sbctl set-connection" can be run duplicately.
 # If you run this command duplicately, the config will be overwritten by the command that runs last.
@@ -31,14 +27,14 @@
 - name: Set a connection to Southbound DB for OVN
   ansible.builtin.command:
     argv: ["ovn-sbctl", "set-connection", "ptcp:6642:{{ controller_ip }}", "--", "set", "connection", ".", "inactivity_probe=60000"]
+  notify: ["Restart ovn-central", "Restart ovn-northd", "Restart neutron-server", "Restart openvswitch-switch"]
 
 # FIXME: This instruction has possibility that the multi remotes will be registered if the command run multiply with different controller IP.
 # To be more safely, this instruction should only be run if remote was not registered yet.
 - name: Add remote Open vSwitch daemon
   ansible.builtin.command:
     argv: ["ovs-appctl", "-t", "ovsdb-server", "ovsdb-server/add-remote", "ptcp:6640:{{ controller_ip }}"]
+  notify: ["Restart ovn-central", "Restart ovn-northd", "Restart neutron-server", "Restart openvswitch-switch"]
 
-- name: Restart ovn-northd
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovn-northd
+- name: Flush handlers of Neutron for OVN
+  meta: flush_handlers

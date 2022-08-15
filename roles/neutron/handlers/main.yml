@@ -42,16 +42,6 @@
     state: restarted
     name: ovsdb-server
 
-- name: Restart ovn-ovsdb-server-ic-nb
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovn-ovsdb-server-ic-nb
-
-- name: Restart ovn-ovsdb-server-ic-sb
-  ansible.builtin.systemd:
-    state: restarted
-    name: ovn-ovsdb-server-ic-sb
-
 - name: Restart ovn-ovsdb-server-nb
   ansible.builtin.systemd:
     state: restarted
@@ -72,3 +62,37 @@
   ansible.builtin.systemd:
     state: restarted
     name: ovn-controller
+
+- name: Restart openvswitch-switch
+  ansible.builtin.systemd:
+    state: restarted
+    name: openvswitch-switch
+
+- name: Restart ovn-host
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-host
+
+- name: Restart neutron-ovn-metadata-agent
+  ansible.builtin.systemd:
+    state: restarted
+    name: neutron-ovn-metadata-agent
+
+# - Migrate DB for neutron -------------------------------------------
+- name: Restart ovn-central
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-central
+
+- name: Restart ovn-northd
+  ansible.builtin.systemd:
+    state: restarted
+    name: ovn-northd
+
+- name: Migrate neutron db for ovn
+  ansible.builtin.command:
+    argv: ["su", "-s", "/bin/sh", "-c", "neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head", "neutron"]
+
+# - Handler for the OS -------------------------------------------
+- name: Reboot OS
+  ansible.builtin.reboot:

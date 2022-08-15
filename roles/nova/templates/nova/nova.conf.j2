@@ -8,14 +8,17 @@ transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{
 my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% elif 'computes' in group_names %}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
-{% endif %}
-
-{% if 'computes' in group_names %}
+{% if 'Linux Bridge' == group_vars.openstack.network.plugin %}
 # For using Linux bridge.
 # Added vif parameters to prevent https://ask.openstack.org/en/question/26938/virtualinterfacecreateexception-virtual-interface-creation-failed/
 # Or see: https://web.archive.org/web/20201021171630/https://ask.openstack.org/en/question/26938/virtualinterfacecreateexception-virtual-interface-creation-failed/
 vif_plugging_is_fatal = false
 vif_plugging_timeout = 0
+{% elif 'OVN' == group_vars.openstack.network.plugin %}
+use_neutron = True
+vif_plugging_is_fatal = true
+vif_plugging_timeout = 300
+{% endif %}
 {% endif %}
 
 #
@@ -3495,7 +3498,9 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 {%- endfor %}
 username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
-{% if 'controllers' in group_names %}
+
+{% if ('controllers' in group_names) or ('computes' in group_names and 'OVN' == group_vars.openstack.network.plugin) %}
+{# TODO: Is it needed to add these lines if a conditional ('computes' in group_names and 'OVN' == group_vars.openstack.network.plugin) #}
 service_metadata_proxy = true
 metadata_proxy_shared_secret = {{ group_vars.neutron.password }}
 {% endif %}

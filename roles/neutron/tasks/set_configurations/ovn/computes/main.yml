@@ -7,5 +7,48 @@
     group: neutron
     mode: '0640'
     backup: yes
-  notify: ["Restart ovn-controller"]
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
   register: result_neutron_conf
+
+- name: Set /etc/neutron/plugins/ml2/ml2_conf.ini of Neutron with OVN on compute
+  ansible.builtin.template:
+    src: neutron/plugins/ml2/ml2_conf.ini.j2
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
+  register: result_neutron_conf
+
+- name: Set /etc/neutron/neutron_ovn_metadata_agent.ini of Neutron with OVN on compute
+  ansible.builtin.template:
+    src: neutron/neutron_ovn_metadata_agent.ini.j2
+    dest: /etc/neutron/neutron_ovn_metadata_agent.ini
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
+  register: result_neutron_conf
+
+- name: Set /etc/default/openvswitch-switch of Neutron with OVN on controller
+  ansible.builtin.template:
+    src: default/openvswitch-switch
+    dest: /etc/default/openvswitch-switch
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
+  register: result_openvswitch_switch
+
+- name: Create symbolic link to /etc/neutron/plugin.ini from /etc/neutron/plugins/ml2/ml2_conf.ini
+  file:
+    src: "/etc/neutron/plugins/ml2/ml2_conf.ini"
+    dest: "/etc/neutron/plugin.ini"
+    state: link
+  notify: ["Restart openvswitch-switch", "Restart ovn-controller", "Restart ovn-host", "Restart neutron-ovn-metadata-agent", "Restart nova-compute"]
+
+- name: Flush handlers of Neutron for OVN
+  meta: flush_handlers

@@ -1,0 +1,6 @@
+---
+- name: Add an interface br-int if it has not existed
+  ansible.builtin.command:
+    argv: ["ovs-vsctl", "add-br", "br-int"]
+  when: '"br-int" not in ansible_interfaces'
+

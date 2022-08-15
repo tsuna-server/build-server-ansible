@@ -8,7 +8,7 @@
 
 - name: Set ovn-remote for compute node
   ansible.builtin.command:
-    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-encap-type=geneve,vxlan"]
+    argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-encap-type=geneve"]
 
 - name: Declare my IP for setting ovn-encap-ip
   set_fact:

@@ -19,6 +19,9 @@
     - name: Include create_example_router/main.yml to create test environment
       include: create_example_router/main.yml
 
+    - name: Include create_example_rbac/main.yml to create test environment
+      include: create_example_rbac/main.yml
+
     - name: Include create_flavor/main.yml to create test environment
       include: create_example_flavor/main.yml
 

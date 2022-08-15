@@ -1,0 +1,11 @@
+---
+# Tasks for preparing interfaces of Open vSwitch in OVN.
+# TODO: Can instructions in this file be removed in a role Neutron?
+
+- name: Determin which network driver will be used. Linux Bridge or OVN are only supported so far.
+  set_fact:
+    network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'Linux Bridge' == group_vars.openstack.network.plugin %}Linux Bridge{% else %}{{ group_vars.openstack.network.plugin }}{% endif %}"
+
+- name: Include configure ovn 
+  include: create_interfaces_of_ovn/main.yml
+  when: "'OVN' == network_plugin"

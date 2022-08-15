@@ -43,7 +43,6 @@
 
         - name: Join dns variable to execute
           set_fact:
-            #converted_dns_servers: "{{ dns_servers | join(' --dns-nameserver ') | split(' ') }}"
             dns_servers: "{{ ['--dns-nameserver'] + (dns_servers | join(' --dns-nameserver ') | split(' ')) }}"
           when: dns_servers|length > 0
 
