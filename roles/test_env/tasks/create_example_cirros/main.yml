@@ -49,13 +49,33 @@
 
 - name: Block of creating an instance
   block:
-    - name: Print an instance that will be created
+    - name: Declare a variable server_create_options that will be passed when creating an instance
+      set_fact:
+        server_create_options: []
+        server_create_command: []
+
+    - name: Append security groups for an instance
+      set_fact:
+        server_create_options: '{{ server_create_options + ["--security-group", item] }}'
+      loop: '{{ group_vars.openstack.examples.instances[0].security_groups }}'
+
+    - name: Build a command to create an instance
+      set_fact:
+        server_create_command: '{{ ["openstack", "server", "create", "--flavor", group_vars.openstack.examples.instances[0].flavor, "--image", group_vars.openstack.examples.instances[0].image.name, "--network", group_vars.openstack.examples.instances[0].network] + server_create_options + [group_vars.openstack.examples.instances[0].name] }}'
+
+    #- name: Print an instance that will be created
+    #  ansible.builtin.debug:
+    #    msg: "instance_name={{ group_vars.openstack.examples.instances[0].name }}, image={{ group_vars.openstack.examples.instances[0].image.name }}, network={{ group_vars.openstack.examples.instances[0].network }}, security_group={{ server_create_options }}"
+
+    - name: Print a command to create an instance
       ansible.builtin.debug:
-        msg: "instance_name={{ group_vars.openstack.examples.instances[0].name }}, image={{ group_vars.openstack.examples.instances[0].image.name }}, network={{ group_vars.openstack.examples.instances[0].network }}"
+        msg: "command={{ server_create_command }}"
 
     - name: Create an instance
       ansible.builtin.command:
-        argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}", "{{ group_vars.openstack.examples.instances[0].name }}"]
+        #argv: ["openstack", "server", "create", "--flavor", "{{ group_vars.openstack.examples.instances[0].flavor }}", "--image", "{{ group_vars.openstack.examples.instances[0].image.name }}", "--network", "{{ group_vars.openstack.examples.instances[0].network }}",] + server_create_options + [ "{{ group_vars.openstack.examples.instances[0].name }}"]
+        #argv: '{{ ["openstack", "server", "create", "--flavor", group_vars.openstack.examples.instances[0].flavor, "--image", group_vars.openstack.examples.instances[0].image.name, "--network", group_vars.openstack.examples.instances[0].network, server_create_options] }}'
+        argv: "{{ server_create_command }}"
 
     - name: Get an instance list after new one was created
       ansible.builtin.command:
