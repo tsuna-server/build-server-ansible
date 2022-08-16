@@ -42,10 +42,19 @@
         msg: "{{ result.stdout.split('\n') }}"
   when: result_of_checking.rc == 0
 
+#- name: Check whether the instance is already declared or not
+#  ansible.builtin.script: ./check_duplicate_glance_image.sh cirros
+#  register: result_check_instance
+#  failed_when: (result_check_instance.rc not in [0, 1])
+
 - name: Check whether the instance is already declared or not
-  ansible.builtin.script: ./check_duplicate_glance_image.sh cirros
+  ansible.builtin.script: ./check_duplicate_instance.sh "{{ group_vars.openstack.examples.instances[0].name }}"
   register: result_check_instance
   failed_when: (result_check_instance.rc not in [0, 1])
+
+- name: Print the result of check_duplicate_instance.sh
+  ansible.builtin.debug:
+    msg: "output={{ result_check_instance.stdout }}"
 
 - name: Block of creating an instance
   block:

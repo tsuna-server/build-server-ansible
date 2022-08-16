@@ -25,7 +25,7 @@ main() {
         return 2
     }
 
-    [ $output -gt 0 ] || {
+    [ $output -gt 0 ] && {
         echo "INFO: An instance \"${target_instance_name}\" was already registered."
         return 1
     }
