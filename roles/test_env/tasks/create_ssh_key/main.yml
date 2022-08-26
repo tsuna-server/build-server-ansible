@@ -1,18 +1,17 @@
 ---
-
 - name: Declare a path of ssh-key private key file
   set_fact:
     ssh_key_pair_name: "{{ group_vars.openstack.admin_user_name }}"
-    ssh_private_key_file: "{{ ansible_env.HOME }}/.ssh/openstack_{{ group_vars.openstack.admin_user_name }}_id_rsa"
+    ssh_private_key_file_name: "{{ ansible_env.HOME }}/.ssh/openstack_{{ group_vars.openstack.admin_user_name }}"
 
 - name: Stat ssh key pair file
   ansible.builtin.stat:
-    path: "{{ ssh_private_key_file }}"
+    path: "{{ ssh_private_key_file_name }}"
   register: key_file
 
 - name: Create a ssh key pair
   community.crypto.openssh_keypair:
-    path: "{{ ssh_private_key_file }}"
+    path: "{{ ssh_private_key_file_name }}"
   when: not key_file.stat.exists
 
 - name: Check whether a key is already registerd
