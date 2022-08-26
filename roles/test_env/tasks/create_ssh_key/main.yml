@@ -2,6 +2,6 @@
 - name: Include do_create_ssh_key.yml
   include: do_create_ssh_key.yml
   loop_control:
-    loop_var: ssh_key
-  loop: "{{ group_vars.openstack.ssh.key_pars }}"
+    loop_var: key_pair
+  loop: "{{ group_vars.openstack.ssh.key_pairs }}"
 

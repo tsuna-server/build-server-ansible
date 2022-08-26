@@ -63,10 +63,16 @@
         server_create_options: []
         server_create_command: []
 
-    - name: Append security groups for an instance
+    - name: Append options for security groups
       set_fact:
         server_create_options: '{{ server_create_options + ["--security-group", item] }}'
       loop: '{{ group_vars.openstack.examples.instances[0].security_groups }}'
+
+    - name: Append options for ssh key
+      set_fact:
+        server_create_options: '{{ server_create_options + ["--key-name", item] }}'
+      loop: '{{ group_vars.openstack.examples.instances[0].ssh.key_pairs }}'
+      when: '("ssh" in {{ group_vars.openstack.examples.instances[0] }}) and ("key_pairs" in {{ group_vars.openstack.examples.instances[0].ssh }})'
 
     - name: Build a command to create an instance
       set_fact:
