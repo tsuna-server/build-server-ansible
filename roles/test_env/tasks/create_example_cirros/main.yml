@@ -70,9 +70,13 @@
 
     - name: Append options for ssh key
       set_fact:
-        server_create_options: '{{ server_create_options + ["--key-name", item] }}'
+        server_create_options: '{{ server_create_options + ["--key-name", item.name] }}'
       loop: '{{ group_vars.openstack.examples.instances[0].ssh.key_pairs }}'
       when: '("ssh" in {{ group_vars.openstack.examples.instances[0] }}) and ("key_pairs" in {{ group_vars.openstack.examples.instances[0].ssh }})'
+
+    - name: Debug building a command to create an instance
+      ansible.builtin.debug:
+        msg: 'server_create_command={{ server_create_command }}'
 
     - name: Build a command to create an instance
       set_fact:
