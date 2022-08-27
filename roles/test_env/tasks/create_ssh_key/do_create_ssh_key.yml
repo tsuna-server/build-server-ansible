@@ -1,0 +1,35 @@
+---
+# This is a task to create a ssh key.
+# Variables that are pretended below.
+#
+#   key_pair:
+#     A key_par
+#
+#   key_pair.name:
+#     A name of a key to create
+
+- name: Declare a path of ssh-key private key file
+  set_fact:
+    ssh_key_pair_name: "{{ key_pair.name }}"
+    ssh_private_key_file_path: "{{ ansible_env.HOME }}/.ssh/{{ key_pair.name }}"
+
+- name: Stat ssh key pair file
+  ansible.builtin.stat:
+    path: "{{ ssh_private_key_file_path }}"
+  register: key_file
+
+- name: Create a ssh key pair
+  community.crypto.openssh_keypair:
+    path: "{{ ssh_private_key_file_path }}"
+  when: not key_file.stat.exists
+
+- name: Check whether a key is already registerd
+  ansible.builtin.script: ./check_duplicate_ssh_key.sh "{{ ssh_key_pair_name }}"
+  register: result
+  failed_when: result.rc not in [0, 1]
+
+- name: Register a ssh key pair
+  ansible.builtin.command:
+    argv: ["openstack", "keypair", "create", "--public-key", "{{ ssh_private_key_file_path }}.pub", "{{ ssh_key_pair_name }}"]
+  when: result.rc == 0
+
