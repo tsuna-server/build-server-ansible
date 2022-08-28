@@ -1,0 +1,7 @@
+---
+- name: Include do_add_floating_ip.yml
+  include: do_add_floating_ip.yml
+  loop_control:
+    loop_var: instance
+  loop: '{{ group_vars.openstack.examples.instances }}'
+  when: '"floating_ip_network" in instance'
