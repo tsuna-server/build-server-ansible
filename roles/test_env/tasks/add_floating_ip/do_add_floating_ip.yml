@@ -16,28 +16,29 @@
   register: result_get_floating_ip
   failed_when: ( result_get_floating_ip.rc not in [0, 1] )
 
-- block: Block of adding floating IP to the instance
-  - name: Declare a variable floating_ip
-    set_fact:
-      floating_ip: "{{ result_get_floating_ip.stdout }}"
-      command_to_add_floating_ip: []
+- name: Block of adding floating IP to the instance
+  block:
+    - name: Declare a variable floating_ip
+      set_fact:
+        floating_ip: "{{ result_get_floating_ip.stdout.split('\n')[0] }}"
+        command_to_add_floating_ip: []
 
-  - name: Declare a command to add floating ip
-    set_fact:
-      command_to_add_floating_ip: ["openstack", "server", "add", "floating", "ip", "{{ instance.name }}", "{{ floating_ip }}"]
+    - name: Declare a command to add floating ip
+      set_fact:
+        command_to_add_floating_ip: ["openstack", "server", "add", "floating", "ip", "{{ instance.name }}", "{{ floating_ip }}"]
 
-  - name: Print a command to add floating IP to the instance
-    ansible.builtin.debug:
-      msg: "command={{ command_to_add_floating_ip }}"
+    - name: Print a command to add floating IP to the instance
+      ansible.builtin.debug:
+        msg: "command={{ command_to_add_floating_ip }}"
 
-  - name: Run a command to add floating IP to the instance
-    ansible.builtin.command:
-      argv: "{{ command_to_add_floating_ip }}"
-    register: result_of_adding_floating_ip
+    - name: Run a command to add floating IP to the instance
+      ansible.builtin.command:
+        argv: "{{ command_to_add_floating_ip }}"
+      register: result_of_adding_floating_ip
 
-  - name: Print the result of adding floating IP to the instance
-    ansible.builtin.debug:
-      msg: "{{ result_of_adding_floating_ip.stdout.split('\n') }}"
+    - name: Print the result of adding floating IP to the instance
+      ansible.builtin.debug:
+        msg: "{{ result_of_adding_floating_ip.stdout.split('\n') }}"
   when: result_of_checking_network.rc == 0
 
 - name: You do not have to add floating IP because it is already added in the instance
