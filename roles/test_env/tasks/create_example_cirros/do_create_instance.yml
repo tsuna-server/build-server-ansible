@@ -1,0 +1,75 @@
+---
+# This task creates an instance.
+#
+# Variables
+#   instance:
+#     An instance.
+#
+#   instance.name
+#     A name of instance.
+#
+#   instance.flavor
+#     A flavor of the instance.
+#
+#   instance.security_groups: (Optional)
+#     Security groups that will be applied to the instance.
+#
+#   instance.ssh.key_pairs: (Optional)
+#     SSH key pair that will be added to the instance.
+#
+#   instance.image.name:
+#     An image name that the instance will be created from.
+#
+#   instance.network:
+#     A network name that the instance will be belonging in.
+
+- name: Check whether the instance is already declared or not
+  ansible.builtin.script: ./check_duplicate_instance.sh "{{ instance.name }}"
+  register: result_check_instance
+  failed_when: (result_check_instance.rc not in [0, 1])
+
+- name: Print the result of check_duplicate_instance.sh
+  ansible.builtin.debug:
+    msg: "output={{ result_check_instance.stdout }}"
+
+- name: Block of creating an instance
+  block:
+    - name: Declare a variable server_create_options that will be passed when creating an instance
+      set_fact:
+        server_create_options: []
+        server_create_command: []
+
+    - name: Append options for security groups
+      set_fact:
+        server_create_options: '{{ server_create_options + ["--security-group", item] }}'
+      loop: '{{ instance.security_groups }}'
+
+    - name: Append options for ssh key
+      set_fact:
+        server_create_options: '{{ server_create_options + ["--key-name", item.name] }}'
+      loop: '{{ instance.ssh.key_pairs }}'
+      when: '("ssh" in {{ instance }}) and ("key_pairs" in {{ instance.ssh }})'
+
+    - name: Build a command to create an instance
+      set_fact:
+        server_create_command: '{{ ["openstack", "server", "create", "--flavor", instance.flavor, "--image", instance.image.name, "--network", instance.network] + server_create_options + [instance.name] }}'
+
+    - name: Print a command to create an instance
+      ansible.builtin.debug:
+        msg: "command={{ server_create_command }}"
+
+    - name: Create an instance
+      ansible.builtin.command:
+        argv: "{{ server_create_command }}"
+
+    - name: Get an instance list after new one was created
+      ansible.builtin.command:
+        argv: ["openstack", "server", "list"]
+      register: result_get_an_instance_list
+
+    - name: Print an instance list after new one was created
+      ansible.builtin.debug:
+        msg: "{{ result_get_an_instance_list.stdout.split('\n') }}"
+  when: result_check_instance.rc == 0
+
+
