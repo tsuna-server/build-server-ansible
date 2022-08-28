@@ -12,7 +12,7 @@
 #     A floating IP will be added in the network.
 
 - name: Create or get unused floating IP
-  ansible.builtin.script: ./get_floating_ip_to_the_instance.sh "{{ instance.floating_ip_network }}"
+  ansible.builtin.script: ./get_floating_ip_to_the_instance.sh "{{ instance.floating_ip_network }}" "{{ instance.name }}"
   register: result_get_floating_ip
   failed_when: ( result_get_floating_ip.rc not in [0, 1] )
 

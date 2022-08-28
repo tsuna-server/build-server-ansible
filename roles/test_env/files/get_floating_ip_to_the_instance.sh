@@ -13,20 +13,21 @@
 #   2: Error
 main() {
     local network="$1"
+    local instance_id="$2"
     local ret num_of_addresses unused_ip
 
     export PYTHONWARNINGS="ignore"
 
-    if [ -z "$network" ]; then
+    if [ -z "$network" ] || [ -z "$instance_id" ]; then
         echo "Usage: $0 <network>" >&2
         exit 2
     fi
 
-    num_of_addresses=$(jq '.addresses | map(.[]) | length' < <(openstack server show cirros01 --format json))
+    num_of_addresses=$(jq '.addresses | map(.[]) | length' < <(openstack server show ${instance_id} --format json))
     ret=$?
 
     if [ $ret -ne 0 ] || [[ ! "$num_of_addresses" =~ ^[0-9]+$ ]]; then
-        echo "ERROR: Failed to get number of IP addresses. A command \"openstack server show cirros01 --format json\" might be failed." >&2
+        echo "ERROR: Failed to get number of IP addresses. A command \"openstack server show ${instance_id} --format json\" might be failed." >&2
         exit 2
     fi
 
