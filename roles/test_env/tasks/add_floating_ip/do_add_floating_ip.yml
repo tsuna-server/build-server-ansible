@@ -39,10 +39,10 @@
     - name: Print the result of adding floating IP to the instance
       ansible.builtin.debug:
         msg: "{{ result_of_adding_floating_ip.stdout }}"
-  when: result_of_checking_network.rc == 0
+  when: result_get_floating_ip.rc == 0
 
 - name: You do not have to add floating IP because it is already added in the instance
   ansible.builtin.debug:
     msg: "A instance {{ instance.name }} has already have a floating IP. Then you need NOT to add it. The instruction was skipped."
-  when: result_of_checking_network.rc == 1
+  when: result_get_floating_ip.rc == 1
 
