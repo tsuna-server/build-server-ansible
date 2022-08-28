@@ -1,30 +1,39 @@
 ---
 # This task creates an image
+# Variables
+#   image:
+#     An image
+#
+#   image.name
+#     Name of the image.
+#
+#   image.url
+#     A URL to download its image.
 
 - name: Declare iso file image name
   set_fact:
-    iso_cirros_file_name: "{{ group_vars.openstack.examples.images[0].url.split('/')[-1] }}"
+    iso_file_name: "{{ image.url.split('/')[-1] }}"
 
 - name: Declare iso file path
   set_fact:
-    iso_cirros_file_path: "/root/{{ iso_cirros_file_name }}"
+    iso_file_path: "/root/{{ iso_cirros_file_name }}"
 
 - name: Check an iso file of cirros has already downloaded
   stat:
-    path: "{{ iso_cirros_file_path }}"
+    path: "{{ iso_file_path }}"
   register: flag_file
 
-- name: Download cirros image (timeout == 300 sec, retries == 3)
+- name: Download cirros image (timeout == 600 sec, retries == 3)
   get_url:
-    url: "{{ group_vars.openstack.examples.images[0].url }}"
-    dest: "{{ iso_cirros_file_path }}"
-    timeout: 300
+    url: "{{ images.url }}"
+    dest: "{{ iso_file_path }}"
+    timeout: 600
   retries: 3
   delay: 2
   when: not flag_file.stat.exists
 
 - name: Check Glance example image of cirros has already created
-  ansible.builtin.script: ./check_duplicate_glance_image.sh "{{ group_vars.openstack.examples.images[0].name }}"
+  ansible.builtin.script: ./check_duplicate_glance_image.sh "{{ image.name }}"
   register: result_of_checking
   failed_when: ( result_of_checking.rc not in [0, 1] )
 
@@ -32,7 +41,7 @@
   block: 
     - name: Create Glance image of cirros
       ansible.builtin.command:
-        argv: ["openstack", "image", "create", "--disk-format", "qcow2", "--container-format", "bare", "--public", "--file", "{{ iso_cirros_file_path }}", "{{ group_vars.openstack.examples.images[0].name }}"]
+        argv: ["openstack", "image", "create", "--disk-format", "qcow2", "--container-format", "bare", "--public", "--file", "{{ iso_file_path }}", "{{ image.name }}"]
 
     - name: List Glance images
       ansible.builtin.command:

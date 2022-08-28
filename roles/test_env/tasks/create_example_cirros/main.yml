@@ -1,6 +1,4 @@
 ---
-
-
 - name: Include do_create_image.yml
   include: do_create_image.yml
   loop_control:
