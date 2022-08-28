@@ -20,7 +20,7 @@
   block:
     - name: Declare a variable floating_ip
       set_fact:
-        floating_ip: "{{ result_get_floating_ip.stdout.split('\n')[0] }}"
+        floating_ip: "{{ result_get_floating_ip.stdout_lines[0] }}"
         command_to_add_floating_ip: []
 
     - name: Declare a command to add floating ip
@@ -38,7 +38,7 @@
 
     - name: Print the result of adding floating IP to the instance
       ansible.builtin.debug:
-        msg: "{{ result_of_adding_floating_ip.stdout.split('\n') }}"
+        msg: "{{ result_of_adding_floating_ip.stdout }}"
   when: result_of_checking_network.rc == 0
 
 - name: You do not have to add floating IP because it is already added in the instance
