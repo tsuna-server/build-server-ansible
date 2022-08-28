@@ -4,6 +4,13 @@
 # It will add floating IP only when the instance has 1 IP adress.
 # It will NOT add floating IP if the instance has equals or more than 2 IPs.
 #
+# Output of result
+#   Floating IP address that is not used now. It means the floating IP cann attach an instance.
+#
+# Return code
+#   0: Success and this script output new floating IP
+#   1: Floating IP is already added at the instance.
+#   2: Error
 main() {
     local network="$1"
     local ret num_of_address unused_ip
@@ -25,7 +32,7 @@ main() {
 
     if [ $num_of_addresses -ge 2 ]; then
         # You do NOT have to add a floating IP.
-        exit 0
+        exit 1
     fi
 
     unused_ip=$(search_unused_floating_ip "$network")

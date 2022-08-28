@@ -33,4 +33,7 @@
 
     - name: Include create_example_cirros/main.yml to create test environment
       include: create_example_cirros/main.yml
+
+    - name: Include add_floating_ip/main.yml to attach IP address to an instance
+      include: add_floating_ip/main.yml
   when: "'controllers' in group_names"

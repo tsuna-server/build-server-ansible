@@ -1,0 +1,47 @@
+---
+# This task will add floating IP to an instance.
+# The task will search a floating IPs which already registered in OpenStack and don't used from other instances first.
+# The task will add it to the instance if it was found.
+# Otherwise the task will create new floating IP and add it to an instance
+#
+# Variable
+#   * instance:
+#     An instance that a floating IP will be added.
+#   * instance.floating_ip_network
+#     A name of network that the instance has.
+#     A floating IP will be added in the network.
+
+- name: Create or get unused floating IP
+  ansible.builtin.script: ./get_floating_ip_to_the_instance.sh "{{ instance.floating_ip_network }}"
+  register: result_get_floating_ip
+  failed_when: ( result_get_floating_ip.rc not in [0, 1] )
+
+- block: Block of adding floating IP to the instance
+  - name: Declare a variable floating_ip
+    set_fact:
+      floating_ip: "{{ result_get_floating_ip.stdout }}"
+      command_to_add_floating_ip: []
+
+  - name: Declare a command to add floating ip
+    set_fact:
+      command_to_add_floating_ip: ["openstack", "server", "add", "floating", "ip", "{{ instance.name }}", "{{ floating_ip }}"]
+
+  - name: Print a command to add floating IP to the instance
+    ansible.builtin.debug:
+      msg: "command={{ command_to_add_floating_ip }}"
+
+  - name: Run a command to add floating IP to the instance
+    ansible.builtin.command:
+      argv: "{{ command_to_add_floating_ip }}"
+    register: result_of_adding_floating_ip
+
+  - name: Print the result of adding floating IP to the instance
+    ansible.builtin.debug:
+      msg: "{{ result_of_adding_floating_ip.stdout.split('\n') }}"
+  when: result_of_checking_network.rc == 0
+
+- name: You do not have to add floating IP because it is already added in the instance
+  ansible.builtin.debug:
+    msg: "A instance {{ instance.name }} has already have a floating IP. Then you need NOT to add it. The instruction was skipped."
+  when: result_of_checking_network.rc == 1
+
