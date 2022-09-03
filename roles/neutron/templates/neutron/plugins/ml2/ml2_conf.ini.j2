@@ -151,7 +151,7 @@
 
 
 [ml2]
-{% if 'Linux Bridge' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
+{% if 'Linux Bridge' == group_vars.openstack.network.plugin %}
 type_drivers = flat,vlan,vxlan
 tenant_network_types = vxlan
 mechanism_drivers = linuxbridge,l2population
