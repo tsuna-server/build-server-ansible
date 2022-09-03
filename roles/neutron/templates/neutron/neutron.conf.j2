@@ -1,9 +1,16 @@
 [DEFAULT]
 core_plugin = ml2
+state_path = /var/lib/neutron
+transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}
+auth_strategy = keystone
+
 {% if 'Linux Bridge' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
 service_plugins = router
 {% if 'controllers' in group_names %}
 allow_overlapping_ips = true
+dhcp_agent_notification = True
+notify_nova_on_port_status_changes = true
+notify_nova_on_port_data_changes = true
 {% endif %}
 {% elif 'OVN' == group_vars.openstack.network.plugin %}
 service_plugins = ovn-router
@@ -13,9 +20,6 @@ notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
 {% endif %}
 {% endif %}
-state_path = /var/lib/neutron
-transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}
-auth_strategy = keystone
 
 #
 # From neutron
@@ -1244,7 +1248,7 @@ password = {{ group_vars.neutron.password }}
 
 
 [nova]
-{% if 'OVN' == group_vars.openstack.network.plugin and 'controllers' in group_names %}
+{% if 'controllers' in group_names %}
 auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000
 auth_type = password
 project_domain_name = Default
