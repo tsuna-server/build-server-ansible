@@ -231,6 +231,7 @@ physical_interface_mappings = provider:{{ (group_vars.hosts.computes|selectattr(
 {# These parameters should be declaread both controllers and computes in the driver Linux Bridge -#}
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+enable_ipset = true
 
 #
 # From neutron.ml2.linuxbridge.agent
