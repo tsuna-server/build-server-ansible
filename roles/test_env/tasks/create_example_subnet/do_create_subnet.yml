@@ -48,6 +48,7 @@
 
         - name: Build a command to create an internal subnet
           set_fact:
+            # TODO: Is an option --projvect <project> should added?
             command_array: "{{ ['openstack', 'subnet', 'create', '--network', '{{ subnet.network }}', '--allocation-pool', 'start={{ subnet.pool.start }},end={{ subnet.pool.end }}', '--subnet-range', '{{ subnet.subnet.range }}'] + dns_servers + ['{{ subnet.name }}'] }}"
       when: "subnet.network not in external_network_list"
 

@@ -1,6 +1,7 @@
 [DEFAULT]
 nova_metadata_host = {{ group_vars.hosts.controllers[0].names[0] }}
 metadata_proxy_shared_secret = {{ group_vars.openstack.metadata.proxy.shared_secret }}
+memcache_servers = {{ group_vars.hosts.controllers[0].names[0] }}:11211
 
 #
 # From neutron.metadata.agent
