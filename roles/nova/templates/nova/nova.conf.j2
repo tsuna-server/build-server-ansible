@@ -2,6 +2,7 @@
 log_dir = /var/log/nova
 lock_path = /var/lock/nova
 state_path = /var/lib/nova
+use_neutron = True
 
 {% if 'controllers' in group_names %}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
@@ -15,7 +16,6 @@ transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{
 vif_plugging_is_fatal = false
 vif_plugging_timeout = 0
 {% elif 'OVN' == group_vars.openstack.network.plugin %}
-use_neutron = True
 vif_plugging_is_fatal = true
 vif_plugging_timeout = 300
 {% endif %}
@@ -3499,7 +3499,7 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
 
-{% if ('controllers' in group_names) or ('computes' in group_names and 'OVN' == group_vars.openstack.network.plugin) %}
+{% if ('controllers' in group_names) or ('computes' in group_names) %}
 {# TODO: Is it needed to add these lines if a conditional ('computes' in group_names and 'OVN' == group_vars.openstack.network.plugin) #}
 service_metadata_proxy = true
 metadata_proxy_shared_secret = {{ group_vars.neutron.password }}
