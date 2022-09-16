@@ -43,7 +43,7 @@
 
 - name: Append a projects from a config
   set_fact:
-    target_rbac_projects: '{{ target_rbac_projects }} + {{ rbac_domain.projects }}'
+    target_rbac_projects: "{{ target_rbac_projects + rbac_domain.projects }}"
 
 - name: RBAC access_as_shard will be added in projects below by default(so far).
   ansible.builtin.debug:
