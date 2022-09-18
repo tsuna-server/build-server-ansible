@@ -81,8 +81,5 @@ You can spedify `--skip-tags` for example.
 ```
 
 # To update packages of Ansible
-You can install Ansible with `tsutomu/tsuna-ansible-runner` like below.
-```
-$ docker run --rm --volume ${PWD}:/opt/ansible -ti tsutomu/tsuna-ansible-runner update-requirements-txt
-```
+[Upgrade requirements.txt](https://github.com/tsuna-server/ansible-runner#upgrade-requirementstxt)
 
