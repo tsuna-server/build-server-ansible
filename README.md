@@ -80,7 +80,8 @@ You can spedify `--skip-tags` for example.
     -i production -l dev-private-router01:dev-compute01:dev-compute02 --skip-tags role_hosts site.yml
 ```
 
-## Upgrade requirements.txt
+# To update packages of Ansible
+You can install Ansible with `tsutomu/tsuna-ansible-runner` like below.
 ```
 $ docker run --rm --volume ${PWD}:/opt/ansible -ti tsutomu/tsuna-ansible-runner update-requirements-txt
 ```
