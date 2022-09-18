@@ -71,10 +71,17 @@ You can spedify `--skip-tags` for example.
 
 ```shell
 # docker run --rm \
-    --add-host dev-private-router01:<IP> \
+    --add-host dev-controller01:${IP_DEV_CONTROLLER01} \
+    --add-host dev-compute01:${IP_DEV_COMPUTE01} \
+    --add-host dev-compute01:${IP_DEV_COMPUTE02} \
     --volume ${PWD}:/opt/ansible \
     --volume /path/to/private-key:/private-key \
-    -ti tsutomu/ansible-runner \
-    --user ubuntu -i production -l dev-private-router01:dev-compute01 --skip-tags role_hosts site.yml
+    -ti tsutomu/tsuna-ansible-runner \
+    -i production -l dev-private-router01:dev-compute01:dev-compute02 --skip-tags role_hosts site.yml
+```
+
+## Upgrade requirements.txt
+```
+$ docker run --rm --volume ${PWD}:/opt/ansible -ti tsutomu/tsuna-ansible-runner update-requirements-txt
 ```
 
