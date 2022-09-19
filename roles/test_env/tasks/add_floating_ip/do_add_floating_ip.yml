@@ -23,6 +23,10 @@
         floating_ip: "{{ result_get_floating_ip.stdout_lines[-1] }}"
         command_to_add_floating_ip: []
 
+    - name: "Aborted if a script executed previously failed to get floating IP"
+      ansible.builtin.fail:
+      when: not floating_ip | regex_search("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$")
+
     - name: Declare a command to add floating ip
       set_fact:
         command_to_add_floating_ip: ["openstack", "server", "add", "floating", "ip", "{{ instance.name }}", "{{ floating_ip }}"]
