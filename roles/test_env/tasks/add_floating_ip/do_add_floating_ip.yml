@@ -11,7 +11,7 @@
 #     A name of network that the instance has.
 #     A floating IP will be added in the network.
 
-- name: Create or get unused floating IP
+- name: "Create or get unused floating IP (./get_floating_ip_to_the_instance.sh {{ instance.floating_ip_network }} {{ instance.name }})"
   ansible.builtin.script: ./get_floating_ip_to_the_instance.sh "{{ instance.floating_ip_network }}" "{{ instance.name }}"
   register: result_get_floating_ip
   failed_when: ( result_get_floating_ip.rc not in [0, 1] )
@@ -20,7 +20,7 @@
   block:
     - name: Declare a variable floating_ip
       set_fact:
-        floating_ip: "{{ result_get_floating_ip.stdout_lines[0] }}"
+        floating_ip: "{{ result_get_floating_ip.stdout_lines[-1] }}"
         command_to_add_floating_ip: []
 
     - name: Declare a command to add floating ip
