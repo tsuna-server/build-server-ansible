@@ -10,7 +10,7 @@
 
 - name: Declare a variable of version of mariadb
   set_fact:
-    version_of_mariadb: {{ result.stdout_lines[-1] }}
+    version_of_mariadb: "{{ result.stdout_lines[-1] }}"
 
 - name: Print a version of mariadb-server
   ansible.builtin.debug:
