@@ -3,19 +3,19 @@
 - name: Block of installing placement from PyPI
   block:
     - name: Include create_dbs/main.yml
-      include: create_dbs/main.yml
+      include_tasks: create_dbs/main.yml
 
     - name: Include create_openstack_services/main.yml
-      include: create_openstack_services/main.yml
+      include_tasks: create_openstack_services/main.yml
 
     - name: Include create_endpoints/main.yml
-      include: create_endpoints/main.yml
+      include_tasks: create_endpoints/main.yml
 
     - name: Include prepare_openstack_services/main.yml
-      include: prepare_openstack_services/main.yml
+      include_tasks: prepare_openstack_services/main.yml
 
     - name: Include verify_installation/main.yml
-      include: verify_installation/main.yml
+      include_tasks: verify_installation/main.yml
 
     - name: Include prepare_wsgi_environments/main.yml
-      include: prepare_wsgi_environments/main.yml
+      include_tasks: prepare_wsgi_environments/main.yml

@@ -2,7 +2,7 @@
 # Create example router
 
 - name: Include do_create_router.yml
-  include: do_create_router.yml
+  include_tasks: do_create_router.yml
   loop_control:
     loop_var: router
   loop: "{{ group_vars.openstack.examples.routers }}"

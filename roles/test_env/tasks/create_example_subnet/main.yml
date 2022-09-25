@@ -11,7 +11,7 @@
     msg: "external_network_list=={{ external_network_list }}"
 
 - name: Include do_create_subnet.yml
-  include: do_create_subnet.yml
+  include_tasks: do_create_subnet.yml
   loop_control:
     loop_var: subnet
   loop: "{{ group_vars.openstack.examples.subnets }}"

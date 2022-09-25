@@ -1,25 +1,25 @@
 ---
 - name: Include create_dbs/main.yml
-  include: create_dbs/main.yml
+  include_tasks: create_dbs/main.yml
 
 - name: Include prepare_openstack_service/main.yml
-  include: prepare_openstack_service/main.yml
+  include_tasks: prepare_openstack_service/main.yml
 
 # Instruction below assumes environment variables are already declared in order to authenticate the endpoint are already declared at controllers.yml.
 - name: Include create_domains/main.yml
-  include: create_domains/main.yml
+  include_tasks: create_domains/main.yml
 
 - name: Include create_projects/main.yml
-  include: create_projects/main.yml
+  include_tasks: create_projects/main.yml
 
 - name: Include create_users/main.yml
-  include: create_users/main.yml
+  include_tasks: create_users/main.yml
 
 - name: Include create_roles/main.yml
-  include: create_roles/main.yml
+  include_tasks: create_roles/main.yml
 
 - name: Include create_admin_openrc/main.yml
-  include: create_admin_openrc/main.yml
+  include_tasks: create_admin_openrc/main.yml
 
 - name: Include check_environment/main.yml
-  include: check_environment/main.yml
+  include_tasks: check_environment/main.yml
