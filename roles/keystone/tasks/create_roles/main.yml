@@ -1,5 +1,5 @@
 ---
 - name: Include do_create_role.yml
-  include: do_create_role.yml
+  include_tasks: do_create_role.yml
   loop: "{{ group_vars.openstack.roles }}"
 

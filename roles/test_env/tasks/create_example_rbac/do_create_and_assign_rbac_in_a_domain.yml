@@ -50,7 +50,7 @@
     msg: "{% for item in target_rbac_projects %}{{ item.name }}{% if not loop.last %},{% endif %}{% endfor %}"
 
 - name: Include do_create_and_assign_rbac_in_a_project.yml
-  include: do_create_and_assign_rbac_in_a_project.yml
+  include_tasks: do_create_and_assign_rbac_in_a_project.yml
   loop_control:
     loop_var: rbac_project
   loop: "{{ target_rbac_projects }}"

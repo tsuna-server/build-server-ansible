@@ -16,12 +16,12 @@
 
 # Configure network plugin for Linux Bridge
 - name: Include include_neutron_with_linux_bridge.yml
-  include: include_neutron_with_linux_bridge.yml
+  include_tasks: include_neutron_with_linux_bridge.yml
   when: "'Linux Bridge' == network_plugin"
 
 # Configure network plugin for OVN
 - name: Include include_neutron_with_ovn.yml
-  include: include_neutron_with_ovn.yml
+  include_tasks: include_neutron_with_ovn.yml
   when: "'OVN' == network_plugin"
 
 - name: Run notified handlers of Neutron OVN

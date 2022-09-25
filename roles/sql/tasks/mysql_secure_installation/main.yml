@@ -17,9 +17,9 @@
     msg: "A version of mariadb-server is {{ version_of_mariadb }}"
 
 - name: Do mysql_secure_installation for a version under 10.4
-  include: ./mysql_secure_installation_for_version_under_10_4.yml
+  include_tasks: ./mysql_secure_installation_for_version_under_10_4.yml
   when: version_of_mariadb is version(version_of_mariadb_10_4, '<')
 
 - name: Do mysql_secure_installation for a version grater or equal 10.4
-  include: ./mysql_secure_installation_for_version_grater_of_equal_10_4.yml
+  include_tasks: ./mysql_secure_installation_for_version_grater_of_equal_10_4.yml
   when: version_of_mariadb is version(version_of_mariadb_10_4, '>=')

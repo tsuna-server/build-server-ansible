@@ -1,6 +1,6 @@
 ---
 - name: Include do_check_to_be_able_to_issue_token_per_user_assigned_a_role.yml
-  include: do_check_to_be_able_to_issue_token_per_user_assigned_a_role.yml
+  include_tasks: do_check_to_be_able_to_issue_token_per_user_assigned_a_role.yml
   loop_control:
     loop_var: role
   loop: "{{ group_vars.openstack.roles }}"

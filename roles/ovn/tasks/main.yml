@@ -7,5 +7,5 @@
     network_plugin: "{% if 'network' not in group_vars.openstack or 'plugin' not in group_vars.openstack.network or 'Linux Bridge' == group_vars.openstack.network.plugin %}Linux Bridge{% else %}{{ group_vars.openstack.network.plugin }}{% endif %}"
 
 - name: Include configure ovn 
-  include: create_interfaces_of_ovn/main.yml
+  include_tasks: create_interfaces_of_ovn/main.yml
   when: "'OVN' == network_plugin"

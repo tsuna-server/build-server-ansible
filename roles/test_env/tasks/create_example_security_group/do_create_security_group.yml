@@ -26,7 +26,7 @@
   when: result_of_checking_security_group.rc == 0
 
 - name: Include do_create_rule.yml
-  include: do_create_rule.yml
+  include_tasks: do_create_rule.yml
   loop_control:
     loop_var: rule
   loop: "{{ group.rules }}"

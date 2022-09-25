@@ -7,7 +7,7 @@
 
 # If a return code 1 and the output is "...An RBAC policy already exists with those values.", the instruction should be skipped because the rule is already registerd.
 - name: Include do_create_and_assign_rbac_in_a_network.yml
-  include: do_create_and_assign_rbac_in_a_network.yml
+  include_tasks: do_create_and_assign_rbac_in_a_network.yml
   loop_control:
     loop_var: rbac_network
   loop: "{{ rbac_project.rbac.networks }}"

@@ -19,7 +19,7 @@
   when: result_of_checking.rc == 0
 
 - name: Include do_assign_role.yml
-  include: do_assign_role.yml
+  include_tasks: do_assign_role.yml
   loop_control:
     loop_var: inner_item
   loop: "{{ item.assigners }}"

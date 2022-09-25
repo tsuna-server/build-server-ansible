@@ -11,7 +11,7 @@
 
 # Sync DB after the configuration has been set
 ##- name: Include sync_db_for_nova_controllers.yml
-##  include: sync_db_for_nova_controllers.yml
+##  include_tasks: sync_db_for_nova_controllers.yml
 ##  when: "'controllers' in group_names"
 - name: Check a flag that means setting config and syncing db for Nova controllers was finished
   stat:

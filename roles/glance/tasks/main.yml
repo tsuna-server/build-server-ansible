@@ -1,12 +1,12 @@
 ---
 - name: Include create_db/main.yml
-  include: create_db/main.yml
+  include_tasks: create_db/main.yml
 
 - name: Include create_service/main.yml
-  include: create_service/main.yml
+  include_tasks: create_service/main.yml
 
 - name: Include create_endpoints/main.yml
-  include: create_endpoints/main.yml
+  include_tasks: create_endpoints/main.yml
 
 - name: Include prepare_openstack_service/main.yml
-  include: prepare_openstack_service/main.yml
+  include_tasks: prepare_openstack_service/main.yml

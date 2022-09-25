@@ -21,7 +21,7 @@
     rbac_project_id: "{{ result_of_project_id.stdout | trim }}"
 
 - name: Include do_create_and_assign_rbac.yml
-  include: do_create_and_assign_rbac.yml
+  include_tasks: do_create_and_assign_rbac.yml
   loop_control:
     loop_var: rbac_action
   loop: "{{ rbac_network.actions }}"

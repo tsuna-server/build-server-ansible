@@ -1,6 +1,6 @@
 ---
 - name: Include do_check_to_be_able_to_issue_token.yml
-  include: do_check_to_be_able_to_issue_token.yml
+  include_tasks: do_check_to_be_able_to_issue_token.yml
   loop_control:
     loop_var: project
   loop: "{{ domain.projects }}"

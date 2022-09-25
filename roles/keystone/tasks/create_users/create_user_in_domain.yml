@@ -9,7 +9,7 @@
   when: item.users is defined
 
 - name: Include do_create_user_in_domain.yml
-  include: do_create_user_in_domain.yml
+  include_tasks: do_create_user_in_domain.yml
   loop: "{{ item.users }}"
   loop_control:
     loop_var: inner_item

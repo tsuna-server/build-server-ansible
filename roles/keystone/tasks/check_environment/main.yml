@@ -1,6 +1,6 @@
 ---
 - name: Include do_create_project.yml
-  include: check_to_be_able_to_issue_token.yml
+  include_tasks: check_to_be_able_to_issue_token.yml
   loop_control:
     loop_var: domain
   loop: "{{ group_vars.openstack.domains }}"
