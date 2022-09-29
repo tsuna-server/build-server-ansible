@@ -28,8 +28,8 @@
     - name: Include create_security_group/main.yml to create test security group environment
       include_tasks: create_example_security_group/main.yml
 
-    - name: Include create_ssh_key/main.yml to create test ssh key
-      include_tasks: create_ssh_key/main.yml
+    #- name: Include create_ssh_key/main.yml to create test ssh key
+    #  include_tasks: create_ssh_key/main.yml
 
     - name: Include create_example_cirros/main.yml to create test environment
       include_tasks: create_example_cirros/main.yml
