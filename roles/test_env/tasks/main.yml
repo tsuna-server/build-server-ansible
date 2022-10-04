@@ -22,8 +22,8 @@
     - name: Include create_example_rbac/main.yml to create test environment
       include_tasks: create_example_rbac/main.yml
 
-    - name: Include create_flavor/main.yml to create test environment
-      include_tasks: create_example_flavor/main.yml
+    #- name: Include create_flavor/main.yml to create test environment
+    #  include_tasks: create_example_flavor/main.yml
 
     #- name: Include create_security_group/main.yml to create test security group environment
     #  include_tasks: create_example_security_group/main.yml
