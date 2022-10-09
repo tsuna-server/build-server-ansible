@@ -19,8 +19,8 @@
     - name: Include create_example_router/main.yml to create test environment
       include_tasks: create_example_router/main.yml
 
-    - name: Include create_example_rbac/main.yml to create test environment
-      include_tasks: create_example_rbac/main.yml
+    #- name: Include create_example_rbac/main.yml to create test environment
+    #  include_tasks: create_example_rbac/main.yml
 
     #- name: Include create_flavor/main.yml to create test environment
     #  include_tasks: create_example_flavor/main.yml
