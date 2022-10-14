@@ -13,8 +13,8 @@
     - name: Include create_example_network/main.yml to create test environment
       include_tasks: create_example_network/main.yml
 
-    - name: Include create_example_subnet/main.yml to create test environment
-      include_tasks: create_example_subnet/main.yml
+    #- name: Include create_example_subnet/main.yml to create test environment
+    #  include_tasks: create_example_subnet/main.yml
 
     #- name: Include create_example_router/main.yml to create test environment
     #  include_tasks: create_example_router/main.yml
