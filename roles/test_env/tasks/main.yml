@@ -8,32 +8,32 @@
   include_tasks: configure_bridge_for_ovn/main.yml
   when: "'OVN' == network_plugin"
 
-- name: Block create test env on controller node
-  block:
-    #- name: Include create_example_network/main.yml to create test environment
-    #  include_tasks: create_example_network/main.yml
-
-    #- name: Include create_example_subnet/main.yml to create test environment
-    #  include_tasks: create_example_subnet/main.yml
-
-    #- name: Include create_example_router/main.yml to create test environment
-    #  include_tasks: create_example_router/main.yml
-
-    #- name: Include create_example_rbac/main.yml to create test environment
-    #  include_tasks: create_example_rbac/main.yml
-
-    #- name: Include create_flavor/main.yml to create test environment
-    #  include_tasks: create_example_flavor/main.yml
-
-    #- name: Include create_security_group/main.yml to create test security group environment
-    #  include_tasks: create_example_security_group/main.yml
-
-    #- name: Include create_ssh_key/main.yml to create test ssh key
-    #  include_tasks: create_ssh_key/main.yml
-
-    #- name: Include create_example_cirros/main.yml to create test environment
-    #  include_tasks: create_example_cirros/main.yml
-
-    #- name: Include add_floating_ip/main.yml to attach IP address to an instance
-    #  include_tasks: add_floating_ip/main.yml
-  when: "'controllers' in group_names"
+#- name: Block create test env on controller node
+#  block:
+#    #- name: Include create_example_network/main.yml to create test environment
+#    #  include_tasks: create_example_network/main.yml
+#
+#    #- name: Include create_example_subnet/main.yml to create test environment
+#    #  include_tasks: create_example_subnet/main.yml
+#
+#    #- name: Include create_example_router/main.yml to create test environment
+#    #  include_tasks: create_example_router/main.yml
+#
+#    #- name: Include create_example_rbac/main.yml to create test environment
+#    #  include_tasks: create_example_rbac/main.yml
+#
+#    #- name: Include create_flavor/main.yml to create test environment
+#    #  include_tasks: create_example_flavor/main.yml
+#
+#    #- name: Include create_security_group/main.yml to create test security group environment
+#    #  include_tasks: create_example_security_group/main.yml
+#
+#    #- name: Include create_ssh_key/main.yml to create test ssh key
+#    #  include_tasks: create_ssh_key/main.yml
+#
+#    #- name: Include create_example_cirros/main.yml to create test environment
+#    #  include_tasks: create_example_cirros/main.yml
+#
+#    #- name: Include add_floating_ip/main.yml to attach IP address to an instance
+#    #  include_tasks: add_floating_ip/main.yml
+#  when: "'controllers' in group_names"
