@@ -10,8 +10,8 @@
 
 - name: Block create test env on controller node
   block:
-    - name: Include create_example_network/main.yml to create test environment
-      include_tasks: create_example_network/main.yml
+    #- name: Include create_example_network/main.yml to create test environment
+    #  include_tasks: create_example_network/main.yml
 
     #- name: Include create_example_subnet/main.yml to create test environment
     #  include_tasks: create_example_subnet/main.yml
