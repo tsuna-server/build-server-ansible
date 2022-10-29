@@ -15,7 +15,6 @@
   ansible.builtin.group:
     name: placement
     state: present
-    gid: 129
 
 - name: User placement should be existed
   ansible.builtin.user:

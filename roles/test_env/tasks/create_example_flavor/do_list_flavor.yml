@@ -1,9 +1,0 @@
----
-- name: Print flavors
-  ansible.builtin.command:
-    argv: ["openstack", "flavor", "list"]
-  register: result
-
-- name: Print the list of the flavors
-  ansible.builtin.debug:
-    msg: "{{ result.stdout.split('\n') }}"
