@@ -7,6 +7,10 @@ dev-compute01
 dev-compute02
 dev-compute03
 
+[cinders]
+dev-cinder01
+dev-cinder02
+
 [default:children]
 controllers
 computes
