@@ -1,8 +1,11 @@
 ---
 - name: Get LVM volumes for Cinder
   ansible.builtin.script: ./create_lvm_filter_string.sh
+  register: result_lvm_filter_string
 
 - name: Configure filter for LVM volumes
+  set_fact:
+    lvm_filter_string: "{{ result_lvm_filter_string.stdout_lines[-1] }}"
 
 - name: Configure /etc/lvm/lvm.conf
   ansible.builtin.template:
@@ -13,5 +16,3 @@
     mode: '0644'
   notify: Restart chrony
   register: result_of_chrony_config
-
-
