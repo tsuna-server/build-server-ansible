@@ -1,0 +1,15 @@
+---
+- name: A block to build Cinder for controller nodes
+  block:
+    - name: Include create_dbs/main.yml
+      include_tasks: create_dbs/main.yml
+  when: "'controllers' in group_names"
+
+- name: A block to build Cinder for cinder nodes
+  block:
+    - name: Include install_packages/cinders/main.yml
+      include_tasks: install_packages/cinders/main.yml
+
+    - name: Include lvm/cinders/main.yml
+      include_tasks: lvm/cinders/main.yml
+  when: "'cinders' in group_names"
