@@ -53,10 +53,7 @@ main() {
                 if [ "$tmp_vg_name" = "cinder-volumes" ]; then
                     # If the physical volume was belonging in a volume group "cinder-volumes".
                     physical_volumes_for_cinder+=("$tmp_pv_name")
-
                     reached_vg_name=1
-                    # TODO: This script only support 1 volumes of cinder so far. Then break at here.
-                    break
                 else
                     # if the physical volume was NOT belonging in a volume group "cinder-volumes",
                     # set flag and continue to proceed next section of the physical volume.
@@ -69,9 +66,12 @@ main() {
     if [ ${#physical_volumes_for_cinder[@]} -eq 0 ]; then
         echo "ERROR: Failed to get physical volumes in a volume group \"cinder-volumes\". Failed to create a filter string for LVM." >&2
         exit 1
+    elif [ ${#physical_volumes_for_cinder[@]} -gt 1 ]; then
+        # TODO: This script only support 1 volumes so far. If you want to make this script supports more 1 volumes, you have to print them all properly.
+        echo "ERROR: This script only support 1 volumes so far. This script detects ${#physical_volumes_for_cinder[@]} volumes on this node($(hostname))." >&2
+        exit 1
     fi
 
-    # TODO: This script only support 1 volumes so far. If you want to make this script supports more 1 volumes, you have to print them all properly.
     echo "[ \"a|${physical_volumes_for_cinder[0]}|\", \"r|.*|\" ]"
 }
 
