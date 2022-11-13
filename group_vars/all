@@ -7,6 +7,8 @@ group_vars:
           ip: 192.168.2.1
           interface: enp2s0
         provider:
+          # An interface that is connecting provider network but it does not have any IP.
+          # It will be used as OpenStack provider interface.
           interface: enp1s0
     computes:
       - names: ["dev-compute01", "dev-compute01.openstack.example.com"]
@@ -21,13 +23,6 @@ group_vars:
           interface: enp2s0
         provider:
           interface: enp1s0
-      - names: ["dev-compute03", "dev-compute03.openstack.example.com"]
-        management:
-          ip: 192.168.2.13
-          interface: enp2s0
-        provider:
-          interface: enp1s0
-
   ntp:
     ip:
       allow: 192.168.2.0/24
@@ -172,8 +167,10 @@ group_vars:
     admin_project_name: admin
     admin_password: secret
     package:
-      #repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/wallaby main'
-      repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/xena main'
+      # OpenStack xena on Ubuntu 20.04
+      #repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/xena main'
+      # OpenStack yoga on Ubuntu 22.04
+      repository: 'deb http://ubuntu-cloud.archive.canonical.com/ubuntu focal-updates/yoga main'
       keyserver: keyserver.ubuntu.com
       id: 5EDB1B62EC4926EA
     region:
@@ -182,12 +179,6 @@ group_vars:
     network:
       plugin: "Linux Bridge"
       # plugin: "OVN"
-    # You can set this parameter like below if you want to specify OVN as a network plugin.
-    # You should also specify a parameter "password" for using shared secret.
-    #network:
-    #  plugin: "OVN"
-    #  password: secret
-
     # Domains belonging in this array will all be created except that "default" domain.
     domains:
       - name: default
@@ -212,8 +203,16 @@ group_vars:
           - name: service
             description: "Service Project"
             primary: true
+            rbac:
+              networks:
+                - name: private
+                  actions: ["access_as_shared"]
           - name: myproject
             description: "Demo Project"
+            rbac:
+              networks:
+                - name: private
+                  actions: ["access_as_shared"]
       - name: example
         description: "An example domain"
 
@@ -245,22 +244,49 @@ group_vars:
             domain: default
             project: service
 
+    ssh:
+      key_pairs:
+        - name: default
+
     examples:
       images:
         # TODO: This instruction support only 1 image currently.
         - name: "example_cirros"
-          url: "http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img"
+          url: "http://download.cirros-cloud.net/0.5.2/cirros-0.5.2-x86_64-disk.img"
       instances:
         - name: "cirros01"
           flavor: "m1.tiny"
           network: "private"
+          floating_ip_network: "public"
           # Specify an image which created from.
           image:
             name: "example_cirros"
+          # A security groups that will be added in the instance.
+          # Security groups declared below must be registerd in the OpenStack.
+          security_groups:
+            - permit_all
+          # A ssh key that will be added in the instance. It must be registered in OpenStack.
+          # You can confirm it with a command "openstack keypair list" on the controller node.
+          ssh:
+            key_pairs:
+              - name: default
+        - name: "cirros02"
+          flavor: "m1.tiny"
+          network: "private"
+          floating_ip_network: "public"
+          image:
+            name: "example_cirros"
+          security_groups:
+            - permit_all
+          ssh:
+            key_pairs:
+              - name: default
+
       networks:
-        # MTU must be less than or equals 1450.
         - name: public
-          mtu: 1450
+          # Value of a mtu will be ignored if 'external' is True.
+          # Provider network in both development and production environment are able to be set as mtu 1500.
+          #mtu: 1500
           external: True
           #
           # "provider.physical.network" and "provider.network.type" will be passed as a value of option
@@ -285,7 +311,17 @@ group_vars:
             network:
               type: flat
         - name: private
-          mtu: 1400
+          # The size of MTU should be set less than or equals 1450(VXLAN) on physical environment. If you will build an OpenStack environment
+          # on KVM instances or any virtual instances that is belonging VXLAN segment, you should specify less than 1450(1400 for example) because packets
+          # will be capcelated 2 times on your virtual environment and OpenStack.
+          # If you want to use Geneve instead, you should specify MTU less than or equals 1442 on physical environment.
+          # The situation is similer to VXLAN when you will build an OpenStack with Geneve on any environment variable.
+          # Summaries:
+          # * 1450 (VLAN on physical OpenStack environment)
+          # * 1400 (VLAN on another virtual network(ex. LVM) OpenStack environment)
+          # * 1442 (Geneve on physical OpenStack environment)
+          # * 1400 (Geneve on another virtual network(ex. LVM) OpenStack environment)
+          mtu: 1442
           provider:
             network:
               # Type should be specified as 'geneve' so far in private network if you chose network driver 'OVN'.
@@ -335,9 +371,9 @@ group_vars:
           disk: 1
           vcpus: 1
         - id: 2
-          name: m1.midium
-          ram: 1024
-          disk: 4
+          name: m1.medium
+          ram: 2048
+          disk: 8
           vcpus: 1
 
       security:
