@@ -5,11 +5,20 @@ dev-controller01
 [computes]
 dev-compute01
 dev-compute02
-dev-compute03
+
+[cinders]
+dev-cinder01
+dev-cinder02
+
+[storages]
+dev-storage01
+dev-storage02
 
 [default:children]
 controllers
 computes
+cinders
+storages
 
 [all:children]
 default
