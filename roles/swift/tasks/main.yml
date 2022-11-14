@@ -1,0 +1,25 @@
+---
+- name: A block to build Swift for controller(Swift proxy) nodes.
+  block:
+    - name: Include create_endpoint/main.yml
+      include_tasks: create_endpoint/main.yml
+
+    - name: Include create_proxy_server/main.yml
+      include_tasks: create_proxy_server/main.yml
+
+    - name: Include restart_services_for_swift_proxy_nodes/main.yml
+      include_tasks: restart_services_for_swift_proxy_nodes/main.yml
+  when: "'controllers' in group_names"
+
+- name: A block to build Swift storage nodes.
+    - name: Include create_swift_storage_node/main.yml
+      include_tasks: create_swift_storage_node/main.yml
+
+    - name: Include distribute_ring_files/main.yml
+      include_tasks: distribute_ring_files/main.yml
+
+    - name: Include restart_services_for_swift_storage_nodes/main.yml
+      include_tasks: restart_services_for_swift_storage_nodes/main.yml
+  when: "'swifts' in group_names"
+
+
