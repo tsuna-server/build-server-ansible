@@ -1,8 +1,14 @@
 ---
 - name: A block to build Swift for controller(Swift proxy) nodes.
   block:
+    - name: Include create_service/main.yml
+      include_tasks: create_service/main.yml
+
     - name: Include create_endpoint/main.yml
       include_tasks: create_endpoint/main.yml
+
+
+
 
     - name: Include create_proxy_server/main.yml
       include_tasks: create_proxy_server/main.yml
