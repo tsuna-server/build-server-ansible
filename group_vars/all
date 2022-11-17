@@ -245,6 +245,9 @@ group_vars:
           - user: neutron
             domain: default
             project: service
+          - user: swift
+            domain: default
+            project: service
 
     ssh:
       key_pairs:
