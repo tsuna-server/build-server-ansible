@@ -159,6 +159,25 @@ group_vars:
           - name: RegionOne
             url: "http://dev-controller01:9696"
 
+  swift:
+    service:
+      name: swift
+      description: "OpenStack Swift"
+      type: object-store
+    endpoints:
+      public:
+        regions:
+          - name: RegionOne
+            url: "http://dev-controller01:8080/v1/AUTH_%\(project_id\)s"
+      internal:
+        regions:
+          - name: RegionOne
+            url: "http://dev-controller01:8080/v1/AUTH_%\(project_id\)s"
+      admin:
+        regions:
+          - name: RegionOne
+            url: "http://dev-controller01:8080/v1"
+
   openstack:
     metadata:
       proxy:
