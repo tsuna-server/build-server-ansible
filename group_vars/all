@@ -196,6 +196,8 @@ group_vars:
             password: secret
           - name: neutron
             password: secret
+          - name: swift
+            password: secret
         projects:
           # Service which set "primary: true" is a primary service that never duplicated in this list.
           # Primary service will be a service that is used by default as ...
