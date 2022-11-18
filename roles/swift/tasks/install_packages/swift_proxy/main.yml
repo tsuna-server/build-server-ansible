@@ -1,0 +1,10 @@
+---
+- name: Install packages of swift-proxy
+  apt:
+    name:
+      - swift
+      - swift-proxy
+      - python3-swiftclient
+      - python3-keystoneclient
+      - python3-keystonemiddleware
+      - memcached

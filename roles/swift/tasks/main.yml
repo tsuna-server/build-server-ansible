@@ -7,8 +7,8 @@
     - name: Include create_endpoint/main.yml
       include_tasks: create_endpoint/main.yml
 
-
-
+    - name: Include install_packages/swift_proxy/main.yml
+      include_tasks: install_packages/swift_proxy/main.yml
 
     - name: Include create_proxy_server/main.yml
       include_tasks: create_proxy_server/main.yml
