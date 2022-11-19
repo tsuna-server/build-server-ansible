@@ -160,6 +160,8 @@ group_vars:
             url: "http://dev-controller01:9696"
 
   swift:
+    user: swift
+    password: secret
     service:
       name: swift
       description: "OpenStack Swift"
