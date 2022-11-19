@@ -10,5 +10,20 @@
 #    dest: "/etc/swift/proxy-server.conf"
 #  when: not stat_of_proxy_server_conf.stat.exists
 
+- name: 
+  get_url:
+    url: "https://opendev.org/openstack/swift/raw/branch/master/etc/proxy-server.conf-sample"
+    dest: "/etc/swift/proxy-server.conf"
+  when: not stat_of_proxy_server_conf.stat.exists
 
+- name: Set /etc/swift/proxy-server.conf of Swift for proxy-node
+  ansible.builtin.template:
+    src: 
+    dest: /etc/swift/proxy-server.conf
+    owner: root
+    group: neutron
+    mode: '0640'
+    backup: yes
+  notify: ["Restart memcached", "Restart swift-proxy"]
+  register: result_neutron_conf
 
