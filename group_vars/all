@@ -162,6 +162,9 @@ group_vars:
   swift:
     user: swift
     password: secret
+    hash:
+      prefix: changeme_this_hash_prefix
+      suffix: changeme_this_hash_suffix
     service:
       name: swift
       description: "OpenStack Swift"
