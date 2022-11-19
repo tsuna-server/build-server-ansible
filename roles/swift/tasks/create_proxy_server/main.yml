@@ -27,3 +27,11 @@
   notify: ["Restart memcached", "Restart swift-proxy"]
   register: result_neutron_conf
 
+- name: Change owner and permission under /etc/swift
+  ansible.builtin.file:
+    path: /etc/swift
+    state: directory
+    recurse: yes
+    owner: root
+    group: swift
+
