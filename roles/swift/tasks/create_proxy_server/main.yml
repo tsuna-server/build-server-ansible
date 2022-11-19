@@ -4,9 +4,11 @@
     path: "/etc/swift/proxy-server.conf"
   register: stat_of_proxy_server_conf
 
-- name: Download an example of proxy-server.conf
-  get_url:
-    url: "https://opendev.org/openstack/swift/raw/branch/master/etc/proxy-server.conf-sample"
-    dest: "/etc/swift/proxy-server.conf"
-  when: not stat_of_proxy_server_conf.stat.exists
+#- name: Download an example of proxy-server.conf
+#  get_url:
+#    url: "https://opendev.org/openstack/swift/raw/branch/master/etc/proxy-server.conf-sample"
+#    dest: "/etc/swift/proxy-server.conf"
+#  when: not stat_of_proxy_server_conf.stat.exists
+
+
 
