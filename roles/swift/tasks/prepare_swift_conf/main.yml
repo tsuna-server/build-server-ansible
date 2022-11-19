@@ -1,3 +1,4 @@
+
 ---
 - name: Stat /etc/swift/proxy-server.conf
   ansible.builtin.stat:

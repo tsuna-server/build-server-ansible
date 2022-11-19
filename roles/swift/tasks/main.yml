@@ -10,11 +10,11 @@
     - name: Include install_packages/swift_proxy/main.yml
       include_tasks: install_packages/swift_proxy/main.yml
 
-    - name: Include create_proxy_server/main.yml
-      include_tasks: create_proxy_server/main.yml
+    #- name: Include create_proxy_server/main.yml
+    #  include_tasks: create_proxy_server/main.yml
 
-    - name: Include restart_services_for_swift_proxy_nodes/main.yml
-      include_tasks: restart_services_for_swift_proxy_nodes/main.yml
+    #- name: Include restart_services_for_swift_proxy_nodes/main.yml
+    #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
   when: "'controllers' in group_names"
 
 - name: A block to build Swift storage nodes.
@@ -24,8 +24,8 @@
     - name: Include distribute_ring_files/main.yml
       include_tasks: distribute_ring_files/main.yml
 
-    - name: Include restart_services_for_swift_storage_nodes/main.yml
-      include_tasks: restart_services_for_swift_storage_nodes/main.yml
+    #- name: Include restart_services_for_swift_storage_nodes/main.yml
+    #  include_tasks: restart_services_for_swift_storage_nodes/main.yml
   when: "'swifts' in group_names"
 
 - name: A block to finalize prepareation Swift
