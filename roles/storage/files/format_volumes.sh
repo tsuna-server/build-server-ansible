@@ -66,18 +66,47 @@ main() {
 
 prepare_storages_for_storage_node() {
     log_info "Preparing storages for swift and cinder because this host \"${HOSTNAME}\" is for all storages."
-    prepare_storages_for_swift
     prepare_storages_for_cinder
+    prepare_storages_for_swift
 }
 
 prepare_storages_for_swift() {
-    true
+    for device in "${SWIFT_VOLUMES}"; do
+        create_storage_for_swift "${device}"
+    done
 }
 
 prepare_storages_for_cinder() {
-    true
+    for device in "${SWIFT_VOLUMES}"; do
+        create_storage_for_cinder "${device}"
+    done
 }
 
+create_storage_for_swift() {
+    local deivce="$1"
+    local output ret
 
+    output="$(blkid "$device")"
+
+    grep -q -F 'TYPE="xfs"' <<< "$output"
+    ret=$?
+
+    if [ -z "${output}" ]; then
+        # The device is not formatted yet. Then the device can be formatted.
+        log_info "The device \"${device}\" is not formatted yet. It will be formatted as XFS file system."
+        format_as_xfs "${device}"
+    else [ ${ret} -eq 0 ]; then
+        log_info "The device \"${device}\" is already formatted. Then an instruction to create XFS file system for Swift will be skipped."
+        return 0
+    else
+        log_err "The device \"${device}\" is already formatted but a format of it is unexpected. A information of the device like below."
+        log_err "${output}"
+        return 1
+    fi
+}
+
+create_storage_for_cinder() {
+    local deivce="$1"
+}
 
 main "$@"
