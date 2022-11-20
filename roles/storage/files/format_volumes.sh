@@ -109,4 +109,16 @@ create_storage_for_cinder() {
     local deivce="$1"
 }
 
+format_as_xfs() {
+    local device="$1"
+    local ret
+    mkfs.xfs "${device}"
+    ret=$?
+
+    if [ $ret -ne 0 ]; then
+        log_err "Failed to foramt a device \"${device}\" as XFS. The actual error messages might be outputted before this message."
+        return 1
+    fi
+}
+
 main "$@"
