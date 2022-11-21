@@ -1,7 +1,15 @@
 ---
-#- name: 
+- name: Declare a variable options_of_create_account_ring
+  set_fact:
+    options_of_create_account_ring: []
 
+- name: Append options of storages for Cinder
+  set_fact:
+    options_of_create_account_ring: "{{ options_of_create_account_ring + group_vars.hosts.cinder }}"
 
+- name: Append options of storages for Swift
+  set_fact:
+    options_of_create_account_ring: "{{ options_of_create_account_ring + group_vars.hosts.swifts }}"
 
 #swift-ring-builder account.builder create 10 3 1
 #

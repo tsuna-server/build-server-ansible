@@ -14,11 +14,25 @@
 #    map_of_swift_nodes: "{{ map_of_swift_nodes | hash_merge(storages) }}"
 #  when: "'storages' in groups"
 
+###- name: Combine 01
+###  set_fact:
+###    options: []
+###
+###- name: Combine 02
+###  set_fact:
+###    options: "{{ options + [\"--swift-device\", item] }}"
+###  with_items: "{{ group_vars.hosts.swifts[0].storage.swift }}"
+###
+###- name: Combine 02
+###  set_fact:
+###    options: "{{ options + [\"--cinder-device\", item] }}"
+###  with_items: "{{ group_vars.hosts.swifts[0].storage.cinder }}"
+###
+###
+###- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebug
+###  ansible.builtin.debug:
+###    msg: "map_of_swift_nodes={{ map_of_swift_nodes }}, option={{ options }}"
 
-- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebug
-  ansible.builtin.debug:
-    msg: "map_of_swift_nodes={{ map_of_swift_nodes }}"
-
-#- name: Include create_account_ring.yml
-#  include_tasks: create_account_ring.yml
-#  with_dict: 
+- name: Include create_account_ring.yml
+  include_tasks: create_account_ring.yml
+  with_dict: 
