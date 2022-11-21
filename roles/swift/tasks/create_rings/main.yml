@@ -3,17 +3,6 @@
   set_fact:
     map_of_swift_nodes: []
 
-- name: Merge hash of swifts to create rings for Swift
-  set_fact:
-    #map_of_swift_nodes: "{{ map_of_swift_nodes | hash_merge(group_vars.hosts) }}"
-    map_of_swift_nodes: "{{ map_of_swift_nodes + group_vars.hosts.swifts }}"
-  when: "'controllers' in groups and 'swifts' in group_vars.hosts"
-
-#- name: Merge hash of swifts to create rings for Swift
-#  set_fact:
-#    map_of_swift_nodes: "{{ map_of_swift_nodes | hash_merge(storages) }}"
-#  when: "'storages' in groups"
-
 ###- name: Combine 01
 ###  set_fact:
 ###    options: []
