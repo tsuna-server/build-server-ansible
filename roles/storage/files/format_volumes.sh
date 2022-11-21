@@ -55,9 +55,9 @@ main() {
     if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
         prepare_storages_for_storage_node
     elif [[ "${HOSTNAME}" =~ ^.*swift[0-9]+$ ]]; then
-        true
+        prepare_storages_for_swift
     elif [[ "${HOSTNAME}" =~ ^.*cinder[0-9]+$ ]]; then
-        true
+        prepare_storages_for_cinder
     else
         log_err "Unsupported operations to create vlumes for OpenStack storage nodes on a host \"${HOSTNAME}\". Hostname must contains a characters \"storage\", \"swift\" or \"cinder\"."
         return 1
@@ -74,12 +74,14 @@ prepare_storages_for_swift() {
     for device in "${SWIFT_VOLUMES}"; do
         create_storage_for_swift "${device}"
     done
+    return 0
 }
 
 prepare_storages_for_cinder() {
     for device in "${SWIFT_VOLUMES}"; do
         create_storage_for_cinder "${device}"
     done
+    return 0
 }
 
 create_storage_for_swift() {
@@ -107,6 +109,11 @@ create_storage_for_swift() {
 
 create_storage_for_cinder() {
     local deivce="$1"
+    local output ret
+
+    output=""
+
+    $(pvdisplay "${device}" | grep "VG Name")
 }
 
 format_as_xfs() {
