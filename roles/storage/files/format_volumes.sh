@@ -109,11 +109,42 @@ create_storage_for_swift() {
 
 create_storage_for_cinder() {
     local deivce="$1"
-    local output ret
+    local output_of_pvdisplay ret_of_pvdisplay output_of_vg_name ret_of_vg_name
 
-    output=""
+    [ -b "${device}" ] || {
+        log_err "A device \"${device}\" is not present."
+        return 1
+    }
 
-    $(pvdisplay "${device}" | grep "VG Name")
+    output_of_pvdisplay="$(pvdisplay "${device}")"
+    ret_of_pvdisplay=$?
+
+
+
+    if [ ${ret_of_pvdisplay} -eq 0 ]; then
+        # A device has already been formatted as LVM.
+
+        output_of_vg_name=$(grep -q -P '^.*VG Name .*cinder\-volumes$' <<< "${output_of_pvdisplay}")
+        ret_of_vg_name=$?
+        if [ ${ret_of_vg_name} -ne 0 ]; then
+            log_err "A device \"${device}\" has already been formatted as LVM but VG Name is different from \"cinder-volumes\". An output of volume name is \"${output_of_vg_name}\""
+            return 1
+        fi
+
+        log_info "A device \"${device}\" has already been formatted as LVM."
+        return 0
+    fi
+    # | Not partitioned |                 |                 |
+    # | or              |                 |                 |
+    # | Partitioned     | Formatted       | Proceed         |
+    # | labeled LVM     | with any FS     | creating LVM?   |
+    # +-----------------+-----------------+-----------------|
+    # | False           | False           | True            |
+    # | True            | False           | True            |
+    # | False           | True            | False           |
+    # | True            | True            | False           |
+    #
+    # TODO: 
 }
 
 format_as_xfs() {
