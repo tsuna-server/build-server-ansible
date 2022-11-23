@@ -28,15 +28,15 @@ main() {
             [ -n "${TYPE}" ] && {
                 log_err "A parameter \"type\" is declared"
             }
-            TYPE="$1"
+            TYPE="$2"
             shift 2
             ;;
         --swift-volume | -s )
-            SWIFT_VOLUMES+=("$1")
+            SWIFT_VOLUMES+=("$2")
             shift 2
             ;;
         --cinder-volume | -c )
-            CINDER_VOLUMES+=("$1")
+            CINDER_VOLUMES+=("$2")
             shift 2
             ;;
         -- )
@@ -52,13 +52,15 @@ main() {
 
     log_info "Creating volumes with parameters[type=${TYPE},swift_volumes=${SWIFT_VOLUMES},cinder_volumes=${CINDER_VOLUMES}]"
 
-    verify_parameters
+    verify_parameters || return 1
 
-    if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
+    #if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
+    echo "type=${TYPE}"
+    if [ "${TYPE}" = "storage" ]; then
         prepare_storages_for_storage_node
-    elif [[ "${HOSTNAME}" =~ ^.*swift[0-9]+$ ]]; then
+    elif [ "${TYPE}" = "swift" ]; then
         prepare_storages_for_swift
-    elif [[ "${HOSTNAME}" =~ ^.*cinder[0-9]+$ ]]; then
+    elif [ "${TYPE}" = "cinder" ]; then
         prepare_storages_for_cinder || return 1
     else
         log_err "Unsupported operations to create vlumes for OpenStack storage nodes on a host \"${HOSTNAME}\". Hostname must contains a characters \"storage\", \"swift\" or \"cinder\"."
@@ -79,8 +81,8 @@ verify_parameters() {
 }
 
 verify_cinder_volumes() {
-    if [ ${CINDER_VOLUMES} -ne 1 ]; then
-        log_err "Wrong number of Cinder volumes you specified. This script does not support other than 1 Cinder volume"
+    if [ ${#CINDER_VOLUMES[@]} -ne 1 ]; then
+        log_err "Wrong number of Cinder volumes you specified. This script does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\"."
     fi
     return 0
 }
@@ -93,14 +95,25 @@ prepare_storages_for_storage_node() {
 }
 
 prepare_storages_for_swift() {
-    for device in "${SWIFT_VOLUMES}"; do
+    [ ${#SWIFT_VOLUMES[@]} -eq 0 ] && {
+        log_info "Ignore creating Swift volumes because num of Swift volumes that you specified is 0."
+        return 0
+    }
+
+    log_info "Preparing storages for swift. Target volumes "
+    for device in "${SWIFT_VOLUMES[@]}"; do
         create_storage_for_swift "${device}"
     done
     return 0
 }
 
 prepare_storages_for_cinder() {
-    for device in "${SWIFT_VOLUMES}"; do
+    [ ${#CINDER_VOLUMES[@]} -eq 0 ] && {
+        log_info "Ignore creating Cinder volumes because num of Cinder volumes that you specified is 0."
+        return 0
+    }
+
+    for device in "${CINDER_VOLUMES[@]}"; do
         create_storage_for_cinder "${device}" || return 1
     done
     return 0
