@@ -176,10 +176,7 @@ create_storage_for_cinder() {
     fi
 
     # No 1
-    pvcreate "${device}"
-
-    # TODO
-    #vgcreate
+    create_lvm_for_cinder "${device}" || return 1
 
     return 0
 }
@@ -192,7 +189,18 @@ create_lvm_for_cinder() {
         return 1
     }
 
-    pvcreate "${device}"
+    pvcreate "${device}" || {
+        log_err "Failed to create LVM of physical volume at device \"${device}\". A command \"pvcreate ${device}\" was failed."
+        return 1
+    }
+
+
+    vgcreate cinder-volumes "${device}" || {
+        log_err "Failed to create LVM of volume group \"cinder-volumes\" at device \"${device}\". A command \"vgcreate cinder-volumes ${device}\" was failed."
+        return 1
+    }
+
+    return 0
 }
 
 format_as_xfs() {
