@@ -52,22 +52,44 @@ main() {
 
     log_info "Creating volumes with parameters[type=${TYPE},swift_volumes=${SWIFT_VOLUMES},cinder_volumes=${CINDER_VOLUMES}]"
 
+    verify_parameters
+
     if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
         prepare_storages_for_storage_node
     elif [[ "${HOSTNAME}" =~ ^.*swift[0-9]+$ ]]; then
         prepare_storages_for_swift
     elif [[ "${HOSTNAME}" =~ ^.*cinder[0-9]+$ ]]; then
-        prepare_storages_for_cinder
+        prepare_storages_for_cinder || return 1
     else
         log_err "Unsupported operations to create vlumes for OpenStack storage nodes on a host \"${HOSTNAME}\". Hostname must contains a characters \"storage\", \"swift\" or \"cinder\"."
         return 1
     fi
 }
 
+verify_parameters() {
+    if [ -z "${TYPE}" ]; then
+        log_err "This command requires \"--type <name>\" specified."
+        return 1
+    fi
+
+    if [ "${TYPE}" = "storage" ]; then
+        verify_cinder_volumes || return 1
+    fi
+    return 0
+}
+
+verify_cinder_volumes() {
+    if [ ${CINDER_VOLUMES} -ne 1 ]; then
+        log_err "Wrong number of Cinder volumes you specified. This script does not support other than 1 Cinder volume"
+    fi
+    return 0
+}
+
 prepare_storages_for_storage_node() {
     log_info "Preparing storages for swift and cinder because this host \"${HOSTNAME}\" is for all storages."
-    prepare_storages_for_cinder
-    prepare_storages_for_swift
+    prepare_storages_for_cinder || return 1
+    prepare_storages_for_swift || return 1
+    return 0
 }
 
 prepare_storages_for_swift() {
@@ -79,7 +101,7 @@ prepare_storages_for_swift() {
 
 prepare_storages_for_cinder() {
     for device in "${SWIFT_VOLUMES}"; do
-        create_storage_for_cinder "${device}"
+        create_storage_for_cinder "${device}" || return 1
     done
     return 0
 }
@@ -97,7 +119,7 @@ create_storage_for_swift() {
         # The device is not formatted yet. Then the device can be formatted.
         log_info "The device \"${device}\" is not formatted yet. It will be formatted as XFS file system."
         format_as_xfs "${device}"
-    else [ ${ret} -eq 0 ]; then
+    elif [ ${ret} -eq 0 ]; then
         log_info "The device \"${device}\" is already formatted. Then an instruction to create XFS file system for Swift will be skipped."
         return 0
     else
