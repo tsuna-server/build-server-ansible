@@ -57,15 +57,18 @@ main() {
     #if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
     echo "type=${TYPE}"
     if [ "${TYPE}" = "storage" ]; then
-        prepare_storages_for_storage_node
+        prepare_storages_for_storage_node || return 1
     elif [ "${TYPE}" = "swift" ]; then
-        prepare_storages_for_swift
+        prepare_storages_for_swift || return 1
     elif [ "${TYPE}" = "cinder" ]; then
         prepare_storages_for_cinder || return 1
     else
         log_err "Unsupported operations to create vlumes for OpenStack storage nodes on a host \"${HOSTNAME}\". Hostname must contains a characters \"storage\", \"swift\" or \"cinder\"."
         return 1
     fi
+
+    log_info "Finished all instructions successfully."
+    return 0
 }
 
 verify_parameters() {
@@ -82,7 +85,8 @@ verify_parameters() {
 
 verify_cinder_volumes() {
     if [ ${#CINDER_VOLUMES[@]} -ne 1 ]; then
-        log_err "Wrong number of Cinder volumes you specified. This script does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\"."
+        log_err "Wrong number of Cinder volumes you specified. This script does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\" for simplicity."
+        return 1
     fi
     return 0
 }
@@ -96,7 +100,7 @@ prepare_storages_for_storage_node() {
 
 prepare_storages_for_swift() {
     [ ${#SWIFT_VOLUMES[@]} -eq 0 ] && {
-        log_info "Ignore creating Swift volumes because num of Swift volumes that you specified is 0."
+        log_info "Ignore creating Swift volumes because num of them that you specified is 0."
         return 0
     }
 
@@ -109,7 +113,7 @@ prepare_storages_for_swift() {
 
 prepare_storages_for_cinder() {
     [ ${#CINDER_VOLUMES[@]} -eq 0 ] && {
-        log_info "Ignore creating Cinder volumes because num of Cinder volumes that you specified is 0."
+        log_info "Ignore creating Cinder volumes because num of them that you specified is 0."
         return 0
     }
 
@@ -123,6 +127,8 @@ create_storage_for_swift() {
     local deivce="$1"
     local output ret
 
+    log_info "Creating XFS filesystem on a device \"${device}\" for Swift."
+
     output="$(blkid "$device")"
 
     grep -q -F 'TYPE="xfs"' <<< "$output"
@@ -130,13 +136,13 @@ create_storage_for_swift() {
 
     if [ -z "${output}" ]; then
         # The device is not formatted yet. Then the device can be formatted.
-        log_info "The device \"${device}\" is not formatted yet. It will be formatted as XFS file system."
-        format_as_xfs "${device}"
+        log_info "The device \"${device}\" is not formatted yet. It will be formatted as XFS file system for Swift."
+        format_as_xfs "${device}" || return 1
     elif [ ${ret} -eq 0 ]; then
         log_info "The device \"${device}\" is already formatted. Then an instruction to create XFS file system for Swift will be skipped."
         return 0
     else
-        log_err "The device \"${device}\" is already formatted but a format of it is unexpected. A information of the device like below."
+        log_err "The device \"${device}\" is already formatted but its format is unexpected. A information of the device like below."
         log_err "${output}"
         return 1
     fi
@@ -147,6 +153,8 @@ create_storage_for_cinder() {
     local output_of_pvdisplay ret_of_pvdisplay
     local output_of_vg_name ret_of_vg_name
     local output_of_blkid ret_of_blkid
+
+    log_info "Creating LVM named \"cinder-volumes\" on a device \"${device}\" for Cinder."
 
     [ -b "${device}" ] || {
         log_err "A device \"${device}\" is not present."
@@ -162,11 +170,11 @@ create_storage_for_cinder() {
         output_of_vg_name=$(grep -q -P '^.*VG Name .*cinder\-volumes$' <<< "${output_of_pvdisplay}")
         ret_of_vg_name=$?
         if [ ${ret_of_vg_name} -ne 0 ]; then
-            log_err "A device \"${device}\" has already been formatted as LVM but VG Name is different from \"cinder-volumes\". An output of volume name is \"${output_of_vg_name}\""
+            log_err "Failed to create LVM for Cinder. A device \"${device}\" has already been formatted as LVM but name of VG is different from \"cinder-volumes\". An output of volume name is \"${output_of_vg_name}\"."
             return 1
         fi
 
-        log_info "A device \"${device}\" has already been formatted as LVM."
+        log_info "Creating LVM has been skipped for Cinder. A device \"${device}\" has already been formatted as LVM for Cinder."
         return 0
     fi
 
@@ -192,7 +200,7 @@ create_storage_for_cinder() {
         ret_of_blkid=$?
         if [ ${ret_of_blkid} -ne 0 ]; then
             # No 2, No 4, No 6
-            log_err "A device \"${device}\" has already been formatted and not labeld \"Linux LVM\"."
+            log_err "A device \"${device}\" has already been formatted and not labeld \"Linux LVM\" for Cinder."
             return 1
         fi
 
@@ -201,7 +209,7 @@ create_storage_for_cinder() {
         ret_of_blkid=$?
         if [ ${ret_of_blkid} -eq 0 ]; then
             # No 8
-            log_err "A device \"${device}\" has been already formatted. Could not create LVM for cinder. (${output_of_blkid})"
+            log_err "A device \"${device}\" has been already formatted. Could not create LVM for Cinder. (${output_of_blkid})"
             return 1
         fi
 
@@ -245,9 +253,10 @@ format_as_xfs() {
     ret=$?
 
     if [ $ret -ne 0 ]; then
-        log_err "Failed to foramt a device \"${device}\" as XFS. The actual error messages might be outputted before this message."
+        log_err "Failed to foramt a device \"${device}\" as XFS for Swift(ret=${ret}). The actual error messages might be outputted before this message."
         return 1
     fi
+    return 0
 }
 
 main "$@"
