@@ -50,12 +50,11 @@ main() {
         esac
     done
 
-    log_info "Creating volumes with parameters[type=${TYPE},swift_volumes=${SWIFT_VOLUMES},cinder_volumes=${CINDER_VOLUMES}]"
+    log_info "Creating volumes with parameters[type=${TYPE},swift_volumes=[${SWIFT_VOLUMES[@]}],cinder_volumes=[${CINDER_VOLUMES[@]}]]"
 
     verify_parameters || return 1
 
     #if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
-    echo "type=${TYPE}"
     if [ "${TYPE}" = "storage" ]; then
         prepare_storages_for_storage_node || return 1
     elif [ "${TYPE}" = "swift" ]; then
@@ -249,6 +248,7 @@ create_lvm_for_cinder() {
 format_as_xfs() {
     local device="$1"
     local ret
+
     mkfs.xfs "${device}"
     ret=$?
 
