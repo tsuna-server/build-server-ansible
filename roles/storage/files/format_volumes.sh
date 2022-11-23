@@ -109,7 +109,9 @@ create_storage_for_swift() {
 
 create_storage_for_cinder() {
     local deivce="$1"
-    local output_of_pvdisplay ret_of_pvdisplay output_of_vg_name ret_of_vg_name
+    local output_of_pvdisplay ret_of_pvdisplay
+    local output_of_vg_name ret_of_vg_name
+    local output_of_blkid ret_of_blkid
 
     [ -b "${device}" ] || {
         log_err "A device \"${device}\" is not present."
@@ -118,8 +120,6 @@ create_storage_for_cinder() {
 
     output_of_pvdisplay="$(pvdisplay "${device}")"
     ret_of_pvdisplay=$?
-
-
 
     if [ ${ret_of_pvdisplay} -eq 0 ]; then
         # A device has already been formatted as LVM.
@@ -134,17 +134,65 @@ create_storage_for_cinder() {
         log_info "A device \"${device}\" has already been formatted as LVM."
         return 0
     fi
-    # | Not partitioned |                 |                 |
-    # | or              |                 |                 |
-    # | Partitioned     | Formatted       | Proceed         |
-    # | labeled LVM     | with any FS     | creating LVM?   |
-    # +-----------------+-----------------+-----------------|
-    # | False           | False           | True            |
-    # | True            | False           | True            |
-    # | False           | True            | False           |
-    # | True            | True            | False           |
+
+    # |    | Partitioned     | Partitioned     | Formatted       | Proceed         |
+    # | No | other than LVM  | labeled LVM     | with any FS(*1) | creating LVM?   |
+    # +----+-----------------+-----------------+-----------------+-----------------|
+    # | 1  | False           | False           | False           | True            |
+    # | 2  | True            | False           | False           | False(Error)    |
+    # | 3  | False           | True            | False           | False(Skipped)  |
+    # | 4  | False           | False           | True            | False(Error)    |
+    # | 5  | True            | True            | False           | False           | Unrealized
+    # | 6  | True            | False           | True            | False(Error)    |
+    # | 7  | False           | True            | True            | False(Error)    | Unrealized?
+    # | 8  | True            | True            | True            | False           | Unrealized
     #
-    # TODO: 
+    # *1: Except LVM. LVM is not considered as FS in this scenario.
+
+    output_of_blkid="$(grep -P "^${device}: " < <(blkid))"
+    if [ -n "${output_of_blkid}" ]; then
+        # A device has already been partitioned or formatted any file system.
+
+        grep -q -i '^.* PARTLABEL="Linux LVM" .*$' <<< "${output_of_blkid}"
+        ret_of_blkid=$?
+        if [ ${ret_of_blkid} -ne 0 ]; then
+            # No 2, No 4, No 6
+            log_err "A device \"${device}\" has already been formatted and not labeld \"Linux LVM\"."
+            return 1
+        fi
+
+        TYPE="ext4" 
+        output_of_blkid="$(grep -P '^.* TYPE="[a-zA-Z0-9_\- ]" .*$' <<< "${output_of_blkid}")"
+        ret_of_blkid=$?
+        if [ ${ret_of_blkid} -eq 0 ]; then
+            # No 8
+            log_err "A device \"${device}\" has been already formatted. Could not create LVM for cinder. (${output_of_blkid})"
+            return 1
+        fi
+
+        # no 3
+        log_info "A device \"${device}\" has already been formatted by LVM and labeld \"Linux LVM\". Nothing to do. Skipped to create a LVM for cinder."
+        return 0
+    fi
+
+    # No 1
+    pvcreate "${device}"
+
+    # TODO
+    #vgcreate
+
+    return 0
+}
+
+create_lvm_for_cinder() {
+    local device="$1"
+
+    wipefs --all "${device}" || {
+        log_err "Failed to create LVM for cinder. A command to clean device \"${device}\" was failed. [wipefs --all \"${device}\"]"
+        return 1
+    }
+
+    pvcreate "${device}"
 }
 
 format_as_xfs() {
