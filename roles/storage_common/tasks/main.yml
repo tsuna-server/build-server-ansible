@@ -2,5 +2,3 @@
 - name: Include format_volumes/main.yml
   include: format_volumes/main.yml
   when: inventory_hostname | regex_search("^.*(storage|cinder|swift)[0-9]+$")
-
-
