@@ -13,9 +13,14 @@
     options_of_create_account_ring: "{{ options + [\"--swift-device\", item] }}"
   with_items: "{{ group_vars.hosts.swifts[0].storage.swift }}"
 
-#swift-ring-builder account.builder create 10 3 1
-#
-#
+- name: Build an account.builder
+  ansible.builtin.command:
+    cmd: swift-ring-builder account.builder create 10 3 1
+  args:
+    chdir: /etc/swift
+
+
+
 #dev-controllerXX ~# swift-ring-builder account.builder \
 #                        add --region 1 --zone 1 --ip 172.22.1.101 --port 6202 \
 #                        --device vdb --weight 100

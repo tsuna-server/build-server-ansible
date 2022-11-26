@@ -1,0 +1,4 @@
+---
+#- name: Format volumes that has a role for storage
+#  ansible.builtin.script: ./format_volumes.sh
+
