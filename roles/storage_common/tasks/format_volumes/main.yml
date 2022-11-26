@@ -20,19 +20,18 @@
   ansible.builtin.debug:
     msg: "options_of_format_volumes={{ options_of_format_volumes }}"
 
-- name: "Copy format_volumes.sh to \"/opt/format_volumes.sh\" on {{ inventory_hostname }}"
-  ansible.builtin.copy:
-    src: format_volumes.sh
-    dest: /opt/format_volumes.sh
-    owner: root
-    group: root
-    mode: '0750'
+#- name: "Copy format_volumes.sh to \"/opt/format_volumes.sh\" on {{ inventory_hostname }}"
+#  ansible.builtin.copy:
+#    src: format_volumes.sh
+#    dest: /opt/format_volumes.sh
+#    owner: root
+#    group: root
+#    mode: '0750'
 
 #- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
 #  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes }}
 - name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-  ansible.builtin.shell:
-    cmd: /opt/format_volumes.sh {{ options_of_format_volumes | join(' ') }}
+  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes | join(' ') }}
 
 - name: Faaaaaaaaaaaaaaaaaaaaail
   ansible.builtin.fail:
