@@ -13,8 +13,6 @@ log_info() {
 main() {
     . /opt/getoptses/getoptses.sh
 
-    echo "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE: $@" >&2
-
     local options
     options=$(getoptses -o "t:s:c:" --longoptions "type:,swift-volume:,cinder-volume:" -- "$@")
 
@@ -25,8 +23,6 @@ main() {
     eval set -- "$options"
 
     while true; do
-        echo "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: \$1=$1, \$2=$2"
-
         case "$1" in
         --type | -t )
             [ -n "${TYPE}" ] && {
