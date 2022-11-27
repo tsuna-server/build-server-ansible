@@ -1,38 +1,5 @@
 ---
-- name: Declare a variable for format_volumes.sh that create volumes for storage nodes.
-  set_fact:
-    options_of_format_volumes: []
+- name: Include format_volumes_for_each_nodes.yml
+  include: format_volumes_for_each_nodes.yml
 
-- name: Declare type of format_volumes.sh
-  set_fact:
-    options_of_format_volumes: "{% if inventory_hostname | regex_search('^.*storage[0-9]+.*$') -%}
-                                  {{ options_of_format_volumes + ['--type', 'storage'] }}
-                                {% elif inventory_hostname | regex_search('^.*cinder[0-9]+.*$') -%}
-                                  {{ options_of_format_volumes + ['--type', 'cinder'] }}
-                                {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
-                                  {{ options_of_format_volumes + ['--type', 'swift'] }}
-                                {% endif %}"
 
-#- name: Declare options of devices for cinder
-#  with: items
-
-- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebug
-  ansible.builtin.debug:
-    msg: "options_of_format_volumes={{ options_of_format_volumes }}"
-
-#- name: "Copy format_volumes.sh to \"/opt/format_volumes.sh\" on {{ inventory_hostname }}"
-#  ansible.builtin.copy:
-#    src: format_volumes.sh
-#    dest: /opt/format_volumes.sh
-#    owner: root
-#    group: root
-#    mode: '0750'
-
-#- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-#  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes }}
-- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes | join(' ') }}
-
-- name: Faaaaaaaaaaaaaaaaaaaaail
-  ansible.builtin.fail:
-    msg: "Faaaaaaaaaaaaaaaaaaaaail"
