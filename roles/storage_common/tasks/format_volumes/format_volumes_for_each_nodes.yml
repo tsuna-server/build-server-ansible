@@ -1,4 +1,22 @@
 ---
+- name: Declare a group_name to format volumes
+  set_fact:
+    group_name: "{{ group_names[0] }}"
+
+- name: Deeeeeeeeeeeeeeeeeeeeeeebug
+  ansible.builtin.debug:
+    msg: "inventory_hostname => {{ inventory_hostname }}, storage.swift => {{ aaa.storage.swift }}"
+  loop_control:
+    loop_var: aaa
+  with_items: "{{ group_vars.hosts[group_name] }}"
+  when: aaa.name == inventory_hostname
+
+- name: Faaaaaaaaaaaaaaaaaaaaail
+  ansible.builtin.fail:
+    msg: "Faaaaaaaaaaaaaaaaaaaaail"
+
+
+
 - name: Declare a variable for format_volumes.sh that create volumes for storage nodes.
   set_fact:
     options_of_format_volumes: []
@@ -12,10 +30,6 @@
                                 {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
                                   {{ options_of_format_volumes + ['--type', 'swift'] }}
                                 {% endif %}"
-
-- name: Faaaaaaaaaaaaaaaaaaaaail
-  ansible.builtin.fail:
-    msg: "Faaaaaaaaaaaaaaaaaaaaail"
 
 #- name: Declare options of devices for Swift nodes
 #  with_items:
