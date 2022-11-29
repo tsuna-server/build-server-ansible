@@ -31,16 +31,29 @@
   set_fact:
     option_swift_volumes: []
 
-- name: Declare an empty variable option_swift_volumes
+- name: Set the variable option_swift_volumes
   set_fact:
     option_swift_volumes: "{{ option_swift_volumes + [\"--swift-volume\", tmp_option_swift_volume] }}"
   loop_control:
     loop_var: tmp_option_swift_volume
   with_items: "{{ target_storage_instance.storage.swift }}"
+  when: '"swift" in target_storage_instance.storage'
+
+- name: Declare an empty variable option_cinder_volumes
+  set_fact:
+    option_cinder_volumes: []
+
+- name: Set the variable option_cinder_volumes
+  set_fact:
+    option_cinder_volumes: "{{ option_cinder_volumes + [\"--cinder-volume\", tmp_option_cinder_volume] }}"
+  loop_control:
+    loop_var: tmp_option_cinder_volume
+  with_items: "{{ target_storage_instance.storage.cinder }}"
+  when: '"cinder" in target_storage_instance.storage'
 
 - name: Faaaaaaaaaaaaaaaaaaaaail
   ansible.builtin.fail:
-    msg: "Faaaaaaaaaaaaaaaaaaaaail. options_of_type => {{ options_of_type }}, option_swift_volumes => {{ option_swift_volumes }}"
+    msg: "Faaaaaaaaaaaaaaaaaaaaail. options_of_type => {{ options_of_type }}, option_swift_volumes => {{ option_swift_volumes }}, option_cinder_volumes => {{ option_cinder_volumes }}"
 
 
 #- name: Declare options of devices for Swift nodes
