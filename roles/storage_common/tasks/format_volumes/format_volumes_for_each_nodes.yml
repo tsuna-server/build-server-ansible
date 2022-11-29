@@ -3,33 +3,45 @@
   set_fact:
     group_name: "{{ group_names[0] }}"
 
-- name: Deeeeeeeeeeeeeeeeeeeeeeebug
-  ansible.builtin.debug:
-    msg: "inventory_hostname => {{ inventory_hostname }}, storage.swift => {{ aaa.storage.swift }}"
+- name: Declare target_storage_instance to format volumes for storage nodes (swift, cinder etc).
+  #ansible.builtin.debug:
+  #  msg: "inventory_hostname => {{ inventory_hostname }}, storage.swift => {{ aaa.storage.swift }}"
+  set_fact:
+    target_storage_instance: "{{ tmp_target_storage_instance }}"
   loop_control:
-    loop_var: aaa
+    loop_var: tmp_target_storage_instance
   with_items: "{{ group_vars.hosts[group_name] }}"
-  when: aaa.name == inventory_hostname
+  when: tmp_target_storage_instance.name == inventory_hostname
+
+- name: Declare an empty variable option_type_of_storage
+  set_fact:
+    option_type_of_storage: []
+
+- name: Set a variable option_type_of_storage
+  set_fact:
+    options_of_type: "{% if inventory_hostname | regex_search('^.*storage[0-9]+.*$') -%}
+                                  {{ option_type_of_storage + ['--type', 'storage'] }}
+                                {% elif inventory_hostname | regex_search('^.*cinder[0-9]+.*$') -%}
+                                  {{ option_type_of_storage + ['--type', 'cinder'] }}
+                                {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
+                                  {{ option_type_of_storage + ['--type', 'swift'] }}
+                                {% endif %}"
+
+- name: Declare an empty variable option_swift_volumes
+  set_fact:
+    option_swift_volumes: []
+
+- name: Declare an empty variable option_swift_volumes
+  set_fact:
+    option_swift_volumes: "{{ option_swift_volumes + [\"--swift-volume\", tmp_option_swift_volume] }}"
+  loop_control:
+    loop_var: tmp_option_swift_volume
+  with_items: "{{ target_storage_instance.storage.swift }}"
 
 - name: Faaaaaaaaaaaaaaaaaaaaail
   ansible.builtin.fail:
-    msg: "Faaaaaaaaaaaaaaaaaaaaail"
+    msg: "Faaaaaaaaaaaaaaaaaaaaail. options_of_type => {{ options_of_type }}, option_swift_volumes => {{ option_swift_volumes }}"
 
-
-
-- name: Declare a variable for format_volumes.sh that create volumes for storage nodes.
-  set_fact:
-    options_of_format_volumes: []
-
-- name: Declare type of format_volumes.sh
-  set_fact:
-    options_of_format_volumes: "{% if inventory_hostname | regex_search('^.*storage[0-9]+.*$') -%}
-                                  {{ options_of_format_volumes + ['--type', 'storage'] }}
-                                {% elif inventory_hostname | regex_search('^.*cinder[0-9]+.*$') -%}
-                                  {{ options_of_format_volumes + ['--type', 'cinder'] }}
-                                {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
-                                  {{ options_of_format_volumes + ['--type', 'swift'] }}
-                                {% endif %}"
 
 #- name: Declare options of devices for Swift nodes
 #  with_items:
