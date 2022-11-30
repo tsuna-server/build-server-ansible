@@ -13,18 +13,18 @@
   with_items: "{{ group_vars.hosts[group_name] }}"
   when: tmp_target_storage_instance.name == inventory_hostname
 
-- name: Declare an empty variable option_type_of_storage
+- name: Declare an empty variable options_of_type
   set_fact:
-    option_type_of_storage: []
+    options_of_type: []
 
-- name: Set a variable option_type_of_storage
+- name: Set a variable options_of_type
   set_fact:
     options_of_type: "{% if inventory_hostname | regex_search('^.*storage[0-9]+.*$') -%}
-                                  {{ option_type_of_storage + ['--type', 'storage'] }}
+                                  {{ options_of_type + ['--type', 'storage'] }}
                                 {% elif inventory_hostname | regex_search('^.*cinder[0-9]+.*$') -%}
-                                  {{ option_type_of_storage + ['--type', 'cinder'] }}
+                                  {{ options_of_type + ['--type', 'cinder'] }}
                                 {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
-                                  {{ option_type_of_storage + ['--type', 'swift'] }}
+                                  {{ options_of_type + ['--type', 'swift'] }}
                                 {% endif %}"
 
 - name: Declare an empty variable option_swift_volumes
@@ -51,29 +51,33 @@
   with_items: "{{ target_storage_instance.storage.cinder }}"
   when: '"cinder" in target_storage_instance.storage'
 
+- name: "Copy format_volumes.sh to \"/opt/format_volumes.sh\" on {{ inventory_hostname }}"
+  ansible.builtin.copy:
+    src: format_volumes.sh
+    dest: /opt/format_volumes.sh
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: Error if the option --type is empty for format_volumes.sh
+  ansible.builtin.fail:
+    msg: "ERROR: Failed to format volumes for storage nodes. The option --type to format volumes for storage nodes is empty."
+  when: 'options_of_type | length <= 0'
+
+- name: Error if both of the option --swift-volume and --cinder-volume are empty
+  ansible.builtin.fail:
+    msg: "ERROR: Failed to format volumes for storage nodes. Both the option --swift-volume and --cinder-volume for storage nodes are empty."
+  when: '(option_swift_volumes | length <= 0) and (option_cinder_volumes | length <= 0)'
+
+- name: Set variable options_of_format_volumes
+  set_fact:
+    options_of_format_volumes: "{{ options_of_type + option_cinder_volumes + option_swift_volumes }}"
+
+- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
+  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes | join(' ') }}
+
 - name: Faaaaaaaaaaaaaaaaaaaaail
   ansible.builtin.fail:
     msg: "Faaaaaaaaaaaaaaaaaaaaail. options_of_type => {{ options_of_type }}, option_swift_volumes => {{ option_swift_volumes }}, option_cinder_volumes => {{ option_cinder_volumes }}"
-
-
-#- name: Declare options of devices for Swift nodes
-#  with_items:
-
-
-#- name: Declare options of devices for Cinder nodes
-#  with: items
-
-#- name: "Copy format_volumes.sh to \"/opt/format_volumes.sh\" on {{ inventory_hostname }}"
-#  ansible.builtin.copy:
-#    src: format_volumes.sh
-#    dest: /opt/format_volumes.sh
-#    owner: root
-#    group: root
-#    mode: '0750'
-
-#- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-#  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes }}
-- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes | join(' ') }}
 
 
