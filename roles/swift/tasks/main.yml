@@ -10,11 +10,13 @@
     - name: Include install_packages/swift_proxy/main.yml
       include_tasks: install_packages/swift_proxy/main.yml
 
-    - name: Include create_rings/main.yml
-      include_tasks: create_rings/main.yml
+    # This instruction assumes that swift_proxy is in controller node.
+    # Ofcurse, you can separate controller and swift_proxy node.
+    - name: Include create_proxy_server/main.yml
+      include_tasks: create_proxy_server/main.yml
 
-    #- name: Include create_proxy_server/main.yml
-    #  include_tasks: create_proxy_server/main.yml
+    #- name: Include create_rings/main.yml
+    #  include_tasks: create_rings/main.yml
 
     #- name: Include restart_services_for_swift_proxy_nodes/main.yml
     #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
