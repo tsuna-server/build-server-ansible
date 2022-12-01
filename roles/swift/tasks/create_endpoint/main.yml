@@ -5,5 +5,3 @@
     tasks_from: create_endpoint/main.yml
   vars:
     openstack_service_name: "swift"
-
-

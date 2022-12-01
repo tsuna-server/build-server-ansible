@@ -1,0 +1,11 @@
+---
+- name: Configure swift-proxy-server
+  ansible.builtin.template:
+    src: proxy-server.confg
+    dest: /etc/swift/proxy-server.conf
+    owner: swift
+    group: swift
+    mode: 0644
+    backup: yes
+  register: template_result
+
