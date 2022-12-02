@@ -15,8 +15,8 @@
     - name: Include create_proxy_server/main.yml
       include_tasks: create_proxy_server/main.yml
 
-    #- name: Include create_rings/main.yml
-    #  include_tasks: create_rings/main.yml
+    - name: Include create_rings/main.yml
+      include_tasks: create_rings/main.yml
 
     #- name: Include restart_services_for_swift_proxy_nodes/main.yml
     #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml

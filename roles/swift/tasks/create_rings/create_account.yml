@@ -1,17 +1,7 @@
 ---
-- name: Declare a variable options_of_create_account_ring
-  set_fact:
-    options_of_create_account_ring: []
-
-- name: Append options of storages for Swift
-  set_fact:
-    options_of_create_account_ring: "{{ options + [\"--cinder-device\", item] }}"
-  with_items: "{{ group_vars.hosts.swifts[0].storage.cinder }}"
-
-- name: Append options of storages for Cinder
-  set_fact:
-    options_of_create_account_ring: "{{ options + [\"--swift-device\", item] }}"
-  with_items: "{{ group_vars.hosts.swifts[0].storage.swift }}"
+#- name: Declare a variable options_of_create_account_ring
+#  set_fact:
+#    options_of_create_account_ring: []
 
 - name: Build an account.builder
   ansible.builtin.command:
@@ -19,14 +9,9 @@
   args:
     chdir: /etc/swift
 
+- name: Include do_swift_ring_builder.yml
+  include: do_swift_ring_builder.yml
 
-
-#dev-controllerXX ~# swift-ring-builder account.builder \
-#                        add --region 1 --zone 1 --ip 172.22.1.101 --port 6202 \
-#                        --device vdb --weight 100
-#
-#ip > device
-#
 #> Device d0r1z1-172.22.1.101:6202R172.22.1.101:6202/vdb_"" with 100.0 weight got id 0
 #dev-controllerXX ~# swift-ring-builder account.builder \
 #                        add --region 1 --zone 1 --ip 172.22.1.101 --port 6202 \

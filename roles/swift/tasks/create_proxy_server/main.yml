@@ -1,7 +1,7 @@
 ---
 - name: Configure swift-proxy-server
   ansible.builtin.template:
-    src: proxy-server.confg
+    src: proxy-server.conf
     dest: /etc/swift/proxy-server.conf
     owner: swift
     group: swift
