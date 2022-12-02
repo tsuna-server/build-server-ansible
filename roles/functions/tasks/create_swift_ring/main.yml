@@ -2,6 +2,12 @@
 # "Create_swift_ring" is a task to create rings for Swift.
 # It requires variables like below.
 # * type_of_builder (type String)
-#   A type of builder for Swift. 
+#   A type of builder for Swift.
 #   Accepted values are "account.builder", "container.builder", "object.builder".
-#
+
+- name: "Create builder for Swift. A type of builder is \"{{ type_of_builder }}\""
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ type_of_builder }} create 10 3 1
+  args:
+    chdir: /etc/swift
+

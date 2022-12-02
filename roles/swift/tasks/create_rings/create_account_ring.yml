@@ -1,0 +1,33 @@
+---
+#- name: Declare a variable options_of_create_account_ring
+#  set_fact:
+#    options_of_create_account_ring: []
+
+##- name: Build an account.builder
+##  ansible.builtin.command:
+##    cmd: swift-ring-builder account.builder create 10 3 1
+##  args:
+##    chdir: /etc/swift
+
+- name: Stat /etc/swift/account.builder to detect a ring of account.builder has already created
+  stat:
+    path: /etc/swift/account.builder
+  register: stat_account_builder
+
+- name: Include create_swift_ring/main.yml in a role function
+  include_role:
+    name: functions
+    tasks_from: create_swift_ring/main.yml
+  vars:
+    type_of_builder: "account.builder"
+  when: not stat_account_builder.stat.exists
+
+# TODO:
+- name: Include add_swift_ring_builder
+  include_role:
+    name: functions
+    tasks_from: ...
+  vars:
+    type_of_builder: "account.builder"
+  with_items: ...
+
