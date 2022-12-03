@@ -4,7 +4,7 @@
 # * type_of_builder (type String)
 #   A type of builder for Swift.
 #   Accepted values are "account.builder", "container.builder", "object.builder".
-# * ip (type string)
+# * ip_of_storage_node (type string)
 
 - name: "Add builder for Swift. A type of builder is \"{{ type_of_builder }}\""
   ansible.builtin.command:

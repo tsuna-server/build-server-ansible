@@ -21,3 +21,4 @@
   vars:
     type_of_builder: "account.builder"
     ip_of_storage_node: "{{ swift_node.management.ip }}"
+  with_items: "{{ swift_node.storage.swift }}"
