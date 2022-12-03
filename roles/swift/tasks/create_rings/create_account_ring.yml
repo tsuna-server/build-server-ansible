@@ -11,9 +11,3 @@
   vars:
     type_of_builder: "account.builder"
   when: not stat_account_builder.stat.exists
-
-- name: Include add_swift_ring_builder_for_each_nodes.yml
-  include: add_swift_ring_builder_for_each_nodes.yml
-  loop_control:
-    loop_var: swift_node
-  with_items: "{{ group_vars.swifts }}"

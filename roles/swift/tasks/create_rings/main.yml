@@ -5,3 +5,9 @@
 
 - name: Include create_account_ring.yml
   include_tasks: create_account_ring.yml
+
+- name: Include add_swift_ring_builder_for_each_nodes.yml
+  include: add_swift_ring_builder_for_each_nodes.yml
+  loop_control:
+    loop_var: swift_node
+  with_items: "{{ group_vars.hosts.swifts }}"
