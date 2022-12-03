@@ -1,0 +1,24 @@
+---
+# swift_node
+#   A node of Swift that has a key'storage'.
+# swift_node.storage.swift
+#   Storages of Swift
+
+- name: "Check whether the key \"swift_node.storage\" is existed"
+  ansible.builtin.fail:
+    msg: "A parameter \"swift_node\" must have a key \"storage\"."
+  when: not 'storage' in swift_node
+
+- name: "Check whether the key \"swift_node.storage.swift\" is existed"
+  ansible.builtin.fail:
+    msg: "A parameter \"swift_node\" must have a key \"storage.swift\"."
+  when: not 'swift' in swift_node.storage
+
+- name: Include a function adding account.builder of device for Swift
+  include_role:
+    name: functions
+    task_from: add_swift_ring/main
+  vars:
+    type_of_builder: "account.builder"
+  
+
