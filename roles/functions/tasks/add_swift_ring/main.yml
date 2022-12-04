@@ -10,10 +10,10 @@
 #   A name of device of node.
 
 # TODO: This instruction should check whether a node and device have already added or not.
-- name: "Check whether the node and device have already been registered(type_of_builder={{ type_of_builder }}, ip={{ ip_of_storage_node }}, device={{ name_of_device }})."
+#- name: "Check whether the node and device have already been registered(type_of_builder={{ builder }}, ip={{ ip_of_storage_node }}, device={{ name_of_device }})."
 
-- name: "Add builder for Swift. A type of builder is \"{{ type_of_builder }}\""
+- name: "Add builder for Swift. A type of builder is \"{{ builder }}\""
   ansible.builtin.command:
-    cmd: swift-ring-builder {{ type_of_builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port 6202 --device {{ name_of_device }} --weight 100
+    cmd: swift-ring-builder {{ builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port 6202 --device {{ name_of_device }} --weight 100
   args:
     chdir: /etc/swift
