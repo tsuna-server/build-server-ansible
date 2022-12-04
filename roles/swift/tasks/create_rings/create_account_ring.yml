@@ -1,4 +1,7 @@
 ---
+# * type_of_builder:
+#   A type of builder like "account.builder", "container.builder", "object.builder".
+
 - name: Stat /etc/swift/account.builder to detect a ring of account.builder has already created
   stat:
     path: /etc/swift/account.builder
@@ -9,5 +12,13 @@
     name: functions
     tasks_from: create_swift_ring/main.yml
   vars:
-    type_of_builder: "account.builder"
+    type_of_builder: "{{ type_of_builder }}"
   when: not stat_account_builder.stat.exists
+
+- name: Include add_swift_ring_builder_for_each_nodes.yml
+  include: add_swift_ring_builder_for_each_nodes.yml
+  loop_control:
+    loop_var: swift_node
+  vars:
+    type_of_builder: "{{ type_of_builder }}"
+  with_items: "{{ group_vars.hosts.swifts }}"

@@ -8,6 +8,9 @@
 
 # TODO: This instruction should check whether a node and device have already added or not.
 
+
 - name: "Add builder for Swift. A type of builder is \"{{ type_of_builder }}\""
   ansible.builtin.command:
     cmd: swift-ring-builder {{ type_of_builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port 6202 --device {{ device_for_swift }} --weight 100
+  args:
+    chdir: /etc/swift
