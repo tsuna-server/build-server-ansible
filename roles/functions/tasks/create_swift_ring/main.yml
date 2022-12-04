@@ -11,6 +11,6 @@
   args:
     chdir: /etc/swift
 
-- name: "Wait until the file /etc/swift/account.builder has been created."
+- name: "Wait until the file /etc/swift/{{ type_of_builder }} has been created."
   ansible.builtin.wait_for:
-    path: /etc/swift/account.builder
+    path: "/etc/swift/{{ type_of_builder }}"

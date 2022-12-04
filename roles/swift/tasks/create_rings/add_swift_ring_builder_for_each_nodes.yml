@@ -22,5 +22,5 @@
     type_of_builder: "account.builder"
     ip_of_storage_node: "{{ swift_node.management.ip }}"
   loop_control:
-    loop_var: device_for_swift
+    loop_var: name_of_device
   with_items: "{{ swift_node.storage.swift }}"
