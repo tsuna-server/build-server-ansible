@@ -13,4 +13,4 @@
 
 - name: "Wait until the file /etc/swift/{{ builder }} has been created."
   ansible.builtin.wait_for:
-    path: "/etc/swift/{{ type_of_builder2 }}"
+    path: "/etc/swift/{{ builder }}"
