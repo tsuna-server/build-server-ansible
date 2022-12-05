@@ -19,7 +19,7 @@
     name: functions
     tasks_from: add_swift_ring/main.yml
   vars:
-    type_of_builder: "account.builder"
+    type_of_builder: "{{ type_of_builder }}"
     ip_of_storage_node: "{{ swift_node.management.ip }}"
   loop_control:
     loop_var: name_of_device
