@@ -4,7 +4,7 @@
 
 - name: Stat /etc/swift/account.builder to detect a ring of account.builder has already created
   stat:
-    path: /etc/swift/account.builder
+    path: "/etc/swift/{{ type_of_builder }}"
   register: stat_account_builder
 
 - name: Include create_swift_ring/main.yml in a role function
