@@ -11,9 +11,9 @@
 
 # TODO: This instruction should check whether a node and device have already added or not.
 - name: "Check whether the element of Swift ring has already been registered(type_of_builder={{ builder }}, ip={{ ip_of_storage_node }}, device={{ name_of_device }})."
-  ansible.buildin.script: ./check_duplicate_element_of_swift_ring.sh
+  ansible.builtin.script: ./check_duplicate_element_of_swift_ring.sh
   register: result_of_check_duplicate_element_of_swift_ring
-  failed_when: ( result_of_check_duplicate_element_of_swift_ring not in [0, 1] )
+  failed_when: ( result_of_check_duplicate_element_of_swift_ring.rc not in [0, 1] )
 
 - name: "Add builder for Swift. A type of builder is \"{{ builder }}\""
   ansible.builtin.command:

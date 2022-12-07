@@ -14,7 +14,7 @@
     msg: "A parameter \"swift_node\" must have a key \"storage.swift\"."
   when: not 'swift' in swift_node.storage
 
-- name: Include a function adding {{ type_of_builder }} of device for Swift
+- name: "Include a function adding {{ type_of_builder }} of device for Swift"
   include_role:
     name: functions
     tasks_from: add_swift_ring/main.yml
