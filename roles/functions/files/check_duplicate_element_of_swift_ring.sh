@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+BUILDER=
+IP=
+NAME_OF_DEVICE=
+
+log_err() {
+    echo "$(date) - ERROR: $1" >&2
+}
+log_info() {
+    echo "$(date) - INFO: $1"
+}
+
 main() {
     . /opt/getoptses/getoptses.sh
 
@@ -34,6 +45,26 @@ main() {
             return 1
             ;;
     esac
+
+    validate_options || return 1
+    check_duplicate_element
+
+    return 0
+}
+
+validate_options() {
+    if [ -z "${BUILDER}" ]; then
+        log_err "The option -b|--builder has not set. It is required."
+        return 1
+    fi
+    if [ -z "${IP}" ]; then
+        log_err "The option -i|--ip has not set. It is required."
+        return 1
+    fi
+    if [ -z "${NAME_OF_DEVICE}" ]; then
+        log_err "The option -d|--name-of-device has not set. It is required."
+        return 1
+    fi
 
     return 0
 }
