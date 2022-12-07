@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+WORK_DIR="/etc/swift"
 BUILDER=
 IP=
 NAME_OF_DEVICE=
@@ -13,6 +14,11 @@ log_info() {
 
 main() {
     . /opt/getoptses/getoptses.sh
+
+    cd "${WORK_DIR}" || {
+        log_err "Failed to change a directory \"${WORK_DIR}\"."
+        return 1
+    }
 
     local options
     options=$(getoptses -o "b:i:d" --longoptions "builder:,ip:,name-of-device" -- "$@")
@@ -65,6 +71,24 @@ validate_options() {
         log_err "The option -d|--name-of-device has not set. It is required."
         return 1
     fi
+
+    return 0
+}
+
+check_duplicate_element() {
+    local output
+    local id region zone  ip_port replication_ip_port device_name weight partitions balance_flags_meta
+    local ret_ip  ret_device_name
+    output="$(swift-ring-builder account.builder | grep -A999999 -m1 -P "^Devices: .*" | tail -n+2)"
+
+    while read id region zone  ip_port replication_ip_port device_name weight partitions balance_flags_meta; do
+        [[ "${ip_port}" =~ ^${IP}:6202$ ]]
+        ret_ip=$?
+        [[ "${device_name}" =~ ^${NAME_OF_DEVICE}$ ]]
+        ret_device_name=$?
+
+        [ ${ret_ip} -eq 0 -a ${ret_device_name} ] && return 1
+    done <<< "${output}"
 
     return 0
 }
