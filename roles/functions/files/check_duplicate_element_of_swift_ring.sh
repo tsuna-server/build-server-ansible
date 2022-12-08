@@ -5,6 +5,8 @@ BUILDER=
 IP=
 NAME_OF_DEVICE=
 
+CODE_DUPLICATE_RING=99
+
 log_err() {
     echo "$(date) - ERROR: $1" >&2
 }
@@ -53,7 +55,7 @@ main() {
     esac
 
     validate_options || return 1
-    check_duplicate_element
+    check_duplicate_element || ${CODE_DUPLICATE_RING}
 
     return 0
 }
@@ -78,7 +80,7 @@ validate_options() {
 check_duplicate_element() {
     local output
     local id region zone  ip_port replication_ip_port device_name weight partitions balance_flags_meta
-    local ret_ip  ret_device_name
+    local ret_ip ret_device_name
     output="$(swift-ring-builder account.builder | grep -A999999 -m1 -P "^Devices: .*" | tail -n+2)"
 
     while read id region zone  ip_port replication_ip_port device_name weight partitions balance_flags_meta; do
@@ -87,7 +89,7 @@ check_duplicate_element() {
         [[ "${device_name}" =~ ^${NAME_OF_DEVICE}$ ]]
         ret_device_name=$?
 
-        [ ${ret_ip} -eq 0 -a ${ret_device_name} ] && return 1
+        [ ${ret_ip} -eq 0 -a ${ret_device_name} ] && return ${CODE_DUPLICATE_RING}
     done <<< "${output}"
 
     return 0
