@@ -3,7 +3,7 @@
 WORK_DIR="/etc/swift"
 BUILDER=
 IP=
-NAME_OF_DEVICE=
+DEVICE=
 
 CODE_DUPLICATE_RING=99
 
@@ -17,13 +17,15 @@ log_info() {
 main() {
     . /opt/getoptses/getoptses.sh
 
+    echo "args=$@"
+
     cd "${WORK_DIR}" || {
         log_err "Failed to change a directory \"${WORK_DIR}\"."
         return 1
     }
 
     local options
-    options=$(getoptses -o "b:i:d" --longoptions "builder:,ip:,name-of-device:" -- "$@")
+    options=$(getoptses -o "b:i:d" --longoptions "builder:,ip:,device:" -- "$@")
 
     if [[ "$?" -ne 0 ]]; then
         echo "Invalid option were specified" >&2
@@ -41,8 +43,8 @@ main() {
                 IP="$2"
                 shift 2
                 ;;
-            --name-of-device | -d )
-                NAME_OF_DEVICE="$2"
+            --device | -d )
+                DEVICE="$2"
                 shift 2
                 ;;
             -- )
@@ -55,6 +57,8 @@ main() {
                 ;;
         esac
     done
+
+    log_info "builder=${BUILDER}, ip=${IP}, device=${DEVICE}"
 
     validate_options || return 1
     check_duplicate_element || return ${CODE_DUPLICATE_RING}
@@ -71,7 +75,7 @@ validate_options() {
         log_err "The option -i|--ip has not set. It is required."
         return 1
     fi
-    if [ -z "${NAME_OF_DEVICE}" ]; then
+    if [ -z "${DEVICE}" ]; then
         log_err "The option -d|--name-of-device has not set. It is required."
         return 1
     fi
@@ -88,7 +92,7 @@ check_duplicate_element() {
     while read id region zone  ip_port replication_ip_port device_name weight partitions balance_flags_meta; do
         [[ "${ip_port}" =~ ^${IP}:6202$ ]]
         ret_ip=$?
-        [[ "${device_name}" =~ ^${NAME_OF_DEVICE}$ ]]
+        [[ "${device_name}" =~ ^${DEVICE}$ ]]
         ret_device_name=$?
 
         [ ${ret_ip} -eq 0 -a ${ret_device_name} -eq 0 ] && return ${CODE_DUPLICATE_RING}
