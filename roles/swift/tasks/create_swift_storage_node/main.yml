@@ -17,6 +17,9 @@
   ansible.builtin.debug:
     msg: "config_element_of_swift -> {{ config_element_of_swift }}"
 
-- name: "Include format_storage_for_swift_node/main.yml"
-  include_tasks: format_storage_for_swift_node/main.yml
+- name: "Include mount_storage_for_swift_node/main.yml"
+  include_tasks: mount_storage_for_swift_node/main.yml
+  loop_control:
+    loop_var:
+      device_name_of_swift
   with_items: "{{ config_element_of_swift.storage.swift }}"

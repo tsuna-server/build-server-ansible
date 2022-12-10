@@ -1,0 +1,7 @@
+---
+# Variables
+# * config_element_of_swift
+#   A config element of Swift that contains name, names, management.ip, management.interface, provider.interface and storage.swift[] etc.
+# * device_name_of_swift
+#   A name of device to save data for Swift.
+
