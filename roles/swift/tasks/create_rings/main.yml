@@ -3,8 +3,8 @@
   set_fact:
     map_of_swift_nodes: []
 
-- name: Include create_account_ring.yml
-  include_tasks: create_account_ring.yml
+- name: Include create_rings.yml
+  include_tasks: create_rings.yml
   loop_control:
     loop_var: type_of_builder
   with_items:
