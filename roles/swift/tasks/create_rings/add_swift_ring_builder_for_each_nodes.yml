@@ -25,24 +25,20 @@
     loop_var: name_of_device
   with_items: "{{ swift_node.storage.swift }}"
 
-# Print?
-- name: A block to hook ring builder
-  block:
+# Print and rebuild a ring-builder
+- name: "Get output of Swift ring-builder"
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ type_of_builder }}
+  args:
+    chdir: /etc/swift
+  register: result_of_swift_ring_command
+  failed_when: not result_of_swift_ring_command.rc == 0
 
-  - name: "Get output of Swift ring-builder"
-    ansible.builtin.command:
-      cmd: swift-ring-builder {{ type_of_builder }}
-    args:
-      chdir: /etc/swift
-    register: result_of_swift_ring_command
-    failed_when: not result_of_swift_ring_command.rc == 0
+- name: "Print output of Swift ring-builder"
+  ansible.builtin.debug:
+    msg: "{{ result_of_swift_ring_command.stdout.split('\n') }}"
 
-  - name: "Print output of Swift ring-builder"
-    ansible.builtin.debug:
-      msg: "{{ result_of_swift_ring_command.stdout.split('\n') }}"
-
-  - name: "Rebalance Swift ring builder for the builder \"{{ type_of_builder }}\""
-    ansible.builtin.command:
-      cmd: swift-ring-builder {{ type_of_builder }} rebalance
-    failed_when: not result_of_swift_ring_command.rc == 0
-  when: "'controllers' in group_names"
+- name: "Rebalance Swift ring builder for the builder \"{{ type_of_builder }}\""
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ type_of_builder }} rebalance
+  failed_when: not result_of_swift_ring_command.rc == 0
