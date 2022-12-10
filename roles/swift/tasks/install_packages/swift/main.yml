@@ -1,0 +1,6 @@
+---
+- name: Install packages of swift node
+  apt:
+    name:
+      - xfsprogs
+      - rsync

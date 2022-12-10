@@ -1,5 +1,5 @@
 ---
-- name: Install packages of swift-proxy
+- name: Install packages of swift-proxy node
   apt:
     name:
       - swift
