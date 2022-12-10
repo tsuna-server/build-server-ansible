@@ -23,11 +23,12 @@
   when: "'controllers' in group_names"
 
 - name: A block to build Swift storage nodes.
+  block:
     - name: Include install_packages/swift/main.yml
       include_tasks: install_packages/swift/main.yml
 
-    #- name: Include create_swift_storage_node/main.yml
-    #  include_tasks: create_swift_storage_node/main.yml
+    - name: Include create_swift_storage_node/main.yml
+      include_tasks: create_swift_storage_node/main.yml
 
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml
