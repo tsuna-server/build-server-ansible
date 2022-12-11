@@ -18,3 +18,9 @@
     owner: root
     group: root
 
+# Add a device to the /etc/fstab to mount it automatically
+- name: "Check whether the device \"{{ name_of_device_for_swift }}\" has already registered in /etc/fstab"
+  ansible.builtin.script: ./check_whether_the_device_has_already_registered.sh {{ name_of_device_for_swift }}
+  register: result_of_check_whether_the_device_has_already_registered
+  failed_when: not result_of_check_whether_the_device_has_already_registered == 0
+
