@@ -8,11 +8,19 @@ UUID_OF_DEVICE=
 main() {
     local name_of_device="$1"
     local base_name_of_device=$(basename <<< "${name_of_device}")
+    local ret=
 
     init_parameters "${name_of_device}" || return 1
-    check_whether_the_device_has_already_registered "${name_of_device}" && return 0
+    check_whether_the_device_has_already_registered "${name_of_device}"
+    ret=$?
+
+    if [ $ret -eq 0 ]; then
+        # This program returns 0 if the device has already registered.
+        # An instruction to mount the device will be skipped.
+        return 0
+    fi
+
     register_device_into_fstab "${name_of_device}" "${base_name_of_device}" || return 1
-    mount_device "${base_name_of_device}" || return 1
 
     return 0
 }
@@ -47,7 +55,6 @@ check_whether_the_device_has_already_registered() {
 register_device_into_fstab() {
     local name_of_device="$1"
     local base_name_of_device="$2"
-
 
     [ -z "${UUID_OF_DEVICE}" ] && {
         log_err "A function register_device_into_fstab() requires a variable UUID_OF_DEVICE has already set. A value of UUID_OF_DEVICE is empty."
