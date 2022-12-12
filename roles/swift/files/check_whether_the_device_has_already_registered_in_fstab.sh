@@ -10,7 +10,7 @@ main() {
     local base_name_of_device=$(basename <<< "${name_of_device}")
 
     init_parameters "${name_of_device}" || return 1
-    check_whether_the_device_has_already_registered && return 0
+    check_whether_the_device_has_already_registered "${name_of_device}" && return 0
     register_device_into_fstab "${name_of_device}" "${base_name_of_device}" || return 1
     mount_device "${base_name_of_device}" || return 1
 
@@ -20,20 +20,24 @@ main() {
 init_parameters() {
     local name_of_device="$1"
     UUID_OF_DEVICE=$(grep -P "^${name_of_device}:.*" <<< "$(blkid)" | sed -e 's/.* UUID="\([a-z0-9\-]\+\).*" .*/\1/g')
-    if [ -n "${UUID_OF_DEVICE}" ]; then
+    if [ -z "${UUID_OF_DEVICE}" ]; then
         # A device has already registered. Then return 1.
-        log_info "The device \"${name_of_device}\" has already registered on the host ${HOSTNAME}."
+        log_err "The device \"${name_of_device}\" has NOT been formatted. A device of UUID could not be obtained with the command \"blkid\"."
         return 1
     fi
 
     return 0
 }
 
+# Check whether the device has already registered.
+# A meaning of a value that will be returned are like below.
+#   0: A device has already regsiteed.
+#   1: A device has NOT registered.
 check_whether_the_device_has_already_registered() {
     local name_of_device="$1"
 
-    grep -q -P "^${name_of_device}: .*" /etc/fstab && {
-        log_info "A device \"${name_of_device}\" has already regsitered in \"/etc/fstab\". The instruction adding it into \"/etc/fstab\" will be skipped."
+    grep -q -P "^UUID=\"${UUID_OF_DEVICE}\" +${name_of_device} .*" /etc/fstab && {
+        log_info "A device \"${name_of_device}\" has already regsitered as UUID=${UUID_OF_DEVICE} in \"/etc/fstab\". The instruction adding it into \"/etc/fstab\" will be skipped."
         return 0
     }
 
