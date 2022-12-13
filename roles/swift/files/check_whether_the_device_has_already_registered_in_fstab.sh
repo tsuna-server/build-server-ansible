@@ -7,8 +7,13 @@ UUID_OF_DEVICE=
 
 main() {
     local name_of_device="$1"
-    local base_name_of_device=$(basename <<< "${name_of_device}")
+    local base_name_of_device=$(basename "${name_of_device}")
     local ret=
+
+    if [ -z "${base_name_of_device}" ]; then
+        log_err "Failed to get a basename of the device[name_of_device=${name_of_device},base_name_of_device=(empty)]"
+        return 1
+    fi
 
     init_parameters "${name_of_device}" || return 1
     check_whether_the_device_has_already_registered "${name_of_device}"
