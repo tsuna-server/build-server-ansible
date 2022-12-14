@@ -16,7 +16,8 @@ main() {
     fi
 
     init_parameters "${name_of_device}" || return 1
-    check_whether_the_device_has_already_registered "${name_of_device}"
+    #check_whether_the_device_has_already_registered "${name_of_device}"
+    check_whether_the_device_has_already_registered "${base_name_of_device}"
     ret=$?
 
     if [ $ret -eq 0 ]; then
@@ -47,9 +48,9 @@ init_parameters() {
 #   0: A device has already regsiteed.
 #   1: A device has NOT registered.
 check_whether_the_device_has_already_registered() {
-    local name_of_device="$1"
+    local base_name_of_device="$1"
 
-    grep -q -P "^UUID=\"${UUID_OF_DEVICE}\" +${name_of_device} .*" /etc/fstab && {
+    grep -q -P "^UUID=\"${UUID_OF_DEVICE}\" +${DESTINATION_OF_DIRECTORY_TO_MOUNT}/${base_name_of_device} .*" /etc/fstab && {
         log_info "A device \"${name_of_device}\" has already regsitered as UUID=${UUID_OF_DEVICE} in \"/etc/fstab\". The instruction adding it into \"/etc/fstab\" will be skipped."
         return 0
     }
@@ -67,7 +68,7 @@ register_device_into_fstab() {
     }
 
     # This instruction assumes that the device has NOT registered.
-    echo echo "UUID=\"${UUID_OF_DEVICE}\" ${DESTINATION_OF_DIRECTORY_TO_MOUNT}/${base_name_of_device} xfs noatime 0 2" >> /etc/fstab || {
+    echo "UUID=\"${UUID_OF_DEVICE}\" ${DESTINATION_OF_DIRECTORY_TO_MOUNT}/${base_name_of_device} xfs noatime 0 2" >> /etc/fstab || {
         log_err "Failed to register a device \"${base_name_of_device}\" with uuid \"${UUID_OF_DEVICE}\" into /etc/fstab on node ${HOSTNAME}"
         return 1
     }
