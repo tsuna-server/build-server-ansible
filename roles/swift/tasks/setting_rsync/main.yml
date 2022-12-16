@@ -1,0 +1,9 @@
+---
+- name: Get an config-element of this node.
+  set_fact:
+    config_element_of_swift: "{{ tmp_config_element_of_swift }}"
+  when: tmp_config_element_of_swift.name == inventory_hostname
+  loop_control:
+    loop_var:
+      tmp_config_element_of_swift
+
