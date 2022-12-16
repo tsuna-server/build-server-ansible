@@ -24,7 +24,6 @@
 
 - name: A block to build Swift storage nodes.
   block:
-    ## TODO:
     - name: Get an config-element of this node.
       set_fact:
         config_element_of_swift: "{{ tmp_config_element_of_swift }}"
@@ -33,6 +32,16 @@
         loop_var:
           tmp_config_element_of_swift
       with_items: "{{ group_vars.hosts.swifts }}"
+
+    - name: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
+      ansible.builtin.fail:
+        msg: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
+      when: config_element_of_swift | length <= 0
+
+    - name: "Debug config_element_of_swift for the node \"{{ inventory_hostname }}\"."
+      ansible.builtin.debug:
+        msg: "config_element_of_swift -> {{ config_element_of_swift }}"
+
 
     - name: Include install_packages/swift/main.yml
       include_tasks: install_packages/swift/main.yml
