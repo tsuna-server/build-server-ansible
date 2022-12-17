@@ -52,6 +52,9 @@
     - name: Include setting_rsyncd/main.yml
       include_tasks: setting_rsyncd/main.yml
 
+    - name: Include setting_swift_server/main.yml
+      include_tasks: setting_swift_server_components/main.yml
+
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml
 

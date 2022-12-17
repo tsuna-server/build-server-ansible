@@ -1,0 +1,12 @@
+---
+# Setting /etc/swift/(account-server|container-server|object-server).conf
+- name: Include setting_account_server_conf
+  include_tasks: do_setting_swift_server_components.yml
+  loop_control:
+    loop_var:
+      name_of_configuration_of_account_server
+  with_items: 
+    - account-server.conf
+    - container-server.conf
+    - object-server.conf
+
