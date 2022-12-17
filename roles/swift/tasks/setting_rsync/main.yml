@@ -17,4 +17,11 @@
     path: /etc/default/rsync
     regexp: '^RSYNC_ENABLE='
     line: RSYNC_ENABLE=true
+    notify: Restart rsyncd
+
+- name: Enable rsyncd
+  ansible.builtin.systemd:
+    name: rsyncd
+    enabled: yes
+    masked: no
 
