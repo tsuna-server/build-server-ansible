@@ -2,5 +2,11 @@
 - name: Install packages of swift node
   apt:
     name:
+      # For a filesystem XFS and data sync(rsyncd)
       - xfsprogs
       - rsync
+      # For Swift
+      - swift
+      - swift-account
+      - swift-container
+      - swift-object
