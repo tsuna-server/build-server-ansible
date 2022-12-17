@@ -49,8 +49,8 @@
     - name: Include create_swift_storage_node/main.yml
       include_tasks: create_swift_storage_node/main.yml
 
-    - name: Include setting_rsync/main.yml
-      include_tasks: setting_rsync/main.yml
+    - name: Include setting_rsyncd/main.yml
+      include_tasks: setting_rsyncd/main.yml
 
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml
