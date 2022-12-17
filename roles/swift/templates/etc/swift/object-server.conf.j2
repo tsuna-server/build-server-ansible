@@ -1,13 +1,16 @@
+{#
+    This file has downloaded as base config from https://opendev.org/openstack/swift/raw/branch/master/etc/container-server.conf-sample at 2022/12/17.
+#}
 [DEFAULT]
-# bind_ip = 0.0.0.0
+bind_ip = 
 bind_port = 6200
+user = swift
+swift_dir = /etc/swift
+devices = /srv/node
+mount_check = True
 # keep_idle = 600
 # bind_timeout = 30
 # backlog = 4096
-# user = swift
-# swift_dir = /etc/swift
-# devices = /srv/node
-# mount_check = true
 # disable_fallocate = false
 # expiring_objects_container_divisor = 86400
 # expiring_objects_account_name = expiring_objects
@@ -117,7 +120,8 @@ bind_port = 6200
 # ionice_priority =
 
 [pipeline:main]
-pipeline = healthcheck recon backend_ratelimit object-server
+#pipeline = healthcheck recon backend_ratelimit object-server
+pipeline = healthcheck recon object-server
 
 [app:object-server]
 use = egg:swift#object
@@ -234,8 +238,8 @@ use = egg:swift#healthcheck
 
 [filter:recon]
 use = egg:swift#recon
-#recon_cache_path = /var/cache/swift
-#recon_lock_path = /var/lock
+recon_cache_path = /var/cache/swift
+recon_lock_path = /var/lock
 
 [filter:backend_ratelimit]
 use = egg:swift#backend_ratelimit
