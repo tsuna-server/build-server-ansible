@@ -2,7 +2,7 @@ uid = {{ group_vars.swift.user }}
 gid = {{ group_vars.swift.group }}
 log file = /var/log/rsyncd.log
 pid file = /var/run/rsyncd.pid
-address = {{  }}
+address = {{ config_element_of_swift }}
 
 [account]
 max connections = 2
