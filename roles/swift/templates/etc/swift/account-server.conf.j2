@@ -1,13 +1,16 @@
+{#
+    This file has downloaded as base config from https://opendev.org/openstack/swift/raw/branch/master/etc/account-server.conf-sample at 2022/12/17.
+#}
 [DEFAULT]
-# bind_ip = 0.0.0.0
+bind_ip = {{ config_element_of_swift.management.ip }}
 bind_port = 6202
+user = swift
+swift_dir = /etc/swift
+devices = /srv/node
+mount_check = True
 # keep_idle = 600
 # bind_timeout = 30
 # backlog = 4096
-# user = swift
-# swift_dir = /etc/swift
-# devices = /srv/node
-# mount_check = true
 # disable_fallocate = false
 #
 # Use an integer to override the number of pre-forked processes that will
@@ -80,7 +83,8 @@ bind_port = 6202
 # ionice_priority =
 
 [pipeline:main]
-pipeline = healthcheck recon backend_ratelimit account-server
+#pipeline = healthcheck recon backend_ratelimit account-server
+pipeline = healthcheck recon account-server
 
 [app:account-server]
 use = egg:swift#account
@@ -126,7 +130,7 @@ use = egg:swift#healthcheck
 
 [filter:recon]
 use = egg:swift#recon
-# recon_cache_path = /var/cache/swift
+recon_cache_path = /var/cache/swift
 
 [filter:backend_ratelimit]
 use = egg:swift#backend_ratelimit
