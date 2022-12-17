@@ -1,9 +1,20 @@
 ---
-- name: Get an config-element of this node.
-  set_fact:
-    config_element_of_swift: "{{ tmp_config_element_of_swift }}"
-  when: tmp_config_element_of_swift.name == inventory_hostname
-  loop_control:
-    loop_var:
-      tmp_config_element_of_swift
+# Variables
+# * config_element_of_swift
+#   A config element of Swift that contains name, names, management.ip, management.interface, provider.interface and storage.swift[] etc.
+
+- name: Configure /etc/rsyncd.conf for Swift nodes
+  ansible.builtin.template:
+    src: etc/rsyncd.conf.j2
+    dest: /etc/rsyncd.conf
+    owner: root
+    group: root
+    mode: 0644
+  register: template_result
+
+- name: Change a value of RSYNC_ENABLE in /etc/default/rsync
+  ansible.builtin.lineinfile:
+    path: /etc/default/rsync
+    regexp: '^RSYNC_ENABLE='
+    line: RSYNC_ENABLE=true
 
