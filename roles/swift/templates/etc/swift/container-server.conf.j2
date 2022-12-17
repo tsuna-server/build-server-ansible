@@ -1,13 +1,16 @@
 [DEFAULT]
-# bind_ip = 0.0.0.0
+{#
+    This file has downloaded as base config from https://opendev.org/openstack/swift/raw/branch/master/etc/container-server.conf-sample at 2022/12/17.
+#}
+bind_ip = {{ config_element_of_swift.management.ip }}
 bind_port = 6201
+user = swift
+swift_dir = /etc/swift
+devices = /srv/node
+mount_check = true
 # keep_idle = 600
 # bind_timeout = 30
 # backlog = 4096
-# user = swift
-# swift_dir = /etc/swift
-# devices = /srv/node
-# mount_check = true
 # disable_fallocate = false
 #
 # Use an integer to override the number of pre-forked processes that will
@@ -86,7 +89,8 @@ bind_port = 6201
 # ionice_priority =
 
 [pipeline:main]
-pipeline = healthcheck recon backend_ratelimit container-server
+#pipeline = healthcheck recon backend_ratelimit container-server
+pipeline = healthcheck recon container-server
 
 [app:container-server]
 use = egg:swift#container
@@ -136,7 +140,7 @@ use = egg:swift#healthcheck
 
 [filter:recon]
 use = egg:swift#recon
-#recon_cache_path = /var/cache/swift
+recon_cache_path = /var/cache/swift
 
 [filter:backend_ratelimit]
 use = egg:swift#backend_ratelimit
