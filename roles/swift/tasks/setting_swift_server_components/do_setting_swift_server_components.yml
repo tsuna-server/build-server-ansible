@@ -1,4 +1,12 @@
 ---
 # Variables
-# * name_of_configuration_of_account_server
+# * name_of_configuration_of_account_server:
+#     name of configuration file of Swift server component.
 
+- name: "Configure /etc/swift/{{ name_of_configuration_of_account_server }} for Swift node"
+  ansible.builtin.template:
+    src: "etc/swift/{{ name_of_configuration_of_account_server }}.j2"
+    dest: /etc/swift/{{ name_of_configuration_of_account_server }}
+    owner: root
+    group: root
+    mode: 0644
