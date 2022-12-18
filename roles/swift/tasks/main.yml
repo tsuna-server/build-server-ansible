@@ -59,8 +59,8 @@
     - name: Include setting_internal_client_conf/main.yml
       include_tasks: setting_internal_client_conf/main.yml
 
-    - name: Include setting_permissions/main.yml
-      include_tasks: setting_permissions/main.yml
+    - name: Include setting_permissions/swift/main.yml
+      include_tasks: setting_permissions/swift/main.yml
 
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml

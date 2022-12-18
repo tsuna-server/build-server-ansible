@@ -1,0 +1,8 @@
+---
+- name: "Setting permission of the directory /etc/swift"
+  ansible.builtin.file:
+    path: "/etc/swift"
+    owner: root
+    group: swift
+    state: directory
+    recurse: yes

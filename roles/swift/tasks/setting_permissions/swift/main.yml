@@ -1,4 +1,12 @@
 ---
+- name: "Setting permission of the directory /etc/swift"
+  ansible.builtin.file:
+    path: "/etc/swift"
+    owner: root
+    group: swift
+    state: directory
+    recurse: yes
+
 - name: "Setting permission of the directory {{ destination_of_storage_mount_point }}"
   ansible.builtin.file:
     path: "{{ destination_of_storage_mount_point }}"
@@ -13,4 +21,3 @@
     group: swift
     state: directory
     mode: '0775'
-
