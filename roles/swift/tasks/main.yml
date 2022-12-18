@@ -18,6 +18,9 @@
     - name: Include create_rings/main.yml
       include_tasks: create_rings/main.yml
 
+    - name: Include prepare_swift_conf/swift/main.yml
+      include_tasks: prepare_swift_conf/swift/main.yml
+
     #- name: Include restart_services_for_swift_proxy_nodes/main.yml
     #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
   when: "'controllers' in group_names"
@@ -62,6 +65,9 @@
     - name: Include setting_permissions/swift/main.yml
       include_tasks: setting_permissions/swift/main.yml
 
+    - name: Include prepare_swift_conf/swift/main.yml
+      include_tasks: prepare_swift_conf/swift/main.yml
+
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml
 
@@ -69,12 +75,9 @@
     #  include_tasks: restart_services_for_swift_storage_nodes/main.yml
   when: "'swifts' in group_names"
 
-- name: A block to finalize prepareation Swift
-  block:
-    - name: Include prepare_swift_conf/main.yml
-      include_tasks: prepare_swift_conf/main.yml
-
-#    - name: Include verify_swift/main.yml
-#      include_tasks: verify_swift/main.yml
-  when: "'controllers' in group_names or 'swifts' in group_names"
+#- name: A block to finalize prepareation Swift
+#  block:
+#    - name: Include prepare_swift_conf/main.yml
+#      include_tasks: prepare_swift_conf/main.yml
+#  when: "'controllers' in group_names or 'swifts' in group_names"
 
