@@ -56,6 +56,9 @@
     - name: Include setting_swift_server/main.yml
       include_tasks: setting_swift_server_components/main.yml
 
+    - name: Include setting_internal_client_conf/main.yml
+      include_tasks: setting_internal_client_conf/main.yml
+
     - name: Include setting_permissions/main.yml
       include_tasks: setting_permissions/main.yml
 
