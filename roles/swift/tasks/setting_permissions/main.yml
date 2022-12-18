@@ -1,0 +1,16 @@
+---
+- name: "Setting permission of the directory {{ destination_of_storage_mount_point }}"
+  ansible.builtin.file:
+    path: "{{ destination_of_storage_mount_point }}"
+    owner: swift
+    group: swift
+    state: directory
+
+- name: "Create a directory /var/cache/swift if it does not exist."
+  ansible.builtin.file:
+    path: "/var/cache/swift"
+    owner: root
+    group: swift
+    state: directory
+    mode: '0775'
+

@@ -27,6 +27,7 @@
     - name: Get an config-element of this node.
       set_fact:
         config_element_of_swift: "{{ tmp_config_element_of_swift }}"
+        destination_of_storage_mount_point: "/srv/node"
       when: tmp_config_element_of_swift.name == inventory_hostname
       loop_control:
         loop_var:
@@ -54,6 +55,9 @@
 
     - name: Include setting_swift_server/main.yml
       include_tasks: setting_swift_server_components/main.yml
+
+    - name: Include setting_permissions/main.yml
+      include_tasks: setting_permissions/main.yml
 
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml

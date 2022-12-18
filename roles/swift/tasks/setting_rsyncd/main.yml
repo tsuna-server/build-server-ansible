@@ -9,8 +9,9 @@
     dest: /etc/rsyncd.conf
     owner: root
     group: root
-    mode: 0644
-  register: template_result
+    mode: '0644'
+  notify:
+    - Restart rsyncd
 
 - name: Change a value of RSYNC_ENABLE in /etc/default/rsync
   ansible.builtin.lineinfile:
@@ -25,3 +26,5 @@
     enabled: yes
     masked: no
 
+- name: Run notified handler of rsyncd
+  meta: flush_handlers
