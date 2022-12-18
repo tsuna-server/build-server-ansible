@@ -11,18 +11,20 @@
     group: root
     mode: '0644'
   notify:
-    - Restart rsyncd
+    - Restart rsync
 
 - name: Change a value of RSYNC_ENABLE in /etc/default/rsync
   ansible.builtin.lineinfile:
     path: /etc/default/rsync
     regexp: '^RSYNC_ENABLE='
     line: RSYNC_ENABLE=true
-    notify: Restart rsyncd
+  notify:
+    - Restart rsync
 
-- name: Enable rsyncd
+# A config file is called 'rsyncd.conf' but its service is 'rsync'.
+- name: Enable rsync
   ansible.builtin.systemd:
-    name: rsyncd
+    name: rsync
     enabled: yes
     masked: no
 
