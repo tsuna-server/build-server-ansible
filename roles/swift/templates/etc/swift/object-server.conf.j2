@@ -2,7 +2,7 @@
     This file has downloaded as base config from https://opendev.org/openstack/swift/raw/branch/master/etc/container-server.conf-sample at 2022/12/17.
 #}
 [DEFAULT]
-bind_ip = 
+bind_ip = {{ config_element_of_swift.management.ip }}
 bind_port = 6200
 user = swift
 swift_dir = /etc/swift

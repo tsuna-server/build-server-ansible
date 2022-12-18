@@ -1,38 +1,10 @@
-
 ---
-- name: Stat /etc/swift/proxy-server.conf
-  ansible.builtin.stat:
-    path: "/etc/swift/proxy-server.conf"
-  register: stat_of_proxy_server_conf
-
-#- name: Download an example of proxy-server.conf
-#  get_url:
-#    url: "https://opendev.org/openstack/swift/raw/branch/master/etc/proxy-server.conf-sample"
-#    dest: "/etc/swift/proxy-server.conf"
-#  when: not stat_of_proxy_server_conf.stat.exists
-
-- name: 
-  get_url:
-    url: "https://opendev.org/openstack/swift/raw/branch/master/etc/proxy-server.conf-sample"
-    dest: "/etc/swift/proxy-server.conf"
-  when: not stat_of_proxy_server_conf.stat.exists
-
-- name: Set /etc/swift/proxy-server.conf of Swift for proxy-node
+- name: Configure /etc/swift/swift.conf
   ansible.builtin.template:
-    src: 
-    dest: /etc/swift/proxy-server.conf
+    src: etc/swift/swift.conf.j2
+    dest: /etc/swift/swift.conf
     owner: root
-    group: neutron
-    mode: '0640'
-    backup: yes
-  notify: ["Restart memcached", "Restart swift-proxy"]
-  register: result_neutron_conf
-
-- name: Change owner and permission under /etc/swift
-  ansible.builtin.file:
-    path: /etc/swift
-    state: directory
-    recurse: yes
-    owner: root
-    group: swift
-
+    group: root
+    mode: '0644'
+  notify:
+    - Restart rsync

@@ -66,11 +66,12 @@
     #  include_tasks: restart_services_for_swift_storage_nodes/main.yml
   when: "'swifts' in group_names"
 
-#- name: A block to finalize prepareation Swift
-#    - name: Include prepare_swift_conf/main.yml
-#      include_tasks: prepare_swift_conf/main.yml
-#
+- name: A block to finalize prepareation Swift
+  block:
+    - name: Include prepare_swift_conf/main.yml
+      include_tasks: prepare_swift_conf/main.yml
+
 #    - name: Include verify_swift/main.yml
 #      include_tasks: verify_swift/main.yml
-#  when: "'controllers' in group_names or 'swifts' in group_names"
+  when: "'controllers' in group_names or 'swifts' in group_names"
 

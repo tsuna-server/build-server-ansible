@@ -41,4 +41,6 @@
 - name: "Rebalance Swift ring builder for the builder \"{{ type_of_builder }}\""
   ansible.builtin.command:
     cmd: swift-ring-builder {{ type_of_builder }} rebalance
+  args:
+    chdir: /etc/swift
   failed_when: not result_of_swift_ring_command.rc == 0
