@@ -1,0 +1,6 @@
+---
+# Variables
+# * name_of_ring
+
+- name: "Sync pull a file {{ name_of_ring }}.ring.gz"
+
