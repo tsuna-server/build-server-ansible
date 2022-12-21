@@ -1,7 +1,0 @@
----
-- name: Declare a host name of swift proxy
-  set_fact:
-    name_of_controller_node: "{{ group_vars.hosts.controllers[0].name }}"
-
-- name: Include sync a ring file
-  include_tasks: "do_sync_file.yml"

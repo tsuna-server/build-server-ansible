@@ -21,6 +21,13 @@
     - name: Include prepare_swift_conf/swift/main.yml
       include_tasks: prepare_swift_conf/swift/main.yml
 
+    - name: "Fetch the file from the {{ inbentory_hostname }} to push any swift nodes"
+      run_once: yes
+      fetch:
+        src: "/etc/swift/account.ring.gz"
+        dest: .buffer/
+        flat: yes
+
     #- name: Include restart_services_for_swift_proxy_nodes/main.yml
     #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
   when: "'controllers' in group_names"
@@ -71,8 +78,10 @@
     - name: Include sync_ring_file_between_swift_proxy_and_swift_node/main.yml
       include_tasks: sync_ring_file_between_swift_proxy_and_swift_node/main.yml
 
-    - name: "Run a command \"swift-init all start\" for swift node"
-      ansible.builtin.command: swift-init all start
+    - name: "Push the file to {{ inventory_hostname }}"
+      copy:
+        src: .buffer/account.ring.gz
+        dest: /etc/swift/account.ring.gz
 
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml
