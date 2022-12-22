@@ -4,4 +4,5 @@
   roles:
     - { role: ntp, tags: ['role_ntp']}
     - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
-    - { role: swift, tags['role_swift'] }
+    - { role: storage_common, tags: ['role_storage_common'] }
+    - { role: swift, tags: ['role_swift'] }
