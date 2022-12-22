@@ -24,9 +24,13 @@
     - name: "Fetch the file from the {{ inbentory_hostname }} to push any swift nodes"
       run_once: yes
       fetch:
-        src: "/etc/swift/account.ring.gz"
+        src: "/etc/swift/{{ item }}.ring.gz"
         dest: .buffer/
         flat: yes
+      with_items:
+        - account
+        - container
+        - object
 
     #- name: Include restart_services_for_swift_proxy_nodes/main.yml
     #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
@@ -75,13 +79,17 @@
     - name: Include prepare_swift_conf/swift/main.yml
       include_tasks: prepare_swift_conf/swift/main.yml
 
-    - name: Include sync_ring_file_between_swift_proxy_and_swift_node/main.yml
-      include_tasks: sync_ring_file_between_swift_proxy_and_swift_node/main.yml
+    ###- name: Include sync_ring_file_between_swift_proxy_and_swift_node/main.yml
+    ###  include_tasks: sync_ring_file_between_swift_proxy_and_swift_node/main.yml
 
     - name: "Push the file to {{ inventory_hostname }}"
       copy:
-        src: .buffer/account.ring.gz
-        dest: /etc/swift/account.ring.gz
+        src: ".buffer/{{ item }}.ring.gz"
+        dest: "/etc/swift/{{ item }}.ring.gz"
+      with_items:
+        - account
+        - container
+        - object
 
     #- name: Include distribute_ring_files/main.yml
     #  include_tasks: distribute_ring_files/main.yml

@@ -23,4 +23,3 @@
   ansible.builtin.script: ./check_whether_the_device_has_already_registered_in_fstab.sh {{ name_of_device_for_swift }}
   register: result_of_check_whether_the_device_has_already_registered_in_fstab
   failed_when: not result_of_check_whether_the_device_has_already_registered_in_fstab.rc == 0
-
