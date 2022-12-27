@@ -439,8 +439,8 @@ user_test5_tester5 = testing5 service
 [filter:authtoken]
 paste.filter_factory = keystonemiddleware.auth_token:filter_factory
 
-www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
-auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000/
+www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000
+auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000
 memcached_servers = {{ group_vars.hosts.controllers[0].names[0] }}:11211
 auth_type = password
 project_domain_id = Default
