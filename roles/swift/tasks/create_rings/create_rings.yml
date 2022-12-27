@@ -1,24 +1,32 @@
 ---
-# * type_of_builder:
-#   A type of builder like "account.builder", "container.builder", "object.builder".
+# * swift_object_server
+#   A Swift object builder.
+# * swift_object_server.name
+#   A name of object server.
+# * swift_object_server.port
+#   A port number of the server
 
-- name: Stat /etc/swift/account.builder to detect a ring of account.builder has already created
+- name: "Declare a variable \"builder\""
+  set_fact:
+    builder: "{{ swift_object_server.name }}.builder"
+
+- name: "Stat /etc/swift/{{ builder }} to detect a ring of account.builder has already created"
   stat:
-    path: "/etc/swift/{{ type_of_builder }}"
-  register: stat_account_builder
+    path: "/etc/swift/{{ builder }}"
+  register: stat_builder
 
 - name: Include create_swift_ring/main.yml in a role function
   include_role:
     name: functions
     tasks_from: create_swift_ring/main.yml
-  vars:
-    builder: "{{ type_of_builder }}"
-  when: not stat_account_builder.stat.exists
+  #vars:
+  #  builder: "{{ type_of_builder }}"
+  when: not stat_builder.stat.exists
 
 - name: Include add_swift_ring_builder_for_each_nodes.yml
   include: add_swift_ring_builder_for_each_nodes.yml
   loop_control:
     loop_var: swift_node
-  vars:
-    builder: "{{ type_of_builder }}"
+  #vars:
+  #  builder: "{{ type_of_builder }}"
   with_items: "{{ group_vars.hosts.swifts }}"
