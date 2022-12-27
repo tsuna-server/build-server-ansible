@@ -9,15 +9,19 @@
 # * name_of_device (type String)
 #   A name of device of node.
 
+- name: "set_fact basename_of_device"
+  set_fact:
+    basename_of_device: "{{ name_of_device | basename }}"
+
 # TODO: This instruction should check whether a node and device have already added or not.
-- name: "Check whether the element of Swift ring has already been registered(type_of_builder={{ builder }}, ip={{ ip_of_storage_node }}, device={{ name_of_device }})."
-  ansible.builtin.script: ./check_duplicate_element_of_swift_ring.sh --builder {{ builder }} --ip {{ ip_of_storage_node }} --device {{ name_of_device }}
+- name: "Check whether the element of Swift ring has already been registered(type_of_builder={{ builder }}, ip={{ ip_of_storage_node }}, device={{ basename_of_device }})."
+  ansible.builtin.script: ./check_duplicate_element_of_swift_ring.sh --builder {{ builder }} --ip {{ ip_of_storage_node }} --device {{ basename_of_device }}
   register: result_of_check_duplicate_element_of_swift_ring
   failed_when: ( result_of_check_duplicate_element_of_swift_ring.rc not in [0, 99] )
 
 - name: "Add builder for Swift. A type of builder is \"{{ builder }}\""
   ansible.builtin.command:
-    cmd: swift-ring-builder {{ builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port 6202 --device {{ name_of_device }} --weight 100
+    cmd: swift-ring-builder {{ builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port 6202 --device {{ basename_of_device }} --weight 100
   args:
     chdir: /etc/swift
   when: result_of_check_duplicate_element_of_swift_ring.rc == 0
