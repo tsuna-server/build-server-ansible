@@ -6,6 +6,7 @@
   retries: 360
   delay: 5
   until: apt_result is success
+  timeout: 600
 
 - name: Install common packages
   apt:
