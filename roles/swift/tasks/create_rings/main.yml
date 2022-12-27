@@ -1,8 +1,4 @@
 ---
-- name: Declare empty hash to create rings for Swift
-  set_fact:
-    map_of_swift_nodes: []
-
 - name: Include create_rings.yml
   include_tasks: create_rings.yml
   loop_control:
