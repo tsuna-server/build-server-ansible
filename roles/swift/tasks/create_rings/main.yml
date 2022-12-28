@@ -3,4 +3,4 @@
   include_tasks: create_rings.yml
   loop_control:
     loop_var: swift_object_server
-  with_items: const_swift_object_servers
+  with_items: "{{ const_swift_object_servers }}"
