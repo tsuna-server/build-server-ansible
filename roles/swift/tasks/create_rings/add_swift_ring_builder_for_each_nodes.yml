@@ -1,7 +1,10 @@
 ---
-# swift_node
+# Variables will passed in this instruction.
+# * builder
+#   A type of builder for Swift. Accepted values are "account.builder", "container.builder", "object.builder" so far.
+# * swift_node
 #   A node of Swift that has a key'storage'.
-# swift_node.storage.swift
+# * swift_node.storage.swift
 #   Storages of Swift
 
 - name: "Check whether the key \"swift_node.storage\" is existed"
@@ -14,21 +17,31 @@
     msg: "A parameter \"swift_node\" must have a key \"storage.swift\"."
   when: not 'swift' in swift_node.storage
 
-- name: "Include a function adding {{ type_of_builder }} of ring-device for Swift"
-  include_role:
-    name: functions
-    tasks_from: add_swift_ring/main.yml
+###- name: "Include a function adding {{ builder }} of ring-device for Swift"
+###  include_role:
+###    name: functions
+###    tasks_from: add_swift_ring/main.yml
+###  vars:
+###    builder: "{{ builder }}"
+###    ip_of_storage_node: "{{ swift_node.management.ip }}"
+###  loop_control:
+###    loop_var: name_of_device
+###  with_items: "{{ swift_node.storage.swift }}"
+
+- name: "Include a function adding {{ builder }} of ring-device for Swift"
+  include_tasks: do_add_swift_ring.yml
   vars:
-    builder: "{{ type_of_builder }}"
+    #builder: "{{ builder }}"
     ip_of_storage_node: "{{ swift_node.management.ip }}"
   loop_control:
     loop_var: name_of_device
   with_items: "{{ swift_node.storage.swift }}"
 
+
 # Print and rebuild a ring-builder
 - name: "Get output of Swift ring-builder"
   ansible.builtin.command:
-    cmd: swift-ring-builder {{ type_of_builder }}
+    cmd: swift-ring-builder {{ builder }}
   args:
     chdir: /etc/swift
   register: result_of_swift_ring_command
@@ -38,9 +51,9 @@
   ansible.builtin.debug:
     msg: "{{ result_of_swift_ring_command.stdout.split('\n') }}"
 
-- name: "Rebalance Swift ring builder for the builder \"{{ type_of_builder }}\""
+- name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
   ansible.builtin.command:
-    cmd: swift-ring-builder {{ type_of_builder }} rebalance
+    cmd: swift-ring-builder {{ builder }} rebalance
   args:
     chdir: /etc/swift
   failed_when: not result_of_swift_ring_command.rc == 0

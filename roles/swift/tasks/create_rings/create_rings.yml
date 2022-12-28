@@ -1,8 +1,11 @@
 ---
+# Variables will passed in this instruction.
 # * swift_object_server
 #   A Swift object builder.
+#
 # * swift_object_server.name
 #   A name of object server.
+#
 # * swift_object_server.port
 #   A port number of the server
 
@@ -15,18 +18,12 @@
     path: "/etc/swift/{{ builder }}"
   register: stat_builder
 
-- name: Include create_swift_ring/main.yml in a role function
-  include_role:
-    name: functions
-    tasks_from: create_swift_ring/main.yml
-  #vars:
-  #  builder: "{{ type_of_builder }}"
+- name: Include do_create_ring.yml
+  include: do_create_ring.yml
   when: not stat_builder.stat.exists
 
 - name: Include add_swift_ring_builder_for_each_nodes.yml
   include: add_swift_ring_builder_for_each_nodes.yml
   loop_control:
     loop_var: swift_node
-  #vars:
-  #  builder: "{{ type_of_builder }}"
   with_items: "{{ group_vars.hosts.swifts }}"

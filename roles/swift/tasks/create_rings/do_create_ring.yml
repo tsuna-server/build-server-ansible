@@ -1,6 +1,5 @@
 ---
-# "Create_swift_ring" is a task to create rings for Swift.
-# It requires variables like below.
+# Variables will passed in this instruction.
 # * builder (type String)
 #   A type of builder for Swift.
 #   Accepted values are "account.builder", "container.builder", "object.builder".
