@@ -3,6 +3,7 @@
 WORK_DIR="/etc/swift"
 BUILDER=
 IP=
+PORT=
 DEVICE=
 
 CODE_DUPLICATE_RING=99
@@ -27,7 +28,7 @@ main() {
     }
 
     local options
-    options=$(getoptses -o "b:i:d" --longoptions "builder:,ip:,device:" -- "$@")
+    options=$(getoptses -o "b:i:d:p:" --longoptions "builder:,ip:,device:,port:" -- "$@")
 
     if [[ "$?" -ne 0 ]]; then
         echo "Invalid option were specified" >&2
@@ -43,6 +44,10 @@ main() {
                 ;;
             --ip | -i )
                 IP="$2"
+                shift 2
+                ;;
+            --port | -p )
+                PORT="$2"
                 shift 2
                 ;;
             --device | -d )
