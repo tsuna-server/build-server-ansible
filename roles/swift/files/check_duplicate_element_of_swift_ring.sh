@@ -104,7 +104,7 @@ check_duplicate_element() {
     output="$(swift-ring-builder ${BUILDER} | grep -A999999 -m1 -P "^Devices: .*" | tail -n+2)"
 
     while read id region zone  ip_port replication_ip_port device_name weight partitions balance_flags_meta; do
-        [[ "${ip_port}" =~ ^${IP}:6202$ ]]
+        [[ "${ip_port}" =~ ^${IP}:${PORT}$ ]]
         ret_ip=$?
         [[ "${device_name}" =~ ^${DEVICE}$ ]]
         ret_device_name=$?
