@@ -72,7 +72,7 @@ main() {
     ret=$?
     if [ $ret -eq ${CODE_DUPLICATE_RING} ]; then
         return ${CODE_DUPLICATE_RING}
-    else
+    elif [ $ret -ne 0 ]; then
         log_err "Failed to check_duplicate_element() for some reason[ret=${ret}]. Error messages might be outputted before this message."
         return 1
     fi
