@@ -12,6 +12,7 @@
 - name: "Declare a variable \"builder\""
   set_fact:
     builder: "{{ swift_object_server.name }}.builder"
+    builder_port: "{{ swift_object_server.port }}"
 
 - name: "Stat /etc/swift/{{ builder }} to detect a ring of account.builder has already created"
   stat:

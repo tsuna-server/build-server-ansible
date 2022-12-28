@@ -2,8 +2,11 @@
 ---
 # "add_swift_ring" is a task to add rings for Swift.
 # It requires variables like below.
+#
 # * builder (type String)
 #   A type of builder for Swift. Accepted values are "account.builder", "container.builder", "object.builder" so far.
+# * builder_port
+#   A port number of the server of builder.
 # * ip_of_storage_node (type String)
 #   A IP of node.
 # * name_of_device (type String)
@@ -21,7 +24,7 @@
 
 - name: "Add builder for Swift. A type of builder is \"{{ builder }}\""
   ansible.builtin.command:
-    cmd: swift-ring-builder {{ builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port 6202 --device {{ basename_of_device }} --weight 100
+    cmd: swift-ring-builder {{ builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port {{ builder_port }} --device {{ basename_of_device }} --weight 100
   args:
     chdir: /etc/swift
   when: result_of_check_duplicate_element_of_swift_ring.rc == 0

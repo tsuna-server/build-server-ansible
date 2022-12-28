@@ -2,6 +2,8 @@
 # Variables will passed in this instruction.
 # * builder
 #   A type of builder for Swift. Accepted values are "account.builder", "container.builder", "object.builder" so far.
+# * builder_port
+#   A port number of the server of builder. It will be used in child tasks.
 # * swift_node
 #   A node of Swift that has a key'storage'.
 # * swift_node.storage.swift
@@ -17,21 +19,9 @@
     msg: "A parameter \"swift_node\" must have a key \"storage.swift\"."
   when: not 'swift' in swift_node.storage
 
-###- name: "Include a function adding {{ builder }} of ring-device for Swift"
-###  include_role:
-###    name: functions
-###    tasks_from: add_swift_ring/main.yml
-###  vars:
-###    builder: "{{ builder }}"
-###    ip_of_storage_node: "{{ swift_node.management.ip }}"
-###  loop_control:
-###    loop_var: name_of_device
-###  with_items: "{{ swift_node.storage.swift }}"
-
 - name: "Include a function adding {{ builder }} of ring-device for Swift"
   include_tasks: do_add_swift_ring.yml
   vars:
-    #builder: "{{ builder }}"
     ip_of_storage_node: "{{ swift_node.management.ip }}"
   loop_control:
     loop_var: name_of_device
