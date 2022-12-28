@@ -31,16 +31,9 @@
     - name: Include prepare_swift_conf/swift/main.yml
       include_tasks: prepare_swift_conf/swift/main.yml
 
-    - name: "Fetch the file from the {{ inbentory_hostname }} to push any swift nodes"
-      run_once: yes
-      fetch:
-        src: "/etc/swift/{{ item }}.ring.gz"
-        dest: .buffer/
-        flat: yes
-      with_items:
-        - account
-        - container
-        - object
+    # This instruction requires a the variable "const_swift_object_servers".
+    - name: Include fetch_ring_files/main.yml
+      include_tasks: fetch_ring_files/main.yml
 
     #- name: Include restart_services_for_swift_proxy_nodes/main.yml
     #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
