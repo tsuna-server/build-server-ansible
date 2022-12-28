@@ -15,6 +15,8 @@ log_info() {
 }
 
 main() {
+    local ret
+
     . /opt/getoptses/getoptses.sh
 
     echo "args=$@"
@@ -61,7 +63,14 @@ main() {
     log_info "builder=${BUILDER}, ip=${IP}, device=${DEVICE}"
 
     validate_options || return 1
-    check_duplicate_element || return ${CODE_DUPLICATE_RING}
+    check_duplicate_element
+    ret=$?
+    if [ $ret -eq ${CODE_DUPLICATE_RING} ]; then
+        return ${CODE_DUPLICATE_RING}
+    else
+        log_err "Failed to check_duplicate_element() for some reason[ret=${ret}]. Error messages might be outputted before this message."
+        return 1
+    fi
 
     return 0
 }
