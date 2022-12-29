@@ -29,7 +29,7 @@
 
 
 # Print and rebuild a ring-builder
-- name: "Get output of Swift ring-builder"
+- name: "Get output of Swift ring-builder {{ builder }}"
   ansible.builtin.command:
     cmd: swift-ring-builder {{ builder }}
   args:
