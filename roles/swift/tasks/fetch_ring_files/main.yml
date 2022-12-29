@@ -18,5 +18,5 @@
     src: "/etc/swift/{{ item.name }}.ring.gz"
     dest: .buffer/
     flat: yes
-  with_items: const_swift_object_servers
+  with_items: "{{ const_swift_object_servers }}"
 
