@@ -1,0 +1,49 @@
+---
+# Variables will passed in this instruction.
+# * builder
+#   A type of builder for Swift. Accepted values are "account.builder", "container.builder", "object.builder" so far.
+# * builder_port
+#   A port number of the server of builder. It will be used in child tasks.
+# * swift_node
+#   A node of Swift that has a key'storage'.
+# * swift_node.storage.swift
+#   Storages of Swift
+
+- name: "Check whether the key \"swift_node.storage\" is existed"
+  ansible.builtin.fail:
+    msg: "A parameter \"swift_node\" must have a key \"storage\"."
+  when: not 'storage' in swift_node
+
+- name: "Check whether the key \"swift_node.storage.swift\" is existed"
+  ansible.builtin.fail:
+    msg: "A parameter \"swift_node\" must have a key \"storage.swift\"."
+  when: not 'swift' in swift_node.storage
+
+- name: "Include a function adding {{ builder }} of ring-device for Swift"
+  include_tasks: do_add_swift_ring.yml
+  vars:
+    ip_of_storage_node: "{{ swift_node.management.ip }}"
+  loop_control:
+    loop_var: name_of_device
+  with_items: "{{ swift_node.storage.swift }}"
+
+
+# Print and rebuild a ring-builder
+- name: "Get output of Swift ring-builder {{ builder }}"
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ builder }}
+  args:
+    chdir: /etc/swift
+  register: result_of_swift_ring_command
+  failed_when: not result_of_swift_ring_command.rc == 0
+
+- name: "Print output of Swift ring-builder"
+  ansible.builtin.debug:
+    msg: "{{ result_of_swift_ring_command.stdout.split('\n') }}"
+
+- name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ builder }} rebalance
+  args:
+    chdir: /etc/swift
+  failed_when: not result_of_swift_ring_command.rc == 0

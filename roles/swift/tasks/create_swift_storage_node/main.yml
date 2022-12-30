@@ -1,0 +1,11 @@
+---
+- name: "Include mount_storage_for_swift_node/main.yml"
+  include_tasks: mount_storage_for_swift_node/main.yml
+  loop_control:
+    loop_var:
+      name_of_device_for_swift
+  with_items: "{{ config_element_of_swift.storage.swift }}"
+
+- name: "Mount all after /etc/fstab has been modified."
+  ansible.builtin.command:
+    argv: ["mount", "-a"]

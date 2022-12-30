@@ -159,6 +159,30 @@ group_vars:
           - name: RegionOne
             url: "http://dev-controller01:9696"
 
+  swift:
+    user: swift
+    password: secret
+    hash:
+      prefix: changeme_this_hash_prefix
+      suffix: changeme_this_hash_suffix
+    service:
+      name: swift
+      description: "OpenStack Swift"
+      type: object-store
+    endpoints:
+      public:
+        regions:
+          - name: RegionOne
+            url: "http://dev-controller01:8080/v1/AUTH_%\(project_id\)s"
+      internal:
+        regions:
+          - name: RegionOne
+            url: "http://dev-controller01:8080/v1/AUTH_%\(project_id\)s"
+      admin:
+        regions:
+          - name: RegionOne
+            url: "http://dev-controller01:8080/v1"
+
   openstack:
     metadata:
       proxy:
@@ -195,6 +219,8 @@ group_vars:
           - name: nova
             password: secret
           - name: neutron
+            password: secret
+          - name: swift
             password: secret
         projects:
           # Service which set "primary: true" is a primary service that never duplicated in this list.
@@ -241,6 +267,9 @@ group_vars:
             domain: default
             project: service
           - user: neutron
+            domain: default
+            project: service
+          - user: swift
             domain: default
             project: service
 

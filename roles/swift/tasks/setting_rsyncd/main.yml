@@ -1,0 +1,32 @@
+---
+# Variables
+# * config_element_of_swift
+#   A config element of Swift that contains name, names, management.ip, management.interface, provider.interface and storage.swift[] etc.
+
+- name: Configure /etc/rsyncd.conf for Swift nodes
+  ansible.builtin.template:
+    src: etc/rsyncd.conf.j2
+    dest: /etc/rsyncd.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Restart rsync
+
+- name: Change a value of RSYNC_ENABLE in /etc/default/rsync
+  ansible.builtin.lineinfile:
+    path: /etc/default/rsync
+    regexp: '^RSYNC_ENABLE='
+    line: RSYNC_ENABLE=true
+  notify:
+    - Restart rsync
+
+# A config file is called 'rsyncd.conf' but its service is 'rsync'.
+- name: Enable rsync
+  ansible.builtin.systemd:
+    name: rsync
+    enabled: yes
+    masked: no
+
+- name: Run notified handler of rsyncd
+  meta: flush_handlers

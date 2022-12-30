@@ -1,0 +1,30 @@
+
+---
+# "add_swift_ring" is a task to add rings for Swift.
+# It requires variables like below.
+#
+# * builder (type String)
+#   A type of builder for Swift. Accepted values are "account.builder", "container.builder", "object.builder" so far.
+# * builder_port
+#   A port number of the server of builder.
+# * ip_of_storage_node (type String)
+#   A IP of node.
+# * name_of_device (type String)
+#   A name of device of node.
+
+- name: "set_fact basename_of_device"
+  set_fact:
+    basename_of_device: "{{ name_of_device | basename }}"
+
+# TODO: This instruction should check whether a node and device have already added or not.
+- name: "Check whether the element of Swift ring has already been registered(type_of_builder={{ builder }}, ip={{ ip_of_storage_node }}, device={{ basename_of_device }})."
+  ansible.builtin.script: ./check_duplicate_element_of_swift_ring.sh --builder {{ builder }} --ip {{ ip_of_storage_node }} --port {{ builder_port }} --device {{ basename_of_device }}
+  register: result_of_check_duplicate_element_of_swift_ring
+  failed_when: ( result_of_check_duplicate_element_of_swift_ring.rc not in [0, 99] )
+
+- name: "Add builder for Swift. A type of builder is \"{{ builder }}\""
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ builder }} add --region 1 --zone 1 --ip {{ ip_of_storage_node }} --port {{ builder_port }} --device {{ basename_of_device }} --weight 100
+  args:
+    chdir: /etc/swift
+  when: result_of_check_duplicate_element_of_swift_ring.rc == 0

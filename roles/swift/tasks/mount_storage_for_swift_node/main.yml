@@ -1,0 +1,25 @@
+---
+# Variables
+# * config_element_of_swift
+#   A config element of Swift that contains name, names, management.ip, management.interface, provider.interface and storage.swift[] etc.
+# * name_of_device_for_swift
+#   A name of device to save data for Swift.
+
+- name: "Basename of a device \"{{ name_of_device_for_swift }}\" for the node \"{{ config_element_of_swift.name }}\"."
+  set_fact:
+    basename_of_device_for_swift: "{{ name_of_device_for_swift | basename }}"
+
+- name: "Create directory \"/srv/node/{{ basename_of_device_for_swift }}\" that the device \"{{ name_of_device_for_swift }}\" for node of Swift \"{{ config_element_of_swift.name }}\"."
+  ansible.builtin.file:
+    path: "/srv/node/{{ basename_of_device_for_swift }}"
+    state: directory
+    mode: 0755
+    recurse: yes
+    owner: root
+    group: root
+
+- name: "Add a device \"{{ name_of_device_for_swift }}\" to /etc/fstab that it has not been registered."
+  ansible.builtin.script: ./add_a_device_if_it_has_not_been_registered.sh {{ name_of_device_for_swift }}
+  register: result_of_check_whether_the_device_has_already_registered_in_fstab
+  failed_when: not result_of_check_whether_the_device_has_already_registered_in_fstab.rc == 0
+

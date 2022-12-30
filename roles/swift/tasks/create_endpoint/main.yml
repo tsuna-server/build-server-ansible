@@ -1,0 +1,7 @@
+---
+- name: Include role-functions to create endpoints for swift
+  include_role:
+    name: functions
+    tasks_from: create_endpoint/main.yml
+  vars:
+    openstack_service_name: "swift"

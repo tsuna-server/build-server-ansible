@@ -1,0 +1,14 @@
+- name: Restart memcached
+  ansible.builtin.systemd:
+    state: restarted
+    name: memcached
+
+- name: Restart swift-proxy
+  ansible.builtin.systemd:
+    state: restarted
+    name: swift-proxy
+
+- name: Restart rsync
+  ansible.builtin.systemd:
+    state: restarted
+    name: rsync

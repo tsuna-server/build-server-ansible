@@ -1,0 +1,6 @@
+---
+- hosts: swifts
+  become: yes
+  roles:
+    - { role: storage_common, tags: ['role_storage_common'] }
+    - { role: swift, tags: ['role_swift'] }

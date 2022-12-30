@@ -12,6 +12,7 @@
     - { role: glance, tags: ['role_glance']}
     - { role: placement, tags: ['role_placement']}
     - { role: nova, tags: ['role_nova']}
+    - { role: swift, tags: ['role_swift'] }
     #- { role: cinder, tags: ['role_cinder']}
     - { role: neutron, tags: ['role_neutron']}
     - { role: horizon, tags: ['role_horizon']}

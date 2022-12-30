@@ -1,0 +1,82 @@
+---
+- name: Set constant variable to handle swift servers
+  set_fact:
+    const_swift_object_servers: "[{'name': 'account', 'port': '6202'}, {'name': 'container', 'port': '6201'}, {'name': 'object', 'port': '6200'}]"
+
+- name: A block to build Swift for controller(Swift proxy) nodes.
+  block:
+    - name: Include create_service/main.yml
+      include_tasks: create_service/main.yml
+
+    - name: Include create_endpoint/main.yml
+      include_tasks: create_endpoint/main.yml
+
+    - name: Include install_packages/swift_proxy/main.yml
+      include_tasks: install_packages/swift_proxy/main.yml
+
+    # This instruction assumes that swift_proxy is in controller node.
+    # Ofcurse, you can separate controller and swift_proxy node.
+    - name: Include create_proxy_server/main.yml
+      include_tasks: create_proxy_server/main.yml
+
+    - name: Include create_rings/main.yml
+      include_tasks: create_rings/main.yml
+
+    - name: Include prepare_swift_conf/swift/main.yml
+      include_tasks: prepare_swift_conf/swift/main.yml
+
+    # This instruction requires a the variable "const_swift_object_servers".
+    - name: Include fetch_ring_files/main.yml
+      include_tasks: fetch_ring_files/main.yml
+  when: "'controllers' in group_names"
+
+- name: A block to build Swift storage nodes.
+  block:
+    - name: Get an config-element of this node.
+      set_fact:
+        config_element_of_swift: "{{ tmp_config_element_of_swift }}"
+        destination_of_storage_mount_point: "/srv/node"
+      when: tmp_config_element_of_swift.name == inventory_hostname
+      loop_control:
+        loop_var:
+          tmp_config_element_of_swift
+      with_items: "{{ group_vars.hosts.swifts }}"
+
+    - name: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
+      ansible.builtin.fail:
+        msg: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
+      when: config_element_of_swift | length <= 0
+
+    - name: "Debug config_element_of_swift for the node \"{{ inventory_hostname }}\"."
+      ansible.builtin.debug:
+        msg: "config_element_of_swift -> {{ config_element_of_swift }}"
+
+
+    - name: Include install_packages/swift/main.yml
+      include_tasks: install_packages/swift/main.yml
+
+    - name: Include create_swift_storage_node/main.yml
+      include_tasks: create_swift_storage_node/main.yml
+
+    - name: Include setting_rsyncd/main.yml
+      include_tasks: setting_rsyncd/main.yml
+
+    - name: Include setting_swift_server/main.yml
+      include_tasks: setting_swift_server_components/main.yml
+
+    - name: Include setting_internal_client_conf/main.yml
+      include_tasks: setting_internal_client_conf/main.yml
+
+    - name: Include setting_permissions/swift/main.yml
+      include_tasks: setting_permissions/swift/main.yml
+
+    - name: Include prepare_swift_conf/swift/main.yml
+      include_tasks: prepare_swift_conf/swift/main.yml
+
+    - name: "Include push_ring_files/main.yml"
+      include_tasks: push_ring_files/main.yml
+
+    - name: "Start all Swift services on Swift node"
+      command: swift-init all start
+
+  when: "'swifts' in group_names"

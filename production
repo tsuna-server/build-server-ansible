@@ -10,6 +10,11 @@ dev-compute02
 dev-cinder01
 dev-cinder02
 
+[swifts]
+dev-swift01
+dev-swift02
+
+# A role storage contains any other storage roles like cinder and swift.
 [storages]
 dev-storage01
 dev-storage02

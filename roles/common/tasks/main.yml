@@ -6,6 +6,7 @@
   retries: 360
   delay: 5
   until: apt_result is success
+  timeout: 600
 
 - name: Install common packages
   apt:
@@ -23,3 +24,20 @@
 - name: Reboot machine if required
   reboot:
   when: file_reboot_required.stat.exists
+
+- name: Ensures /opt/getoptses directory exists for getoptses.sh
+  file:
+    path: /opt/getoptses
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# Copy a script cloned at https://github.com/TsutomuNakamura/getoptses
+- name: Prepare getoptses.sh
+  ansible.builtin.copy:
+    src: getoptses.sh
+    dest: /opt/getoptses/getoptses.sh
+    owner: root
+    group: root
+    mode: '0644'

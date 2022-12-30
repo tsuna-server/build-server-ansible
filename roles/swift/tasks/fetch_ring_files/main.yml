@@ -1,0 +1,22 @@
+---
+# Variables will passed in this instruction.
+# * const_swift_object_servers
+#   Constant variable for swift object servers
+#
+# * const_swift_object_servers[]
+#   Array of swift object servers
+#
+# * const_swift_object_servers[].name
+#   Name of 1 swift object server
+#
+# * const_swift_object_servers[].port
+#   Port number of 1 swift object server
+
+- name: "Fetch the file from the {{ inbentory_hostname }} to push any swift nodes"
+  run_once: yes
+  fetch:
+    src: "/etc/swift/{{ item.name }}.ring.gz"
+    dest: .buffer/
+    flat: yes
+  with_items: "{{ const_swift_object_servers }}"
+

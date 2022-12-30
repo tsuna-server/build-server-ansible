@@ -1,0 +1,12 @@
+---
+#- name: Include format_volumes_for_each_nodes.yml
+#  loop_control:
+#    loop_var: instance
+#  loop: '{{ group_vars.openstack.examples.instances }}'
+#  when: '"floating_ip_network" in instance'
+#
+#  include: format_volumes_for_each_nodes.yml
+
+
+- name: Include format_volumes_for_each_nodes.yml
+  include: format_volumes_for_each_nodes.yml

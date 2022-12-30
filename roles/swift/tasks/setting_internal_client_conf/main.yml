@@ -1,0 +1,8 @@
+---
+- name: "Configure /etc/swift/internal-client.conf for Swift node"
+  ansible.builtin.template:
+    src: "etc/swift/internal-client.conf.j2"
+    dest: "/etc/swift/internal-client.conf"
+    owner: root
+    group: root
+    mode: 0644
