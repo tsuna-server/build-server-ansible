@@ -1,23 +1,11 @@
 ---
-- name: "Run swift stat to verify a Swift"
-  command: swift stat
-  register: result_of_swift_stat
-
-- name: "Print output of Swift ring-builder"
-  ansible.builtin.debug:
-    msg: "{{ result_of_swift_stat.stdout.split('\n') }}"
-
-
-
-
-
-# Print and rebuild a ring-builder
-- name: "Get output of Swift ring-builder {{ builder }}"
-  ansible.builtin.command:
-    cmd: swift-ring-builder {{ builder }}
-  args:
-    chdir: /etc/swift
-  register: result_of_swift_ring_command
-  failed_when: not result_of_swift_ring_command.rc == 0
-
-
+- name: A block to verify Swift
+  block:
+    - name: "Run swift stat to verify a Swift"
+      command: swift stat
+      register: result_of_swift_stat
+    
+    - name: "Print output of Swift ring-builder"
+      ansible.builtin.debug:
+        msg: "{{ result_of_swift_stat.stdout.split('\n') }}"
+  when: "'controllers' in group_names"
