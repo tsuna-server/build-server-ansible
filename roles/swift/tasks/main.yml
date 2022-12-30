@@ -88,8 +88,8 @@
     ###    - container
     ###    - object
 
-    - name: "Include fetch_ring_files/main.yml"
-      include_tasks: fetch_ring_files/main.yml
+    - name: "Include push_ring_files/main.yml"
+      include_tasks: push_ring_files/main.yml
 
     - name: "Start all Swift services on Swift node"
       command: swift-init all start
