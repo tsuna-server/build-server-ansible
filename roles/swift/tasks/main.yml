@@ -28,9 +28,6 @@
     # This instruction requires a the variable "const_swift_object_servers".
     - name: Include fetch_ring_files/main.yml
       include_tasks: fetch_ring_files/main.yml
-
-    #- name: Include restart_services_for_swift_proxy_nodes/main.yml
-    #  include_tasks: restart_services_for_swift_proxy_nodes/main.yml
   when: "'controllers' in group_names"
 
 - name: A block to build Swift storage nodes.
@@ -76,18 +73,6 @@
     - name: Include prepare_swift_conf/swift/main.yml
       include_tasks: prepare_swift_conf/swift/main.yml
 
-    ###- name: Include sync_ring_file_between_swift_proxy_and_swift_node/main.yml
-    ###  include_tasks: sync_ring_file_between_swift_proxy_and_swift_node/main.yml
-
-    ###- name: "Push the file to {{ inventory_hostname }}"
-    ###  copy:
-    ###    src: ".buffer/{{ item }}.ring.gz"
-    ###    dest: "/etc/swift/{{ item }}.ring.gz"
-    ###  with_items:
-    ###    - account
-    ###    - container
-    ###    - object
-
     - name: "Include push_ring_files/main.yml"
       include_tasks: push_ring_files/main.yml
 
@@ -95,10 +80,3 @@
       command: swift-init all start
 
   when: "'swifts' in group_names"
-
-#- name: A block to finalize prepareation Swift
-#  block:
-#    - name: Include prepare_swift_conf/main.yml
-#      include_tasks: prepare_swift_conf/main.yml
-#  when: "'controllers' in group_names or 'swifts' in group_names"
-
