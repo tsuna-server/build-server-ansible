@@ -88,11 +88,9 @@
         - container
         - object
 
-    #- name: Include distribute_ring_files/main.yml
-    #  include_tasks: distribute_ring_files/main.yml
+    - name: "Start all Swift services on Swift node"
+      command: swift-init all start
 
-    #- name: Include restart_services_for_swift_storage_nodes/main.yml
-    #  include_tasks: restart_services_for_swift_storage_nodes/main.yml
   when: "'swifts' in group_names"
 
 #- name: A block to finalize prepareation Swift
