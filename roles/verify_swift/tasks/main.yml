@@ -1,11 +1,28 @@
 ---
+- name: "Declare a variable \"test_container_name\""
+  set_fact:
+    test_container_name: "test1"
+
 - name: A block to verify Swift
   block:
-    - name: "Run swift stat to verify a Swift"
+    - name: "Run \"swift stat\" to verify a Swift"
       command: swift stat
-      register: result_of_swift_stat
-    
-    - name: "Print output of Swift ring-builder"
+      register: result_of_the_command
+
+    - name: "Print the output of Swift ring-builder"
       ansible.builtin.debug:
-        msg: "{{ result_of_swift_stat.stdout.split('\n') }}"
+        msg: "{{ result_of_the_command.stdout.split('\n') }}"
+
+    # Verifying Swift by creating test container
+    - name: "Delete {{ test_container_name }} container before verifying Swift by creating container"
+      ansible.builtin.script: ./delete_test_container.sh "{{ test_container_name }}"
+
+    - name: "Create {{ test_container_name }} container with the command \"openstack container create {{ test_container_name }}\""
+      command: openstack container create {{ test_container_name }}
+      register: result_of_the_command
+
+    - name: "Print the output of \"openstack container create {{ test_container_name }}\""
+      ansible.builtin.debug:
+        msg: "{{ result_of_the_command.stdout.split('\n') }}"
+
   when: "'controllers' in group_names"
