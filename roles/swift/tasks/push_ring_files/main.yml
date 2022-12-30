@@ -1,0 +1,7 @@
+---
+- name: "Push the file to {{ inventory_hostname }}"
+  copy:
+    src: ".buffer/{{ item.name }}.ring.gz"
+    dest: "/etc/swift/{{ item.name }}.ring.gz"
+  with_items: "{{ const_swift_object_servers }}"
+

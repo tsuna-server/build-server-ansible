@@ -79,14 +79,17 @@
     ###- name: Include sync_ring_file_between_swift_proxy_and_swift_node/main.yml
     ###  include_tasks: sync_ring_file_between_swift_proxy_and_swift_node/main.yml
 
-    - name: "Push the file to {{ inventory_hostname }}"
-      copy:
-        src: ".buffer/{{ item }}.ring.gz"
-        dest: "/etc/swift/{{ item }}.ring.gz"
-      with_items:
-        - account
-        - container
-        - object
+    ###- name: "Push the file to {{ inventory_hostname }}"
+    ###  copy:
+    ###    src: ".buffer/{{ item }}.ring.gz"
+    ###    dest: "/etc/swift/{{ item }}.ring.gz"
+    ###  with_items:
+    ###    - account
+    ###    - container
+    ###    - object
+
+    - name: "Include fetch_ring_files/main.yml"
+      include_tasks: fetch_ring_files/main.yml
 
     - name: "Start all Swift services on Swift node"
       command: swift-init all start
