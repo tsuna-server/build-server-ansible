@@ -11,13 +11,24 @@
 - name: Update package indexes
   apt:
     update_cache: yes
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Dist-Upgrade packages
   apt:
     upgrade: dist
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Install python3-openstackclient
   apt:
     pkg:
       - python3-openstackclient
-
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success

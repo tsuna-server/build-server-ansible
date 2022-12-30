@@ -3,6 +3,10 @@
   apt:
     name:
       - openstack-dashboard
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Set /etc/openstack-dashboard/local_settings.py for Horizon
   ansible.builtin.template:
