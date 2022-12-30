@@ -1,7 +1,7 @@
 ---
 - name: Set constant variable to handle swift servers
   set_fact:
-    const_swift_object_servers: "[{'name': 'account', 'port': '6302'}, {'name': 'container', 'port': '6301'}, {'name': 'object', 'port': '6300'}]"
+    const_swift_object_servers: "[{'name': 'account', 'port': '6202'}, {'name': 'container', 'port': '6201'}, {'name': 'object', 'port': '6200'}]"
 
 - name: A block to build Swift for controller(Swift proxy) nodes.
   block:

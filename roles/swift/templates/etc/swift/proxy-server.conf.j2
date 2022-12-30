@@ -443,8 +443,13 @@ www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:500
 auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000
 memcached_servers = {{ group_vars.hosts.controllers[0].names[0] }}:11211
 auth_type = password
-project_domain_id = Default
-user_domain_id = Default
+{#
+# You should specify value of domain in small cases if you use keys "project_domain_id" and "user_domain_id" instead of "project_domain_name", "user_domain_name".
+project_domain_id = default
+user_domain_id = default
+#}
+project_domain_name = Default
+user_domain_name = Default
 project_name = {% for domain in group_vars.openstack.domains if domain.name.upper() == 'DEFAULT' -%}
   {% for project in domain.projects if 'primary' in project and project.primary == true -%}
     {{ project.name }}{{ '\n' }}
