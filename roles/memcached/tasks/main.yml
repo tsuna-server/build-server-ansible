@@ -4,6 +4,10 @@
     name:
       - memcached
       - python3-memcache
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Modify /etc/memcached.conf
   ansible.builtin.template:

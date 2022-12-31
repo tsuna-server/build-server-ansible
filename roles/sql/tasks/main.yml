@@ -5,6 +5,10 @@
       - mariadb-server
       - mariadb-client
       - python3-pymysql
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Configure /etc/mysql/mariadb.conf.d/99-openstack.cnf
   ansible.builtin.template:

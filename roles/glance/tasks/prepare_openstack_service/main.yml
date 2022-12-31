@@ -3,6 +3,10 @@
   apt:
     name:
       - glance
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
 
 - name: Set /etc/glance/glance-api.conf
   ansible.builtin.template:
