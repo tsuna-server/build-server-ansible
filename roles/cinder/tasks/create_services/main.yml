@@ -1,0 +1,7 @@
+---
+- name: Include role-function to create OpenStack service for cinder
+  include_role:
+    name: functions
+    tasks_from: create_openstack_service/main.yml
+  vars:
+    openstack_service_name: "cinder"

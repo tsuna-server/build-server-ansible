@@ -1,0 +1,11 @@
+---
+- name: Install packages of Neutron for computes with OVN
+  apt:
+    name:
+      - cinder-api
+      - cinder-scheduler
+    update_cache: yes
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
