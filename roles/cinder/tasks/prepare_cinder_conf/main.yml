@@ -1,0 +1,23 @@
+---
+- name: Prepare /etc/cinder/cinder.conf
+  ansible.builtin.template:
+    src: etc/cinder/cinder.conf.j2
+    dest: /etc/cinder/cinder.conf
+    owner: root
+    group: cinder
+    mode: 0640
+    backup: yes
+  register: template_result
+
+
+
+#- name: Restart services for Cinder controllers
+#  service:
+#    name: "{{ item }}"
+#    state: restarted
+#  with_items:
+#    - nova-api
+#    - nova-scheduler
+#    - nova-conductor
+#    - nova-novncproxy
+#  when: template_result.changed

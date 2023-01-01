@@ -13,6 +13,8 @@
     - name: Include install_packages/controllers/main.yml
       include_tasks: install_packages/controllers/main.yml
 
+    - name: Include prepare_cinder_conf/main.yml
+      include_tasks: prepare_cinder_conf/main.yml
 
   when: "'controllers' in group_names"
 
