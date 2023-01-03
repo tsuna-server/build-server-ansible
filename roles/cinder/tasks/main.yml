@@ -10,8 +10,11 @@
     - name: Include create_endpoints/main.yml
       include_tasks: create_endpoints/main.yml
 
-    - name: Include install_packages/controllers/main.yml for controllers
+    - name: Include install_packages/controllers/main.yml of cinder for controllers
       include_tasks: install_packages/controllers/main.yml
+
+    - name: Include set_configuration/controllers/main.yml of cinder for controllers
+      include_tasks: set_configuration/controllers/main.yml
 
     - name: Include cinder_manage_db_sync/main.yml for controllers
       include_tasks: cinder_manage_db_sync/main.yml
