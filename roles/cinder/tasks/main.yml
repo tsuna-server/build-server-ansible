@@ -9,6 +9,9 @@
 
     - name: Include create_endpoints/main.yml
       include_tasks: create_endpoints/main.yml
+
+    - name: Include install_packages/controllers/main.yml for controllers
+      include_tasks: install_packages/controllers/main.yml
   when: "'controllers' in group_names"
 
 - name: A block to build Cinder for cinder nodes
