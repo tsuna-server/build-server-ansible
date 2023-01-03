@@ -1,0 +1,28 @@
+---
+- name: Check a flag that means cinder-manage db sync was finished
+  stat:
+    path: /root/.ansible_cinder_manage_db_sync_for_controllers_was_finished
+  register: flag_file
+
+- name: Block of sync DB for Nova controller nodes
+  block:
+    # There are no patterns to detect options to sync DB.
+    # So they are written as hard coded so far.
+    - name: Sync Nova database for controller nodes
+      ansible.builtin.command:
+        argv: ["su", "-s", "/bin/sh", "-c", "cinder-manage db sync", "cinder"]
+      register: result
+
+    - name: Print the result of cinder-manage db sync
+      ansible.builtin.debug:
+        msg: "{{ result.stdout.split('\n') }}"
+  when: not flag_file.stat.exists
+
+- name: Create a flag that means cinder-manage db sync was finished
+  copy:
+    content: ""
+    dest: /root/.ansible_cinder_manage_db_sync_for_controllers_was_finished
+    force: no
+    owner: root
+    group: root
+    mode: '0640'

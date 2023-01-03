@@ -12,6 +12,9 @@
 
     - name: Include install_packages/controllers/main.yml for controllers
       include_tasks: install_packages/controllers/main.yml
+
+    - name: Include cinder_manage_db_sync/main.yml for controllers
+      include_tasks: cinder_manage_db_sync/main.yml
   when: "'controllers' in group_names"
 
 - name: A block to build Cinder for cinder nodes
