@@ -3,6 +3,12 @@
   block:
     - name: Include create_dbs/main.yml
       include_tasks: create_dbs/main.yml
+
+    - name: Include create_services/main.yml
+      include_tasks: create_services/main.yml
+
+    - name: Include create_endpoints/main.yml
+      include_tasks: create_endpoints/main.yml
   when: "'controllers' in group_names"
 
 - name: A block to build Cinder for cinder nodes
