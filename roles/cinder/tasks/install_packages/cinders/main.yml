@@ -1,0 +1,10 @@
+---
+- name: Install packages of Nova controller node
+  apt:
+    name:
+      - cinder-volume
+      - tgt
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
