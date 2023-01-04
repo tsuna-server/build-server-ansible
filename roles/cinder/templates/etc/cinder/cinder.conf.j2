@@ -12,16 +12,18 @@ lock_path = /var/lock/cinder
 volumes_dir = /var/lib/cinder/volumes
 enabled_backends = lvm
 
-{% if 'controllers' in group_names %}
+{# Definitions below are common in controllers and cinders. #}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
 auth_strategy = keystone
 my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% if 'cinders' in group_names %}
+enabled_backends = lvm
+glance_api_servers = http://{{ group_vars.hosts.controllers[0].names[0] }}:9292
 {% endif %}
 
 [database]
-{% if 'controllers' in group_names %}
-
 connection = mysql+pymysql://{{ group_vars.cinder.user }}:{{ group_vars.cinder.password }}@{{ group_vars.hosts.controllers[0].names[0] }}/cinder
+
 [keystone_authtoken]
 www_authenticate_uri = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000
 auth_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:5000
@@ -37,12 +39,16 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 username = {{ group_vars.cinder.user }}
 password = {{ group_vars.cinder.password }}
 
+{% if 'controllers' in group_names %}
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+target_protocol = iscsi
+target_helper = tgtadm
+{% endif %}
+
+{% if 'controllers' in group_names %}
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
-
-{% else %}
-
-connection = sqlite:////var/lib/cinder/cinder.sqlite
-
 {% endif %}
 

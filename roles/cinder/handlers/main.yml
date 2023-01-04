@@ -13,3 +13,13 @@
   ansible.builtin.systemd:
     state: restarted
     name: apache2
+
+- name: Restart tgt
+  ansible.builtin.systemd:
+    state: restarted
+    name: tgt
+
+- name: Restart cinder-volume
+  ansible.builtin.systemd:
+    state: restarted
+    name: cinder-volume
