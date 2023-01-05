@@ -1,0 +1,8 @@
+---
+- name: "Configure /etc/cinder/cinder.conf of Cinder for Controller node"
+  ansible.builtin.template:
+    src: "etc/cinder/cinder.conf.j2"
+    dest: /etc/cinder/cinder.conf
+    owner: root
+    group: cinder
+    mode: 0640

@@ -13,8 +13,8 @@
     - name: Include install_packages/controllers/main.yml of cinder for controllers
       include_tasks: install_packages/controllers/main.yml
 
-    - name: Include set_configuration/main.yml of cinder for controllers
-      include_tasks: set_configuration/main.yml
+    - name: Include set_configuration/controllers/main.yml of cinder for controllers
+      include_tasks: set_configuration/controllers/main.yml
 
     - name: Include cinder_manage_db_sync/main.yml for controllers
       include_tasks: cinder_manage_db_sync/main.yml
@@ -28,6 +28,6 @@
     - name: Include install_packages/cinders/main.yml
       include_tasks: install_packages/cinders/main.yml
 
-    - name: Include set_configuration/main.yml of cinder for controllers
-      include_tasks: set_configuration/main.yml
+    - name: Include set_configuration/cinders/main.yml of cinder for controllers
+      include_tasks: set_configuration/cinders/main.yml
   when: "'cinders' in group_names"
