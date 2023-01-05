@@ -1,4 +1,19 @@
 ---
+- name: "Run get_backup_swift_url.sh"
+  ansible.builtin.script: ./get_backup_swift_url.sh
+  register: result_get_backup_swift_url
+
+- name: "Declare backup_swift_url to configure Cinder"
+  set_fact:
+    backup_swift_url: "{{ result_get_backup_swift_url.stdout_lines[-1] }}"
+
+
+
+
+- name: Declare swift_url to configure cinder.conf
+  set_fact:
+    backup_swift_url: 
+
 - name: A block to build Cinder for controller nodes
   block:
     - name: Include create_dbs/main.yml
@@ -18,6 +33,10 @@
 
     - name: Include cinder_manage_db_sync/main.yml for controllers
       include_tasks: cinder_manage_db_sync/main.yml
+
+    # Get swift_url and transfer it to cinder node in order to configure cinder.conf on Cinder nodes.
+    - name: Include get_backup_swift_url/main.yml
+      include_tasks: get_backup_swift_url/main.yml
   when: "'controllers' in group_names"
 
 - name: A block to build Cinder for cinder nodes
