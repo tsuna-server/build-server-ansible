@@ -1,16 +1,4 @@
 ---
-- name: "Run get_backup_swift_url.sh"
-  ansible.builtin.script: ./get_backup_swift_url.sh
-  register: result_get_backup_swift_url
-
-- name: "Declare backup_swift_url to configure Cinder"
-  set_fact:
-    backup_swift_url: "{{ result_get_backup_swift_url.stdout_lines[-1] }}"
-
-- name: Declare swift_url to configure cinder.conf
-  set_fact:
-    backup_swift_url: 
-
 - name: A block to build Cinder for controller nodes
   block:
     - name: Include create_dbs/main.yml
