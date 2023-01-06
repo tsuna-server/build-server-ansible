@@ -7,9 +7,6 @@
   set_fact:
     backup_swift_url: "{{ result_get_backup_swift_url.stdout_lines[-1] }}"
 
-
-
-
 - name: Declare swift_url to configure cinder.conf
   set_fact:
     backup_swift_url: 
