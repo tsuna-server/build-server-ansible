@@ -24,7 +24,7 @@ enabled_backends = lvm
 glance_api_servers = http://{{ group_vars.hosts.controllers[0].names[0] }}:9292
 
 backup_driver = cinder.backup.drivers.swift.SwiftBackupDriver
-backup_swift_url = SWIFT_URL
+backup_swift_url = {{ backup_swift_url }}
 {% endif %}
 
 [database]

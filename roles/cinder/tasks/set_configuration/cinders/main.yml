@@ -1,4 +1,17 @@
 ---
+- name: "Push the file to any Swift nodes from the Ansible"
+  copy:
+    src: ".buffer/.cinder_backup_swift_url"
+    dest: "/root/.cinder_backup_swift_url"
+
+- name: "Get backup Swift URL to configure Cinder nodes"
+  ansible.builtin.command: cat /root/.cinder_backup_swift_url
+  register: result_cinder_backup_swift_url
+
+- name: "Declare backup_swift_url to configure Cinder nodes"
+  set_fact:
+    backup_swift_url: "{{ result_cinder_backup_swift_url.stdout_lines[-1] }}"
+
 - name: "Configure /etc/cinder/cinder.conf of Cinder for Controller node"
   ansible.builtin.template:
     src: "etc/cinder/cinder.conf.j2"
