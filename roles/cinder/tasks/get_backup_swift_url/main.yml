@@ -7,12 +7,12 @@
   set_fact:
     backup_swift_url: "{{ result_get_backup_swift_url.stdout_lines[-1] }}"
 
-  - name: Creating a file of backup_swift_url
-    copy:
-      dest: /root/.cinder_backup_swift_url
-      content: "{{ backup_swift_url }}"
+- name: Creating a file of backup_swift_url
+  copy:
+    dest: /root/.cinder_backup_swift_url
+    content: "{{ backup_swift_url }}"
 
-- name: "Fetch the file \"{{ /root/.cinder_backup_swift_url }}\" from the {{ inventory_hostname }} to push any cinder nodes"
+- name: "Fetch the file \"/root/.cinder_backup_swift_url\" from the \"{{ inventory_hostname }}\" to push any cinder nodes"
   run_once: yes
   fetch:
     src: "/root/.cinder_backup_swift_url"
