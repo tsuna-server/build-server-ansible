@@ -53,8 +53,6 @@ target_protocol = iscsi
 target_helper = tgtadm
 {% endif %}
 
-{% if 'controllers' in group_names %}
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
-{% endif %}
 
