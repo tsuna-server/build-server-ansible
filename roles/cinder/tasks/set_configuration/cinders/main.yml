@@ -22,3 +22,23 @@
   notify:
     - Restart tgt
     - Restart cinder-volume
+
+# Setting cinder.conf for tgt
+- name: Get stats of /etc/tgt/conf.d/cinder.conf
+  ansible.builtin.stat:
+    path: /etc/tgt/conf.d/cinder.conf
+  register: result_of_stat_of_cinder_conf
+
+- name: Block of creating /etc/tgt/conf.d/cinder.conf
+  block:
+    - name: Create /etc/tgt/conf.d/cinder.conf
+      copy:
+        dest: "/etc/tgt/conf.d/cinder.conf"
+        content: "include /var/lib/cinder/volumes/*"
+
+    - name: Restart tgt after /etc/tgt/conf.d/cinder.conf was configured
+      ansible.builtin.systemd:
+        state: restarted
+        name: tgt.service
+  when: result_of_stat_of_cinder_conf.stat.exists is not defined
+
