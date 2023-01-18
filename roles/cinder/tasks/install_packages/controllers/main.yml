@@ -8,3 +8,9 @@
   retries: 360
   delay: 5
   until: apt_result is success
+
+- name: Enable and start iscsi.service on controller nodes
+  ansible.builtin.systemd:
+    name: iscsid
+    state: started
+    enabled: yes
