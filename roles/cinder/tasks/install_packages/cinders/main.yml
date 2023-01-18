@@ -8,3 +8,15 @@
   retries: 360
   delay: 5
   until: apt_result is success
+
+- name: Disable and stop iscsi.service on cinder nodes
+  ansible.builtin.systemd:
+    name: iscsid
+    state: stopped
+    enabled: false
+
+- name: Enable and start cinder-volume.service on cinder nodes
+  ansible.builtin.systemd:
+    name: cinder-volume
+    state: started
+    enabled: yes
