@@ -40,5 +40,4 @@
       ansible.builtin.systemd:
         state: restarted
         name: tgt.service
-  when: result_of_stat_of_cinder_conf.stat.exists is not defined
-
+  when: not result_of_stat_of_cinder_conf.stat.exists
