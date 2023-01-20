@@ -1,0 +1,6 @@
+---
+- name: Start and enabled iscsid.service for compute nodes
+  ansible.builtin.systemd:
+    name: iscsid
+    state: started
+    enabled: yes
