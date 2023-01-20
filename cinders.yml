@@ -4,5 +4,6 @@
   roles:
     - { role: ntp, tags: ['role_ntp']}
     - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
-    #- { role: cinder, tags: ['role_cinder']}
+    - { role: storage_common, tags: ['role_storage_common'] }
+    - { role: cinder, tags: ['role_cinder']}
     #- { role: neutron, tags: ['role_neutron']}
