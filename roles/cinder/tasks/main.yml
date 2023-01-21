@@ -38,6 +38,6 @@
 
 - name: A block to build Cinder for compute nodes
   block:
-    - name: Include set_services_of_cinder_for_computes.yml
-      include_tasks: set_services_of_cinder_for_computes.yml
+    - name: Include set_services_of_cinder_for_computes/main.yml
+      include_tasks: set_services_of_cinder_for_computes/main.yml
   when: "'computes' in group_names"
