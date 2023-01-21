@@ -34,7 +34,8 @@
     - name: Create /etc/tgt/conf.d/cinder.conf
       copy:
         dest: "/etc/tgt/conf.d/cinder.conf"
-        content: "include /var/lib/cinder/volumes/*"
+        content: |
+          include /var/lib/cinder/volumes/*
 
     - name: Restart tgt after /etc/tgt/conf.d/cinder.conf was configured
       ansible.builtin.systemd:
