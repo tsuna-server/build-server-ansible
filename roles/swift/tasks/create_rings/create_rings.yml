@@ -11,7 +11,6 @@
 
 - name: "Declare a variable \"builder\""
   set_fact:
-    object_server_name: "{{ swift_object_server.name }}"
     builder: "{{ swift_object_server.name }}.builder"
     builder_port: "{{ swift_object_server.port }}"
 
@@ -32,7 +31,7 @@
 
 - name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
   ansible.builtin.command:
-    cmd: swift-ring-builder {{ object_server_name }} rebalance
+    cmd: swift-ring-builder {{ builder }} rebalance
   args:
     chdir: /etc/swift
 
