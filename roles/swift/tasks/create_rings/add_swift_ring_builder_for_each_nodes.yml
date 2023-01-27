@@ -41,9 +41,3 @@
   ansible.builtin.debug:
     msg: "{{ result_of_swift_ring_command.stdout.split('\n') }}"
 
-- name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
-  ansible.builtin.command:
-    cmd: swift-ring-builder {{ builder }} rebalance
-  args:
-    chdir: /etc/swift
-  failed_when: not result_of_swift_ring_command.rc == 0

@@ -11,6 +11,7 @@
 
 - name: "Declare a variable \"builder\""
   set_fact:
+    object_server_name: "{{ swift_object_server.name }}"
     builder: "{{ swift_object_server.name }}.builder"
     builder_port: "{{ swift_object_server.port }}"
 
@@ -28,3 +29,12 @@
   loop_control:
     loop_var: swift_node
   with_items: "{{ group_vars.hosts.swifts }}"
+
+- name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
+  ansible.builtin.command:
+    cmd: swift-ring-builder {{ object_server_name }} rebalance
+  args:
+    chdir: /etc/swift
+
+# TODO: Wait antil
+
