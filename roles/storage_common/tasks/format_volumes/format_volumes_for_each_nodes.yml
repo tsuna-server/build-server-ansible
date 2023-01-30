@@ -3,15 +3,21 @@
   set_fact:
     group_name: "{{ group_names[0] }}"
 
+- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebug 1
+  ansible.builtin.debug:
+    msg: "inventory_hostname => {{ inventory_hostname }}, tmp_target_storage_instance => {{ tmp_target_storage_instance }}"
+
 - name: Declare target_storage_instance to format volumes for storage nodes (swift, cinder etc).
-  #ansible.builtin.debug:
-  #  msg: "inventory_hostname => {{ inventory_hostname }}, storage.swift => {{ aaa.storage.swift }}"
   set_fact:
     target_storage_instance: "{{ tmp_target_storage_instance }}"
   loop_control:
     loop_var: tmp_target_storage_instance
   with_items: "{{ group_vars.hosts[group_name] }}"
   when: tmp_target_storage_instance.name == inventory_hostname
+
+- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebug 2
+  ansible.builtin.debug:
+    msg: "inventory_hostname => {{ inventory_hostname }}, tmp_target_storage_instance => {{ tmp_target_storage_instance }}, target_storage_instance => {{ target_storage_instance }}"
 
 - name: Declare an empty variable options_of_type
   set_fact:
