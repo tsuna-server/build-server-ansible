@@ -79,4 +79,4 @@
     - name: "Start all Swift services on Swift node"
       command: swift-init all start
 
-  when: "'swifts' in group_names"
+  when: "('swifts' in group_names) or ('storages' in group_names)"
