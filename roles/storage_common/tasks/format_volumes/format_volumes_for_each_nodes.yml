@@ -3,6 +3,10 @@
   set_fact:
     group_name: "{{ group_names[0] }}"
 
+- name: "Debug group_names in storage_common"
+  ansible.builtin.debug:
+    msg: "group_names => {{ group_names }}"
+
 - name: Declare target_storage_instance to format volumes for storage nodes (swift, cinder etc).
   set_fact:
     target_storage_instance: "{{ tmp_target_storage_instance }}"
