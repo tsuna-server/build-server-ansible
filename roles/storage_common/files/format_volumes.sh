@@ -84,16 +84,14 @@ verify_parameters() {
             log_err "A storage node must specify one or more volumes for Swift or Cinder. It does not specify any volumes(host_name=${HOSTNAME},\${#SWIFT_VOLUMES[@]}==0,\${#CINDER_VOLUMES[@]}==0)."
             return 1
         fi
-        verify_swift_volumes || return 1
-        verify_cinder_volumes || return 1
     elif [ "${TYPE}" = "swift" ]; then
         if [ ${#SWIFT_VOLUMES[@]} -lt 1 ]; then
-            log_err "Wrong number of Swift volumes you specified. This script does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\" for simplicity."
+            log_err "Wrong number of Swift volumes you specified. Swift node (hostname=${HOSTNAME}) does not support lower than 1 Swift volume with the option \"--swift-volume <volume_name>\"."
             return 1
         fi
     elif [ "${TYPE}" = "cinder" ]; then
         if [ ${#CINDER_VOLUMES[@]} -ne 1 ]; then
-            log_err "Wrong number of Cinder volumes you specified. This script does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\" for simplicity."
+            log_err "Wrong number of Cinder volumes you specified. Cinder node (hostname=${HOSTNAME}) does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\" for simplicity."
             return 1
         fi
     fi
@@ -140,14 +138,17 @@ create_storage_for_swift() {
 
     output="$(blkid "$device")"
 
-    grep -q -F 'TYPE="xfs"' <<< "$output"
-    ret=$?
-
     if [ -z "${output}" ]; then
         # The device is not formatted yet. Then the device can be formatted.
         log_info "The device \"${device}\" is not formatted yet. It will be formatted as XFS file system for Swift."
         format_as_xfs "${device}" || return 1
-    elif [ ${ret} -eq 0 ]; then
+        return 0
+    fi
+
+    grep -q -F 'TYPE="xfs"' <<< "$output"
+    ret=$?
+
+    if [ ${ret} -eq 0 ]; then
         log_info "The device \"${device}\" is already formatted. Then an instruction to create XFS file system for Swift will be skipped."
         return 0
     else
