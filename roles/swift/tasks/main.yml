@@ -43,7 +43,7 @@
 
     - name: "Declare config_element_of_swift"
       set_fact:
-        config_element_of_swift: "{{ tmp_swift_nodes + tmp_storage_nodes | selectattr(\"name\", \"eq\", inventory_hostname) }}"
+        config_element_of_swift: "{{ tmp_swift_nodes + tmp_storage_nodes | selectattr(\"name\", \"eq\", inventory_hostname) | first }}"
 
     - name: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
       ansible.builtin.fail:
