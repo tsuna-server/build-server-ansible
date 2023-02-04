@@ -1,18 +1,19 @@
 ---
-- name: Declare a group_name to format volumes
+# TODO: Should this variable declared in another variable file?
+- name: Declare available groups for storages like Swift, Cinder etc
   set_fact:
-    group_name: "{{ group_names[0] }}"
+    available_format_groups: ["swifts", "cinders", "storages"]
 
-- name: "Debug group_names in storage_common"
-  ansible.builtin.debug:
-    msg: "group_names => {{ group_names }}"
+- name: Declare a primary_group_name for getting target host elements
+  set_fact:
+    primary_group_name: "{{ available_format_groups | select('in', group_names) | first }}"
 
 - name: Declare target_storage_instance to format volumes for storage nodes (swift, cinder etc).
   set_fact:
     target_storage_instance: "{{ tmp_target_storage_instance }}"
   loop_control:
     loop_var: tmp_target_storage_instance
-  with_items: "{{ group_vars.hosts[group_name] }}"
+  with_items: "{{ group_vars.hosts[primary_group_name] }}"
   when: tmp_target_storage_instance.name == inventory_hostname
 
 - name: Declare an empty variable options_of_type
