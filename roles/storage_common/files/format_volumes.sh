@@ -80,7 +80,7 @@ verify_parameters() {
     local ret_verify_cinder_volumes ret_verify_swift_volumes
 
     if [ "${TYPE}" = "storage" ]; then
-        if [ ${#SWIFT_VOLUMES[@]} -eq 0 ] && [ ${#CINDER_VOLUMES[@]} -eq 0 ]; then
+        if [ ${#SWIFT_VOLUMES[@]} -eq 0 -a ${#CINDER_VOLUMES[@]} -eq 0 ]; then
             log_err "A storage node must specify one or more volumes for Swift or Cinder. It does not specify any volumes(host_name=${HOSTNAME},\${#SWIFT_VOLUMES[@]}==0,\${#CINDER_VOLUMES[@]}==0)."
             return 1
         fi
