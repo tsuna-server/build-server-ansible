@@ -84,8 +84,6 @@ verify_parameters() {
             log_err "A storage node must specify one or more volumes for Swift or Cinder. It does not specify any volumes(host_name=${HOSTNAME},\${#SWIFT_VOLUMES[@]}==0,\${#CINDER_VOLUMES[@]}==0)."
             return 1
         fi
-        verify_swift_volumes || return 1
-        verify_cinder_volumes || return 1
     elif [ "${TYPE}" = "swift" ]; then
         if [ ${#SWIFT_VOLUMES[@]} -lt 1 ]; then
             log_err "Wrong number of Swift volumes you specified. This script does not support other than 1 Cinder volume with the option \"--cinder-volume <volume_name>\" for simplicity."
