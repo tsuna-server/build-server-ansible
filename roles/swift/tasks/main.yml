@@ -109,7 +109,7 @@
     # A command "swift-init all start" will fail if swift-proxy-server has already started. Then stop it manually.
     - name: "{{ item }} should not be started before the command \"swift-init all start\" has run."
       ansible.builtin.service:
-        name: {{ item }}
+        name: "{{ item }}"
         state: stopped
       loop:
         - swift-object
