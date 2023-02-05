@@ -8,6 +8,8 @@
 #
 # * swift_object_server.port
 #   A port number of the server
+#
+# * target_storage_nodes
 
 - name: "Declare a variable \"builder\""
   set_fact:
@@ -27,7 +29,7 @@
   include: add_swift_ring_builder_for_each_nodes.yml
   loop_control:
     loop_var: swift_node
-  with_items: "{{ group_vars.hosts.swifts }}"
+  with_items: "{{ target_storage_nodes }}"
 
 - name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
   ansible.builtin.command:

@@ -3,6 +3,20 @@
   set_fact:
     const_swift_object_servers: "[{'name': 'account', 'port': '6202'}, {'name': 'container', 'port': '6201'}, {'name': 'object', 'port': '6200'}]"
 
+- name: Declare target_storage_nodes
+  set_fact:
+    target_storage_nodes: []
+
+- name: Join target_storage_nodes with group_vars.hosts.swifts
+  set_fact:
+    target_storage_nodes: "{{ target_storage_nodes + group_vars.hosts.swifts }}"
+  when: "'swifts' in group_vars.hosts"
+
+- name: Join target_storage_nodes with group_vars.hosts.storages
+  set_fact:
+    target_storage_nodes: "{{ target_storage_nodes + group_vars.hosts.storages }}"
+  when: "'storages' in group_vars.hosts"
+
 - name: A block to build Swift for controller(Swift proxy) nodes.
   block:
     - name: Include create_service/main.yml
