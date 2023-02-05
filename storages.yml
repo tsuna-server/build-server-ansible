@@ -1,6 +1,6 @@
 
 ---
-- hosts: cinders
+- hosts: storages
   become: yes
   roles:
     - { role: ntp, tags: ['role_ntp']}

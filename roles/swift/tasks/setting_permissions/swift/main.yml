@@ -18,7 +18,7 @@
 #    state: directory
 
 - name: "Setting permission of the directory {{ destination_of_storage_mount_point }}"
-  command: chown -R swift:swift {{ destination_of_storage_mount_point }}
+  command: chown -R swift:swift {{ group_vars.swift.base_mount_point }}
 
 #- name: "Create a directory /var/cache/swift if it does not exist."
 #  ansible.builtin.file:

@@ -136,6 +136,12 @@ create_storage_for_swift() {
 
     log_info "Creating XFS filesystem on a device \"${device}\" for Swift."
 
+    # Check whether the device is existed or not.
+    [ -b "${device}" ] || {
+        log_err "The device \"${device}\" could not be found."
+        return 1
+    }
+
     output="$(blkid "$device")"
 
     grep -q -F 'TYPE="xfs"' <<< "$output"

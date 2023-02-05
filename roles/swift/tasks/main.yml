@@ -46,25 +46,32 @@
 
 - name: A block to build Swift storage nodes.
   block:
-    - name: Get an config-element of this node.
+    - name: Declare target_swift_nodes
       set_fact:
-        config_element_of_swift: "{{ tmp_config_element_of_swift }}"
-        destination_of_storage_mount_point: "/srv/node"
-      when: tmp_config_element_of_swift.name == inventory_hostname
-      loop_control:
-        loop_var:
-          tmp_config_element_of_swift
-      with_items: "{{ group_vars.hosts.swifts }}"
+        target_swift_nodes: []
+
+    - name: "Declare tmp_swift_nodes and tmp_storage_nodes"
+      set_fact:
+        tmp_swift_nodes: "{{ group_vars.hosts['swifts'] | default([]) }}"
+        tmp_storage_nodes: "{{ group_vars.hosts['storages'] | default([]) }}"
+
+    # This instruction can not use "first" at here because "selectattr" will return dict not array.
+    - name: "Declare config_element_of_swift"
+      set_fact:
+        config_element_of_swift: "{{ tmp_swift_nodes + tmp_storage_nodes | selectattr(\"name\", \"eq\", inventory_hostname) }}"
 
     - name: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
       ansible.builtin.fail:
         msg: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
       when: config_element_of_swift | length <= 0
 
+    - name: "Get a first element of config_element_of_swift"
+      set_fact:
+        config_element_of_swift: "{{ config_element_of_swift | first }}"
+
     - name: "Debug config_element_of_swift for the node \"{{ inventory_hostname }}\"."
       ansible.builtin.debug:
         msg: "config_element_of_swift -> {{ config_element_of_swift }}"
-
 
     - name: Include install_packages/swift/main.yml
       include_tasks: install_packages/swift/main.yml
@@ -99,4 +106,4 @@
     - name: "Start all Swift services on Swift node"
       command: swift-init all start
 
-  when: "'swifts' in group_names"
+  when: "('swifts' in group_names) or ('storages' in group_names)"
