@@ -97,11 +97,24 @@
     - name: "Include push_ring_files/main.yml"
       include_tasks: push_ring_files/main.yml
 
+    # TODO: Theese services sometimes running already for some reason.
+    #       And it will cause an error when the dommand "swift-init all start" was run.
+    #       Then stop these services 
+    #
     # A command "swift-init all start" will fail if swift-proxy-server has already started. Then stop it manually.
     #- name: "swift-proxy should not be started before the command \"swift-init all start\" has run."
     #  ansible.builtin.service:
     #    name: swift-proxy
     #    state: stopped
+    # A command "swift-init all start" will fail if swift-proxy-server has already started. Then stop it manually.
+    - name: "{{ item }} should not be started before the command \"swift-init all start\" has run."
+      ansible.builtin.service:
+        name: {{ item }}
+        state: stopped
+      loop:
+        - swift-object
+        - swift-container
+        - swift-account
 
     - name: "Start all Swift services on Swift node"
       command: swift-init all start
