@@ -76,6 +76,12 @@
     - name: "Include push_ring_files/main.yml"
       include_tasks: push_ring_files/main.yml
 
+    # A command "swift-init all start" will fail if swift-proxy-server has already started. Then stop it manually.
+    - name: "swift-proxy should not be started before the command \"swift-init all start\" has run."
+      ansible.builtin.service:
+        name: swift-proxy
+        state: stopped
+
     - name: "Start all Swift services on Swift node"
       command: swift-init all start
 
