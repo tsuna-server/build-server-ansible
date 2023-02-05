@@ -23,11 +23,25 @@
   include: do_create_ring.yml
   when: not stat_builder.stat.exists
 
+- name: Declare a variable target_swift_nodes
+  set_fact:
+    target_swift_nodes: []
+
+- name: Join group_vars.hosts.swifts to a variable target_swift_nodes
+  set_fact:
+    target_swift_nodes: "{{ target_swift_nodes + group_vars.hosts.swifts }}"
+  when: '{{ "swifts" in group_vars.hosts }}'
+
+- name: Join group_vars.hosts.storages to a variable target_swift_nodes
+  set_fact:
+    target_swift_nodes: "{{ target_swift_nodes + group_vars.hosts.storages }}"
+  when: '{{ "storages" in group_vars.hosts }}'
+
 - name: Include add_swift_ring_builder_for_each_nodes.yml
   include: add_swift_ring_builder_for_each_nodes.yml
   loop_control:
     loop_var: swift_node
-  with_items: "{{ group_vars.hosts.swifts }}"
+  with_items: "{{ target_swift_nodes }}"
 
 - name: "Rebalance Swift ring builder for the builder \"{{ builder }}\""
   ansible.builtin.command:

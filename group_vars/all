@@ -165,6 +165,7 @@ group_vars:
     hash:
       prefix: changeme_this_hash_prefix
       suffix: changeme_this_hash_suffix
+    base_mount_point: /srv/node
     service:
       name: swift
       description: "OpenStack Swift"
