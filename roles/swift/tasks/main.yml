@@ -55,10 +55,14 @@
         tmp_swift_nodes: "{{ group_vars.hosts['swifts'] | default([]) }}"
         tmp_storage_nodes: "{{ group_vars.hosts['storages'] | default([]) }}"
 
+    - name: "Join nodes of swifts ant storages(tmp_all_swift_nodes = tmp_swift_nodes + tmp_storage_nodes)"
+      set_fact:
+        tmp_all_swift_nodes: "{{ tmp_swift_nodes + tmp_storage_nodes }}"
+
     # This instruction can not use "first" at here because "selectattr" will return dict not array.
     - name: "Declare config_element_of_swift"
       set_fact:
-        config_element_of_swift: "{{ tmp_swift_nodes + tmp_storage_nodes | selectattr(\"name\", \"eq\", inventory_hostname) }}"
+        config_element_of_swift: '{{ tmp_all_swift_nodes | selectattr("name", "eq", inventory_hostname) }}'
 
     - name: "Failed if there is no element of the config for Swift node \"{{ inventory_hostname }}\"."
       ansible.builtin.fail:
@@ -69,9 +73,9 @@
       set_fact:
         config_element_of_swift: "{{ config_element_of_swift | first }}"
 
-    - name: "Debug config_element_of_swift for the node \"{{ inventory_hostname }}\"."
+    - name: "Debug config_element_of_swift for the node."
       ansible.builtin.debug:
-        msg: "config_element_of_swift -> {{ config_element_of_swift }}"
+        msg: "config_element_of_swift -> {{ config_element_of_swift }}, inventory_hostname => {{ inventory_hostname }}"
 
     - name: Include install_packages/swift/main.yml
       include_tasks: install_packages/swift/main.yml
