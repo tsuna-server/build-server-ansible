@@ -34,7 +34,7 @@
 
     - name: Include set_configuration/cinders/main.yml of cinder for controllers
       include_tasks: set_configuration/cinders/main.yml
-  when: "'cinders' in group_names"
+  when: "('cinders' in group_names) or ('storages' in group_names)"
 
 - name: A block to build Cinder for compute nodes
   block:
