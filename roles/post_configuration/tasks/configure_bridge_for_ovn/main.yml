@@ -32,5 +32,4 @@
 - name: Enable chassis as gw on a controller node with network driver OVN
   ansible.builtin.command:
     argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-cms-options=\"enable-chassis-as-gw\""]
-  when: "'controllers' in group_names"
 
