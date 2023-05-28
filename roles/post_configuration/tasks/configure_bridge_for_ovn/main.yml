@@ -28,8 +28,11 @@
   ansible.builtin.command:
     argv: ["ovs-vsctl", "--may-exist", "add-port", "br-provider", "{{ provider_interface }}"]
 
-# Is it needed to enable-chassis-as-gw?
+# external-ids:ovn-cms-options="enable-chassis-as-gw" is needed if you want to distribute loads of internet connections.
+# It makes VMs on each compute nodes to be able to connect internet without throughing network nords.
+# See also https://docs.openstack.org/networking-ovn/stein/admin/routing.html
 - name: Enable chassis as gw on a controller node with network driver OVN
   ansible.builtin.command:
     argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-cms-options=\"enable-chassis-as-gw\""]
+  when: "'computes' in group_names"
 

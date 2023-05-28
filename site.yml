@@ -5,6 +5,5 @@
 - import_playbook: swifts.yml
 - import_playbook: cinders.yml
 - import_playbook: controllers_discover_hosts.yml
-# TODO: Commented out because creating example instances should be instructed out side of thie Ansible?
-#- import_playbook: controllers_create_example_instances.yml
-#- import_playbook: verify.yml
+- import_playbook: controllers_create_example_instances.yml
+- import_playbook: verify.yml

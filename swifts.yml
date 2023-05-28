@@ -5,5 +5,5 @@
   become: yes
   roles:
     - { role: storage_common, tags: ['role_storage_common'] }
-    # TODO:
-    #- { role: swift, tags: ['role_swift'] }
+    - { role: swift, tags: ['role_swift'] }
+    - { role: neutron, tags: ['role_neutron']}
