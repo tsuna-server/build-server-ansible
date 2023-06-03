@@ -16,6 +16,11 @@ dev-swift01
 dev-swift02
 dev-swift03
 
+[cephs]
+dev-ceph01
+dev-ceph02
+dev-ceph03
+
 # A role storage contains any other storage roles like cinder and swift.
 [storages]
 dev-storage01
