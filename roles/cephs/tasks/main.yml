@@ -1,0 +1,4 @@
+---
+- name: Debug for cephs
+  ansible.builtin.debug:
+    msg: "Debug for ceph"
