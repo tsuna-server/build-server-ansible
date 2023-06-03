@@ -25,6 +25,7 @@ dev-storage02
 controllers
 computes
 cinders
+swifts
 storages
 
 [all:children]

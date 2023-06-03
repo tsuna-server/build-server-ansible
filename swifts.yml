@@ -6,3 +6,4 @@
   roles:
     - { role: storage_common, tags: ['role_storage_common'] }
     - { role: swift, tags: ['role_swift'] }
+    - { role: neutron, tags: ['role_neutron']}
