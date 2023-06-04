@@ -18,7 +18,7 @@
 
 - name: "Check whether a current host {{ inventory_hostname }} is belonging in a group_vars.hosts[\"primary_group_name\"]"
   ansible.builtin.fail:
-    msg: "Failed."
+    msg: "A host {{ inventory_hostname }} is not existed in a variable \"group_vars.hosts\""
   when: target_storage_instance is not defined
 
 - name: Declare an empty variable options_of_type
