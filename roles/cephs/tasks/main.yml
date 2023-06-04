@@ -1,4 +1,7 @@
 ---
 - name: Debug for cephs
   ansible.builtin.debug:
-    msg: "Debug for ceph"
+    msg: "{{ item }}"
+  with_items:
+  when: "'cephs' in group_vars.hosts"
+
