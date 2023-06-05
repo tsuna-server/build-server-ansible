@@ -3,6 +3,6 @@
   ansible.builtin.debug:
     msg: "{{ item }}"
   with_items:
-    "group_vars.hosts['cephs']"
+    "{{ group_vars.hosts['cephs'] }}"
   when: "'cephs' in group_vars.hosts"
 
