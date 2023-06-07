@@ -1,7 +1,16 @@
 ---
-- name: Debug for cephs
-  ansible.builtin.include: create_ceph_osd_pool/main.yml
-  with_items:
-    "{{ group_vars.hosts['cephs'] }}"
-  when: "'cephs' in group_vars.hosts"
+- name: Deeeeeeeeeeeeeeeclare
+  command: whoami
+  register: username
+
+- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeebug
+  ansible.builtin.debug:
+    msg: "-------> {{ username.stdout_lines[-1] }}, {{ lookup('env', 'USER') }}"
+
+#- name: Debug for cephs
+#  ansible.builtin.debug:
+#    msg: "{{ item }}"
+#  with_items:
+#    "group_vars.hosts['cephs']"
+#  when: "'cephs' in group_vars.hosts"
 
