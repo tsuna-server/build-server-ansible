@@ -1,11 +1,8 @@
 ---
-- name: Deeeeeeeeeeeeeeeclare
-  command: whoami
-  register: username
-
-- name: Deeeeeeeeeeeeeeeeeeeeeeeeeeebug
-  ansible.builtin.debug:
-    msg: "-------> {{ username.stdout_lines[-1] }}, {{ lookup('env', 'USER') }}"
+- name: Create a ssh_key on a master node of Ceph if it has not existed
+  openssh_keypair:
+    path: "{{ ansible_env.HOME }}/.ssh/ceph"
+  when: "inventory_hostname == group_vars.ceph.monitor.hosts.master"
 
 #- name: Debug for cephs
 #  ansible.builtin.debug:
