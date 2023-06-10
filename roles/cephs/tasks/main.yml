@@ -1,8 +1,8 @@
 ---
-- name: Create a ssh_key on a master node of Ceph if it has not existed
-  openssh_keypair:
-    path: "{{ ansible_env.HOME }}/.ssh/ceph"
-  when: "inventory_hostname == group_vars.ceph.monitor.hosts.master"
+#- name: Create a ssh_key on a master node of Ceph if it has not existed
+#  openssh_keypair:
+#    path: "{{ ansible_env.HOME }}/.ssh/ceph"
+#  when: "inventory_hostname == group_vars.ceph.monitor.hosts.master"
 
 #- name: Debug for cephs
 #  ansible.builtin.debug:
@@ -10,4 +10,26 @@
 #  with_items:
 #    "group_vars.hosts['cephs']"
 #  when: "'cephs' in group_vars.hosts"
+
+- name: Installing packages for Ceph nodes
+  apt:
+    name:
+      - ceph
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success
+
+- name: Register a variable file_ceph_cluster_uuid_stat to check a file .uuid_for_ceph_cluster has alreadu existed
+  stat:
+    path: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
+    get_checksum: false
+    get_md5: false
+  register: file_ceph_uuid_stat
+
+- name: Create uuid for ceph cluster
+  copy:
+    dest: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
+    content: "{{ 9999999999999999999999 | random | to_uuid }}"
+  when: file_ceph_uuid_stat.stat.exists == False
 
