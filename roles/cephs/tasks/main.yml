@@ -45,7 +45,23 @@
   set_fact:
     uuid_for_ceph_cluster: "{{ lookup('file', \".buffer/.uuid_for_ceph_cluster\") }}"
 
+- name: "Checking whether getting UUID for Ceph cluster has succeeded"
+  ansible.builtin.fail:
+    msg: "Failed getting UUID from a file \"{{ ansible_env.HOME }}/.uuid_for_ceph_cluster\" from the host \"{{ group_vars.ceph.monitor.hosts.master }}\". Result of value of the variable is \"{{ uuid_for_ceph_cluster }}\""
+  when: not uuid_for_ceph_cluster | regex_search("^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}$")
+
 - name: "Print for a variable uuid_for_ceph_cluster"
   ansible.builtin.debug:
     msg: "uuid_for_ceph_cluster={{ uuid_for_ceph_cluster }}"
+
+- name: "Creating /etc/ceph/ceph.conf only in a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.template:
+    src: monitor/etc/ceph/ceph.conf
+    dest: /etc/ceph/ceph.conf
+    owner: root
+    group: root
+    mode: '0644'
+  #notify:
+  #  - Restart rsync
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
