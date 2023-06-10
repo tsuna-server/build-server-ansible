@@ -39,12 +39,11 @@
     src: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
     dest: .buffer/.uuid_for_ceph_cluster
     flat: yes
-  with_items: "{{ const_swift_object_servers }}"
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
 - name: "Declare a variable to push UUID for Ceph cluster"
   set_fact:
-    uuid_for_ceph_cluster: "{{ lookup('file', .buffer/.uuid_for_ceph_cluster) }}"
+    uuid_for_ceph_cluster: "{{ lookup('file', \".buffer/.uuid_for_ceph_cluster\") }}"
 
 - name: "Print for a variable uuid_for_ceph_cluster"
   ansible.builtin.debug:
