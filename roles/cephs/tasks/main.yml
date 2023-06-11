@@ -136,11 +136,25 @@
     file_type: file
     patterns: "ceph.*"
   register: filelist
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
-- name: "Change permisions of files for Ceph"
+- name: "Change permisions of files \"/etc/ceph/ceph.*\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
   ansible.builtin.file:
     dest: "{{ item.path }}"
     owner: ceph
     group: ceph
   with_items: "{{ filelist.files }}"
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Change permissions of directories recursively on a host {{ group_vars.ceph.monitor.hosts.master }} for Ceph"
+  ansible.builtin.file: 
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: ceph
+    group: ceph
+  with_items:
+    - "/var/lib/ceph/mon/ceph-{{ inventory_hostname }}"
+    - "/var/lib/ceph/bootstrap-osd"
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
