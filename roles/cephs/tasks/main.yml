@@ -165,3 +165,12 @@
     enabled: true
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
+
+- name: "Enabling manager v2 protocol for Ceph"
+  ansible.builtin.command: ceph mon enable-msgr2
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph"
+  ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
