@@ -101,7 +101,26 @@
   ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
-- name: "Import a key \"client.bootstrap-osd\" from \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" to \"/etc/ceph/ceph.mon.keyring\""
+- name: "Import a key \"client.bootstrap-osd\" from \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" to \"/etc/ceph/ceph.mon.keyring\"."
   ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.command: monmaptool --create --add {{ inventory_hostname }} {{ my_ip }} --fsid {{ uuid_for_ceph_cluster }} /etc/ceph/monmap
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Creating a directory \"/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}\" for a daemon of Ceph monitor"
+  ansible.builtin.file:
+    path: "/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}"
+    state: directory
+    mode: '0755'
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.command: monmaptool --create --add {{ inventory_hostname }} {{ my_ip }} --fsid {{ uuid_for_ceph_cluster }} /etc/ceph/monmap
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Create a monitor daemon of Ceph"
+  ansible.builtin.command: ceph-mon --cluster ceph --mkfs -i {{ group_vars.ceph.monitor.hosts.master }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
