@@ -105,9 +105,16 @@
   ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
+- name: "Register a variable file_monmap to check a file \"/etc/ceph/monmap\" has alreadu existed"
+  stat:
+    path: "/etc/ceph/monmap"
+    get_checksum: false
+    get_md5: false
+  register: file_ceph_uuid_stat
+
 - name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
   ansible.builtin.command: monmaptool --create --add {{ inventory_hostname }} {{ my_ip }} --fsid {{ uuid_for_ceph_cluster }} /etc/ceph/monmap
-  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+  when: (inventory_hostname == group_vars.ceph.monitor.hosts.master) and (file_ceph_uuid_stat.stat.exists == False)
 
 - name: "Creating a directory \"/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}\" for a daemon of Ceph monitor"
   ansible.builtin.file:
@@ -116,11 +123,24 @@
     mode: '0755'
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
-- name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
-  ansible.builtin.command: monmaptool --create --add {{ inventory_hostname }} {{ my_ip }} --fsid {{ uuid_for_ceph_cluster }} /etc/ceph/monmap
-  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
-
 - name: "Create a monitor daemon of Ceph"
   ansible.builtin.command: ceph-mon --cluster ceph --mkfs -i {{ group_vars.ceph.monitor.hosts.master }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+#- name: "Change owner \"ceph\" and group \"ceph\" of a file /etc/ceph/ceph.*"
+#  ansible.builtin.command: chown ceph. /etc/ceph/ceph.*
+
+- name: "Find ceph configurations in the directory \"/etc/ceph/ceph*\" on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
+  find:
+    paths: /etc/ceph
+    file_type: file
+    patterns: "ceph.*"
+  register: filelist
+
+- name: "Change permisions of files for Ceph"
+  ansible.builtin.file:
+    dest: "{{ item.path }}"
+    owner: ceph
+    group: ceph
+  with_items: "{{ filelist.files }}"
 
