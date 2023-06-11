@@ -158,3 +158,10 @@
     - "/var/lib/ceph/bootstrap-osd"
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
+- name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.systemd:
+    name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
+    state: restarted
+    enabled: true
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
