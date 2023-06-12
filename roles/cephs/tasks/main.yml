@@ -197,17 +197,19 @@
 
   - name: "Declare a result of the command \"ceph auth get-or-create mgr.{{ inventory_hostname }} mon\""
     set_fact:
-      auth_key_for_mgr_host: "{{ result_of_the_command.stdout_lines[-1] }}"
+      #auth_key_for_mgr_host: "{{ result_of_the_command.stdout_lines[-1] }}"
+      auth_key_for_mgr_host: "{{ result_of_the_command.stdout }}"
 
   - name: "Create a file \"/etc/ceph/ceph.mgr.admin.keyring\" for Ceph manager"
     copy:
       dest: "/etc/ceph/ceph.mgr.admin.keyring"
       content: "{{ auth_key_for_mgr_host }}"
 
-  - name: "Copy \"/etc/ceph/ceph.mgr.admin.keyring\" to \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring\""
+  - name: "Copy a file \"/etc/ceph/ceph.mgr.admin.keyring\" to \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring\""
     copy:
       src: "/etc/ceph/ceph.mgr.admin.keyring"
       dest: "/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring"
+      remote_src: yes
       owner: ceph
       group: ceph
 
@@ -221,6 +223,39 @@
       name: "ceph-mgr@{{ inventory_hostname }}"
       state: restarted
       enabled: true
+
+
+  - name: "Run a command \"ceph osd lspools\" to list Ceph pools"
+    ansible.builtin.command: ceph osd lspools
+    register: result_of_command
+
+  - name: "Print a result of \"ceph osd lspools\""
+    ansible.builtin.debug:
+      msg: "{{ result_of_command.stdout.split('\n') }}"
+
+  - name: "Run a command \"ceph -s\" to show Ceph status"
+    ansible.builtin.command: ceph -s
+    register: result_of_command
+
+  - name: "Print a result of \"ceph -s\""
+    ansible.builtin.debug:
+      msg: "{{ result_of_command.stdout.split('\n') }}"
+
+  - name: "Run a command \"ceph osd tree\" to show OSD tree"
+    ansible.builtin.command: ceph osd tree
+    register: result_of_command
+
+  - name: "Print a result of \"ceph osd tree\""
+    ansible.builtin.debug:
+      msg: "{{ result_of_command.stdout.split('\n') }}"
+
+  - name: "Run a command \"ceph df\" to show Ceph device space usage"
+    ansible.builtin.command: ceph df
+    register: result_of_command
+
+  - name: "Print a result of \"ceph df\""
+    ansible.builtin.debug:
+      msg: "{{ result_of_command.stdout.split('\n') }}"
 
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
