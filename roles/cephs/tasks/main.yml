@@ -204,5 +204,16 @@
       dest: "/etc/ceph/ceph.mgr.admin.keyring"
       content: "{{ auth_key_for_mgr_host }}"
 
+  - name: "Copy \"/etc/ceph/ceph.mgr.admin.keyring\" to \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring\""
+    copy:
+      src: "/etc/ceph/ceph.mgr.admin.keyring"
+      dest: "/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring"
+      owner: ceph
+      group: ceph
+
+
+  - name: "Set permissions any files and directories under \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\""
+    ansible.builtin.command: chown -R ceph. /var/lib/ceph/mgr/ceph-{{ inventory_hostname }}
+
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
