@@ -215,5 +215,12 @@
   - name: "Set permissions any files and directories under \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\""
     ansible.builtin.command: chown -R ceph. /var/lib/ceph/mgr/ceph-{{ inventory_hostname }}
 
+
+  - name: "Enable \"ceph-mgr@{{ inventory_hostname }}\" on a host \"{{ inventory_hostname }}\""
+    ansible.builtin.systemd:
+      name: "ceph-mgr@{{ inventory_hostname }}"
+      state: restarted
+      enabled: true
+
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
