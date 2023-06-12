@@ -34,7 +34,7 @@
     copy:
       dest: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
       content: "{{ 9999999999999999999999 | random | to_uuid }}"
-    when: file_ceph_uuid_stat.stat.exists == False and inventory_hostname == group_vars.ceph.monitor.hosts.master
+    when: file_ceph_uuid_stat.stat.exists == False
 
   - name: "Fetch the file \"{{ ansible_env.HOME }}/.uuid_for_ceph_cluster\" from the  to push any swift nodes"
     run_once: yes
@@ -42,7 +42,6 @@
       src: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
       dest: .buffer/.uuid_for_ceph_cluster
       flat: yes
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Declare a variable to push UUID for Ceph cluster"
     set_fact:
@@ -65,17 +64,15 @@
                   {% if item.name == group_vars.ceph.monitor.hosts.master -%}{{ item.management.ip }}{% endif -%}
                 {% endfor -%}
               {% endif %}"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Print a variable \"my_ip\" if a current host \"{{ inventory_hostname }}\" is a monitor of Ceph cluster"
     ansible.builtin.debug:
       msg: "my_ip={{ my_ip }}"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Failed if a variable \"my_ip\" has not defined in a monitor node of Ceph \"{{ inventory_hostname }}\""
     ansible.builtin.fail:
       msg: "Failed! A variable \"my_ip\" has not defined in a monitor node of Ceph \"{{ inventory_hostname }}\". Does a host \"{{ inventory_hostname }}\" existed in \"group_vars.hosts.cinders\" or \"group_vars.hosts.storages\"?"
-    when: (inventory_hostname == group_vars.ceph.monitor.hosts.master) and (not my_ip | regex_search("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$"))
+    when: not my_ip | regex_search("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$")
 
   - name: "Creating /etc/ceph/ceph.conf only in a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.template:
@@ -86,32 +83,26 @@
       mode: '0644'
     #notify:
     #  - Restart rsync
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
 
   # FIXME: This instruction should be skipped if a file /etc/ceph/ceph.mon.keyring has already existed.
   - name: "Generating a key for monitoring a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /etc/ceph/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   # FIXME: This instruction should be skipped if a file /etc/ceph/ceph.client.admin.keyring has already existed.
   - name: "Generating a key for managing a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring --gen-key -n client.admin --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   # FIXME: This instruction should be skipped if a file /var/lib/ceph/bootstrap-osd/ceph.keyring has already existed.
   - name: "Generating a key for bootstraping a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring --gen-key -n client.bootstrap-osd --cap mon 'profile bootstrap-osd' --cap mgr 'allow r'
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   # FIXME: This instruction should be skipped if a file /etc/ceph/ceph.client.admin.keyring has already existed.
   - name: "Import a keyring \"client.admin\" from \"/etc/ceph/ceph.client.admin.keyring\" to \"/etc/ceph/ceph.mon.keyring\""
     ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Import a key \"client.bootstrap-osd\" from \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" to \"/etc/ceph/ceph.mon.keyring\"."
     ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Register a variable file_monmap to check a file \"/etc/ceph/monmap\" has alreadu existed"
     stat:
@@ -122,26 +113,23 @@
 
   - name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: monmaptool --create --add {{ inventory_hostname }} {{ my_ip }} --fsid {{ uuid_for_ceph_cluster }} /etc/ceph/monmap
-    when: (inventory_hostname == group_vars.ceph.monitor.hosts.master) and (file_ceph_uuid_stat.stat.exists == False)
+    when: file_ceph_uuid_stat.stat.exists == False
 
   - name: "Creating a directory \"/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}\" for a daemon of Ceph monitor"
     ansible.builtin.file:
       path: "/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}"
       state: directory
       mode: '0755'
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
 
   - name: "Register a variable result_pgrep_ceph_mon whether ceph-mon has already running or not"
     ansible.builtin.command: pgrep ceph-mon
     register: result_pgrep_ceph_mon
     failed_when: (result_pgrep_ceph_mon.rc not in [1, 0])
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Declare a variable of pid of ceph_mon"
     set_fact:
       pid_of_ceph_mon: "{% if result_pgrep_ceph_mon is defined and result_pgrep_ceph_mon.stdout != '' %}{{ result_pgrep_ceph_mon.stdout_lines[-1] }}{% endif %}"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   #- name: "Deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebug"
   #  ansible.builtin.debug:
@@ -149,7 +137,7 @@
 
   - name: "Create a monitor daemon of Ceph"
     ansible.builtin.command: ceph-mon --cluster ceph --mkfs -i {{ group_vars.ceph.monitor.hosts.master }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
-    when: (inventory_hostname == group_vars.ceph.monitor.hosts.master) and (not pid_of_ceph_mon | regex_search("^[0-9]+$"))
+    when: not pid_of_ceph_mon | regex_search("^[0-9]+$")
 
   #- name: "Change owner \"ceph\" and group \"ceph\" of a file /etc/ceph/ceph.*"
   #  ansible.builtin.command: chown ceph. /etc/ceph/ceph.*
@@ -160,7 +148,6 @@
       file_type: file
       patterns: "ceph.*"
     register: filelist
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Change permisions of files \"/etc/ceph/ceph.*\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
     ansible.builtin.file:
@@ -168,7 +155,6 @@
       owner: ceph
       group: ceph
     with_items: "{{ filelist.files }}"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Change permissions of directories recursively on a host {{ group_vars.ceph.monitor.hosts.master }} for Ceph"
     ansible.builtin.file: 
@@ -180,27 +166,22 @@
     with_items:
       - "/var/lib/ceph/mon/ceph-{{ inventory_hostname }}"
       - "/var/lib/ceph/bootstrap-osd"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.systemd:
       name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
       state: restarted
       enabled: true
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Enabling manager v2 protocol for Ceph"
     ansible.builtin.command: ceph mon enable-msgr2
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph"
     ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
 
   - name: "Enable auto scale module for Ceph"
     ansible.builtin.command: ceph mgr module enable pg_autoscaler
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
 
   - name: "Creating a directory \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\" for a daemon of Ceph monitor"
@@ -208,24 +189,20 @@
       path: "/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}"
       state: directory
       mode: '0755'
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
 
   - name: "Get or create mgr auth-key for mgr.{{ inventory_hostname }}"
     ansible.builtin.command: ceph auth get-or-create mgr.{{ inventory_hostname }} mon 'allow profile mgr' osd 'allow *' mds 'allow *'
     register: result_of_the_command
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Declare a result of the command \"ceph auth get-or-create mgr.{{ inventory_hostname }} mon\""
     set_fact:
       auth_key_for_mgr_host: "{{ result_of_the_command.stdout_lines[-1] }}"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   - name: "Create a file \"/etc/ceph/ceph.mgr.admin.keyring\" for Ceph manager"
     copy:
       dest: "/etc/ceph/ceph.mgr.admin.keyring"
       content: "{{ auth_key_for_mgr_host }}"
-    when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
