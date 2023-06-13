@@ -173,8 +173,23 @@
       state: restarted
       enabled: true
 
-  - name: "Enabling manager v2 protocol for Ceph"
+  - name: "Get version of Ceph manager protocol"
+    ansible.builtin.shell: ceph mon stat -f json | jq '.epoch'
+    register: result_of_command
+
+  - name: "Declare a variable version_of_ceph_manager_protocol"
+    set_fact:
+      version_of_ceph_manager_protocol: result_of_command.stdout_lines[-1]
+
+
+  - name: "Check whether getting version of Ceph manager has succeeded"
+    ansible.builtin.fail:
+      msg: "Failed to get version of Ceph protocol. A resultt of \"ceph mon stat -f json | jq '.epoch'\" is not a number. An actual result is \"version_of_ceph_manager_protocol={{ version_of_ceph_manager_protocol }}\""
+    when: version_of_ceph_manager_protocol | regex_search("^[0-9]+$")
+
+  - name: "Enabling manager v2 protocol for Ceph if current version of it was version \"1\". Current version is \"{{ version_of_ceph_manager_protocol }}\""
     ansible.builtin.command: ceph mon enable-msgr2
+    when: version_of_ceph_manager_protocol == 1
 
   - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph"
     ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
