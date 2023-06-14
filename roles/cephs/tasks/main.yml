@@ -101,6 +101,7 @@
   - name: "Import a keyring \"client.admin\" from \"/etc/ceph/ceph.client.admin.keyring\" to \"/etc/ceph/ceph.mon.keyring\""
     ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
 
+  # FIXME:
   - name: "Import a key \"client.bootstrap-osd\" from \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" to \"/etc/ceph/ceph.mon.keyring\"."
     ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring
 
@@ -191,6 +192,7 @@
     ansible.builtin.command: ceph mon enable-msgr2
     when: version_of_ceph_manager_protocol == 1
 
+  # FIXME:
   - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph"
     ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
 
@@ -218,7 +220,7 @@
   - name: "Create a file \"/etc/ceph/ceph.mgr.admin.keyring\" for Ceph manager"
     copy:
       dest: "/etc/ceph/ceph.mgr.admin.keyring"
-      content: "{{ auth_key_for_mgr_host }}"
+      content: "{{ auth_key_for_mgr_host }}{{ '\n' }}"
 
   - name: "Copy a file \"/etc/ceph/ceph.mgr.admin.keyring\" to \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring\""
     copy:
