@@ -84,26 +84,82 @@
     #notify:
     #  - Restart rsync
 
+  - name: "Stat \"/etc/ceph/ceph.mon.keyring\" whether the file has already existed"
+    stat:
+      path: "/etc/ceph/ceph.mon.keyring"
+      get_checksum: false
+      get_md5: false
+    register: stat_file
 
-  # FIXME: This instruction should be skipped if a file /etc/ceph/ceph.mon.keyring has already existed.
   - name: "Generating a key for monitoring a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /etc/ceph/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'
+    when: stat_file.stat.exists == False
 
-  # FIXME: This instruction should be skipped if a file /etc/ceph/ceph.client.admin.keyring has already existed.
+
+  - name: "Stat \"/etc/ceph/ceph.client.admin.keyring\" whether the file has already existed"
+    stat:
+      path: "/etc/ceph/ceph.client.admin.keyring"
+      get_checksum: false
+      get_md5: false
+    register: stat_file
+
   - name: "Generating a key for managing a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring --gen-key -n client.admin --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
+    when: stat_file.stat.exists == False
 
-  # FIXME: This instruction should be skipped if a file /var/lib/ceph/bootstrap-osd/ceph.keyring has already existed.
+
+  - name: "Stat \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" whether the file has already existed"
+    stat:
+      path: "/var/lib/ceph/bootstrap-osd/ceph.keyring"
+      get_checksum: false
+      get_md5: false
+    register: stat_file
+
   - name: "Generating a key for bootstraping a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring --gen-key -n client.bootstrap-osd --cap mon 'profile bootstrap-osd' --cap mgr 'allow r'
 
-  # FIXME: This instruction should be skipped if a file /etc/ceph/ceph.client.admin.keyring has already existed.
+
+
+
+
+
+  - name: "Check a flag that means \"ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring\" was finished"
+    stat:
+      path: /root/.ceph_authtool_ceph_client_admin_keyring_has_finished
+    register: flag_file
+
   - name: "Import a keyring \"client.admin\" from \"/etc/ceph/ceph.client.admin.keyring\" to \"/etc/ceph/ceph.mon.keyring\""
     ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring
+    when: flag_file.stat.exists == False
 
-  # FIXME:
+  - name: "Create a flag that means \"ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring\" was finished"
+    copy:
+      content: ""
+      dest: /root/.ceph_authtool_ceph_client_admin_keyring_has_finished
+      force: no
+      owner: root
+      group: root
+      mode: '0640'
+
+
+  - name: "Check a flag that means \"ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring\" was finished"
+    stat:
+      path: /root/.ceph_authtool_bootstrap_osd_ceph_keyring_has_finished
+    register: flag_file
+
   - name: "Import a key \"client.bootstrap-osd\" from \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" to \"/etc/ceph/ceph.mon.keyring\"."
     ansible.builtin.command: ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring
+    when: flag_file.stat.exists == False
+
+  - name: "Create a flag that means \"ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring\" was finished"
+    copy:
+      content: ""
+      dest: /root/.ceph_authtool_bootstrap_osd_ceph_keyring_has_finished
+      force: no
+      owner: root
+      group: root
+      mode: '0640'
+
 
   - name: "Register a variable file_monmap to check a file \"/etc/ceph/monmap\" has alreadu existed"
     stat:
