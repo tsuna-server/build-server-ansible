@@ -327,5 +327,13 @@
     ansible.builtin.debug:
       msg: "{{ result_of_command.stdout.split('\n') }}"
 
+  - name: "Run a command \"ceph osd df\" to show OSD device space usage"
+    ansible.builtin.command: ceph osd df
+    register: result_of_command
+
+  - name: "Print a result of \"ceph osd df\""
+    ansible.builtin.debug:
+      msg: "{{ result_of_command.stdout.split('\n') }}"
+
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
