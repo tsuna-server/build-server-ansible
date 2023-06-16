@@ -11,14 +11,14 @@
 #    "group_vars.hosts['cephs']"
 #  when: "'cephs' in group_vars.hosts"
 
-- name: Installing packages for Ceph nodes
-  apt:
-    name:
-      - ceph
-  register: apt_result
-  retries: 360
-  delay: 5
-  until: apt_result is success
+- name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
+  include_tasks: install_packages/monitors/main.yml
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Include \"install_packages/nodes/main.yml\" if a current host is a monitor of Ceph. // conditionals -> \"inventory_hostname({{ inventory_hostname }}) != group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
+  include_tasks: install_packages/nodes/main.yml
+  when: inventory_hostname != group_vars.ceph.monitor.hosts.master
+
 
 - name: Block for monitor node for Ceph cluster
   block:
