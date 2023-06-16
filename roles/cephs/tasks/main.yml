@@ -89,11 +89,11 @@
       path: "/etc/ceph/ceph.mon.keyring"
       get_checksum: false
       get_md5: false
-    register: stat_file
+    register: flag_file
 
   - name: "Generating a key for monitoring a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /etc/ceph/ceph.mon.keyring --gen-key -n mon. --cap mon 'allow *'
-    when: stat_file.stat.exists == False
+    when: flag_file.stat.exists == False
 
 
   - name: "Stat \"/etc/ceph/ceph.client.admin.keyring\" whether the file has already existed"
@@ -101,11 +101,11 @@
       path: "/etc/ceph/ceph.client.admin.keyring"
       get_checksum: false
       get_md5: false
-    register: stat_file
+    register: flag_file
 
   - name: "Generating a key for managing a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /etc/ceph/ceph.client.admin.keyring --gen-key -n client.admin --cap mon 'allow *' --cap osd 'allow *' --cap mds 'allow *' --cap mgr 'allow *'
-    when: stat_file.stat.exists == False
+    when: flag_file.stat.exists == False
 
 
   - name: "Stat \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" whether the file has already existed"
@@ -113,14 +113,11 @@
       path: "/var/lib/ceph/bootstrap-osd/ceph.keyring"
       get_checksum: false
       get_md5: false
-    register: stat_file
+    register: flag_file
 
   - name: "Generating a key for bootstraping a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
     ansible.builtin.command: ceph-authtool --create-keyring /var/lib/ceph/bootstrap-osd/ceph.keyring --gen-key -n client.bootstrap-osd --cap mon 'profile bootstrap-osd' --cap mgr 'allow r'
-
-
-
-
+    when: flag_file.stat.existed == False
 
 
   - name: "Check a flag that means \"ceph-authtool /etc/ceph/ceph.mon.keyring --import-keyring /etc/ceph/ceph.client.admin.keyring\" was finished"
