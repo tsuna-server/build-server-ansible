@@ -99,10 +99,10 @@
     - "/var/lib/ceph/mon/ceph-{{ inventory_hostname }}"
     - "/var/lib/ceph/bootstrap-osd"
 
-## TODO: This instruction should be registered as a handler
-#- name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
-#  ansible.builtin.systemd:
-#    name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
-#    state: restarted
-#    enabled: true
+# TODO: This instruction should be registered as a handler
+- name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.systemd:
+    name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
+    state: restarted
+    enabled: true
 
