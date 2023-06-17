@@ -70,7 +70,7 @@
     when: result_of_ceph_mgr_mocule_ls.stdout_lines[-1] != "pg_autoscaler"
 
 
-  - name: "Creating a directory \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\" for a daemon of Ceph manager"
+  - name: "Creating a directory \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\" for a daemon of Ceph monitor"
     ansible.builtin.file:
       path: "/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}"
       state: directory
