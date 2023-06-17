@@ -23,66 +23,9 @@
 - name: Block for monitor node for Ceph cluster
   block:
 
-  - name: Register a variable file_ceph_cluster_uuid_stat to check a file .uuid_for_ceph_cluster has alreadu existed
-    stat:
-      path: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
-      get_checksum: false
-      get_md5: false
-    register: file_ceph_uuid_stat
+  - name: "Include create_ceph_conf/monitors/main.yml for monitor node of Ceph"
+    include_tasks: create_ceph_conf/monitors/main.yml
 
-  - name: Create uuid for ceph cluster
-    copy:
-      dest: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
-      content: "{{ 9999999999999999999999 | random | to_uuid }}"
-    when: file_ceph_uuid_stat.stat.exists == False
-
-  - name: "Fetch the file \"{{ ansible_env.HOME }}/.uuid_for_ceph_cluster\" from the  to push any swift nodes"
-    run_once: yes
-    fetch:
-      src: "{{ ansible_env.HOME }}/.uuid_for_ceph_cluster"
-      dest: .buffer/.uuid_for_ceph_cluster
-      flat: yes
-
-  - name: "Declare a variable to push UUID for Ceph cluster"
-    set_fact:
-      uuid_for_ceph_cluster: "{{ lookup('file', \".buffer/.uuid_for_ceph_cluster\") }}"
-
-  - name: "Checking whether getting UUID for Ceph cluster has succeeded"
-    ansible.builtin.fail:
-      msg: "Failed getting UUID from a file \"{{ ansible_env.HOME }}/.uuid_for_ceph_cluster\" from the host \"{{ group_vars.ceph.monitor.hosts.master }}\". Result of value of the variable is \"{{ uuid_for_ceph_cluster }}\""
-    when: not uuid_for_ceph_cluster | regex_search("^[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}$")
-
-  - name: "Print for a variable uuid_for_ceph_cluster"
-    ansible.builtin.debug:
-      msg: "uuid_for_ceph_cluster={{ uuid_for_ceph_cluster }}"
-
-  - name: "Declare a list of host to modify \"/etc/ceph/ceph.conf\" if current host \"{{ inventory_hostname }}\" is in \"group_vars.hosts.cinders\""
-    set_fact:
-      my_ip: "{% if 'cinders' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.cinders %}{% elif 'storages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.storages %}{% endif -%}
-              {% if tmp_hosts is defined -%}
-                {% for item in tmp_hosts -%}
-                  {% if item.name == group_vars.ceph.monitor.hosts.master -%}{{ item.management.ip }}{% endif -%}
-                {% endfor -%}
-              {% endif %}"
-
-  - name: "Print a variable \"my_ip\" if a current host \"{{ inventory_hostname }}\" is a monitor of Ceph cluster"
-    ansible.builtin.debug:
-      msg: "my_ip={{ my_ip }}"
-
-  - name: "Failed if a variable \"my_ip\" has not defined in a monitor node of Ceph \"{{ inventory_hostname }}\""
-    ansible.builtin.fail:
-      msg: "Failed! A variable \"my_ip\" has not defined in a monitor node of Ceph \"{{ inventory_hostname }}\". Does a host \"{{ inventory_hostname }}\" existed in \"group_vars.hosts.cinders\" or \"group_vars.hosts.storages\"?"
-    when: not my_ip | regex_search("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$")
-
-  - name: "Creating /etc/ceph/ceph.conf only in a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
-    ansible.builtin.template:
-      src: monitor/etc/ceph/ceph.conf
-      dest: /etc/ceph/ceph.conf
-      owner: root
-      group: root
-      mode: '0644'
-    #notify:
-    #  - Restart rsync
 
   - name: "Stat \"/etc/ceph/ceph.mon.keyring\" whether the file has already existed"
     stat:
