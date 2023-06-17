@@ -31,6 +31,13 @@
   ansible.builtin.command: ceph-mon --cluster ceph --mkfs -i {{ group_vars.ceph.monitor.hosts.master }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
   when: not pid_of_ceph_mon | regex_search("^[0-9]+$")
 
+# TODO: This instruction should be registered as a handler
+- name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.systemd:
+    name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
+    state: restarted
+    enabled: true
+
 # Configuring additional parameters for Ceph monitor
 
 - name: "Get version of Ceph manager protocol of monitor"
