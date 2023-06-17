@@ -33,6 +33,23 @@
     include_tasks: create_monitors/monitors/main.yml
 
 
+  - name: "Change permissions of directories recursively on a host {{ group_vars.ceph.monitor.hosts.master }} for Ceph"
+    ansible.builtin.file: 
+      path: "{{ item }}"
+      state: directory
+      recurse: yes
+      owner: ceph
+      group: ceph
+    with_items:
+      - "/var/lib/ceph/mon/ceph-{{ inventory_hostname }}"
+      - "/var/lib/ceph/bootstrap-osd"
+
+  - name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+    ansible.builtin.systemd:
+      name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
+      state: restarted
+      enabled: true
+
   - name: "Get version of Ceph manager protocol"
     ansible.builtin.shell: ceph mon stat -f json | jq '.epoch'
     register: result_of_command
