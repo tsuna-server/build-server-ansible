@@ -71,20 +71,3 @@
       owner: root
       group: root
       mode: '0640'
-
-
-  - name: "Find ceph configurations in the directory \"/etc/ceph/ceph*\" on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
-    find:
-      paths: /etc/ceph
-      file_type: file
-      patterns: "ceph.*.keyring"
-    register: filelist
-
-  - name: "Change permisions of files \"/etc/ceph/ceph.*\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
-    ansible.builtin.file:
-      dest: "{{ item.path }}"
-      owner: ceph
-      group: ceph
-    with_items: "{{ filelist.files }}"
-
-
