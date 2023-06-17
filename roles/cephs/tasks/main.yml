@@ -254,8 +254,14 @@
     when: result_of_ceph_config_get.stdout_lines[-1] != "false"
 
 
-  - name: "Enable auto scale module for Ceph"
+  # To detect pg_autoscaler is enabled or not, check elements in either always_on_modules[] or enabled_modules[]
+  - name: "Get current status of pg_autosclaer has already enabled or not on Ceph"
+    ansible.builtin.shell: ceph mgr module ls -f json | jq -r '.always_on_modules[], .enabled_modules[] | select(contains("pg_autoscaler"))'
+    register: result_of_ceph_mgr_mocule_ls
+
+  - name: "Enable auto scale module for Ceph if it has not enabled ({{ result_of_ceph_mgr_mocule_ls.stdout_lines[-1] == \"pg_autoscaler\" }})"
     ansible.builtin.command: ceph mgr module enable pg_autoscaler
+    when: result_of_ceph_mgr_mocule_ls.stdout_lines[-1] != "pg_autoscaler"
 
 
   - name: "Creating a directory \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\" for a daemon of Ceph monitor"
