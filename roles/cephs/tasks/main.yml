@@ -245,9 +245,13 @@
     ansible.builtin.command: ceph mon enable-msgr2
     when: version_of_ceph_manager_protocol == "1"
 
-  # FIXME:
-  - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph"
+  - name: "Get current status of \"auth_allow_insecure_global_id_reclaim\""
+    ansible.builtin.shell: ceph config get mon -f json | jq -r .auth_allow_insecure_global_id_reclaim.value
+    register: result_of_ceph_config_get
+
+  - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph if it has not false. (current auth_allow_insecure_global_id_reclaim={{ result_of_ceph_config_get.stdout_lines[-1] }})"
     ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
+    when: result_of_ceph_config_get.stdout_lines[-1] != "false"
 
 
   - name: "Enable auto scale module for Ceph"
