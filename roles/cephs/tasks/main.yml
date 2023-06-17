@@ -32,32 +32,9 @@
   - name: "Include create_monitors/monitors/main.yml for monitor node of Ceph"
     include_tasks: create_monitors/monitors/main.yml
 
+  - name: "Include create_managers/managers/main.yml for manager node of Ceph"
+    include_tasks: create_managers/managers/main.yml
 
-  - name: "Get version of Ceph manager protocol"
-    ansible.builtin.shell: ceph mon stat -f json | jq '.epoch'
-    register: result_of_command
-
-  - name: "Declare a variable version_of_ceph_manager_protocol"
-    set_fact:
-      version_of_ceph_manager_protocol: "{{ result_of_command.stdout_lines[-1] }}"
-
-  - name: "Check whether getting version of Ceph manager has succeeded. (not version_of_ceph_manager_protocol({{ version_of_ceph_manager_protocol }}) | regex_search(\"^[0-9]+$\"))"
-    ansible.builtin.fail:
-      msg: "Failed to get version of Ceph protocol. A resultt of \"ceph mon stat -f json | jq '.epoch'\" is not a number. An actual result is \"version_of_ceph_manager_protocol={{ version_of_ceph_manager_protocol }}\""
-    when: not version_of_ceph_manager_protocol | regex_search("^[0-9]+$")
-
-  # We have to validate version_of_ceph_manager_protocol as a string not as a integer. https://stackoverflow.com/a/69109779
-  - name: "Enabling manager v2 protocol for Ceph if current version of it was version \"1\". Current version is \"{{ version_of_ceph_manager_protocol }}\""
-    ansible.builtin.command: ceph mon enable-msgr2
-    when: version_of_ceph_manager_protocol == "1"
-
-  - name: "Get current status of \"auth_allow_insecure_global_id_reclaim\""
-    ansible.builtin.shell: ceph config get mon -f json | jq -r .auth_allow_insecure_global_id_reclaim.value
-    register: result_of_ceph_config_get
-
-  - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph if it has not false. (current auth_allow_insecure_global_id_reclaim={{ result_of_ceph_config_get.stdout_lines[-1] }})"
-    ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
-    when: result_of_ceph_config_get.stdout_lines[-1] != "false"
 
 
   # To detect pg_autoscaler is enabled or not, check elements in either always_on_modules[] or enabled_modules[]

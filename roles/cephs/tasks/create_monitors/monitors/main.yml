@@ -1,4 +1,6 @@
 ---
+# Launch Ceph monitor
+
 - name: "Register a variable file_monmap to check a file \"/etc/ceph/monmap\" has alreadu existed"
   stat:
     path: "/etc/ceph/monmap"
@@ -16,7 +18,6 @@
     state: directory
     mode: '0755'
 
-
 - name: "Register a variable result_pgrep_ceph_mon whether ceph-mon has already running or not"
   ansible.builtin.command: pgrep ceph-mon
   register: result_pgrep_ceph_mon
@@ -29,4 +30,32 @@
 - name: "Create a monitor daemon of Ceph"
   ansible.builtin.command: ceph-mon --cluster ceph --mkfs -i {{ group_vars.ceph.monitor.hosts.master }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
   when: not pid_of_ceph_mon | regex_search("^[0-9]+$")
+
+# Configuring additional parameters for Ceph monitor
+
+- name: "Get version of Ceph manager protocol of monitor"
+  ansible.builtin.shell: ceph mon stat -f json | jq '.epoch'
+  register: result_of_command
+
+- name: "Declare a variable version_of_ceph_manager_protocol"
+  set_fact:
+    version_of_ceph_manager_protocol: "{{ result_of_command.stdout_lines[-1] }}"
+
+- name: "Check whether getting version of Ceph manager has succeeded. (not version_of_ceph_manager_protocol({{ version_of_ceph_manager_protocol }}) | regex_search(\"^[0-9]+$\"))"
+  ansible.builtin.fail:
+    msg: "Failed to get version of Ceph protocol. A resultt of \"ceph mon stat -f json | jq '.epoch'\" is not a number. An actual result is \"version_of_ceph_manager_protocol={{ version_of_ceph_manager_protocol }}\""
+  when: not version_of_ceph_manager_protocol | regex_search("^[0-9]+$")
+
+- name: "Enabling manager v2 protocol for Ceph if current version of it was version \"1\". Current version is \"{{ version_of_ceph_manager_protocol }}\""
+  ansible.builtin.command: ceph mon enable-msgr2
+  # We have to validate version_of_ceph_manager_protocol as a string not as a integer. https://stackoverflow.com/a/69109779
+  when: version_of_ceph_manager_protocol == "1"
+
+- name: "Get current status of \"auth_allow_insecure_global_id_reclaim\""
+  ansible.builtin.shell: ceph config get mon -f json | jq -r .auth_allow_insecure_global_id_reclaim.value
+  register: result_of_ceph_config_get
+
+- name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph if it has not false. (current auth_allow_insecure_global_id_reclaim={{ result_of_ceph_config_get.stdout_lines[-1] }})"
+  ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
+  when: result_of_ceph_config_get.stdout_lines[-1] != "false"
 
