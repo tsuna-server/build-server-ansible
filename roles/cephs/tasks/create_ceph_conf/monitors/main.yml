@@ -54,9 +54,10 @@
   ansible.builtin.template:
     src: monitor/etc/ceph/ceph.conf
     dest: /etc/ceph/ceph.conf
-    owner: root
-    group: root
+    owner: ceph
+    group: ceph
     mode: '0644'
   #notify:
   #  - Restart rsync
+
 
