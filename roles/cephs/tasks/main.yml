@@ -46,3 +46,10 @@
 
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
+- name: Block for general nodes for Ceph cluster
+  block:
+
+  - name: "Include push_resources_to_other_nodes/monitors/main.yml for monitor node of Ceph"
+    include_tasks: push_resources_to_other_nodes/monitors/main.yml
+
+  when: inventory_hostname != group_vars.ceph.monitor.hosts.master
