@@ -41,5 +41,8 @@
   - name: "Include print_current_stat/managers/main.yml"
     include_tasks: print_current_stat/managers/main.yml
 
+  - name: "Include fetch_resources_to_copy_to_other_nodes/managers/main.yml"
+    include_tasks: fetch_resources_to_copy_to_other_nodes/managers/main.yml
+
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
