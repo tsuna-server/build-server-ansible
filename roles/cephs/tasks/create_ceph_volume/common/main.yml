@@ -1,0 +1,8 @@
+---
+- name: "Create ceph volume for {{ inventory_hostname }}"
+  include_tasks: do_create_ceph_volume.yml
+  loop_control:
+    loop_var: cinder_node
+  with_items: "{{ group_vars.hosts }}"
+  when:
+    - ('storage' in node) and ('cinder' in node)
