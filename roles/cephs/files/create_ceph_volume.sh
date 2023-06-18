@@ -27,27 +27,41 @@ main() {
 
     format_device "${device}" || return 1
 
+    log_info "Succeeded in creating a ceph volume on ${device}."
+
     return 0
 }
 
 format_device() {
     local device="$1"
+    local vg_name=
 
-    parted --script ${device} 'mklabel gpt' || {
-        log_err "Failed to make a label as gpt with a command \"parted --script ${device} 'mklabel gpt'\"."
-        return 1
-    }
-    parted --script ${device} "mkpart primary 0% 100%" || {
-        log_err "Failed to make partition with a command \"parted --script ${device} 'mkpart primary 0% 100%'\"."
-        return 1
-    }
+    parted --script ${device} 'mklabel gpt'
+    parted --script ${device} "mkpart primary 0% 100%"
 
     log_info "Creating a ceph volume at ${device}1 on ${HOSTNAME}"
 
-    ceph-volume lvm create --data ${device}1 || {
-        log_err "Failed to create LVM on a device \"${device}1\""
+    count=0
+
+    while [ ${count} -lt 30 ]; do
+        ceph-volume lvm create --data ${device}1
+        vg_name=$(pvdisplay ${device}1 | grep -P "^ *VG Name *ceph\-.*\$" | grep -o '[^ ]*$')
+        if [[ "${vg_name}" =~ ^ceph\-.*$ ]]; then
+            log_info "Volume group for Ceph has found. vg_name=${vg_name}."
+            break
+        fi
+        (( ++count ))
+
+        log_info "Failed to create ceph volume(Obtained vg_name=${vg_name}). Retrying to execute it agin (count=${count})." >&2
+        sleep 5
+    done
+
+    if [ $count -eq 30 ]; then
+        log_err "Failed to create ceph volume after trying ${count} times."
         return 1
-    }
+    fi
+
+    return 0
 }
 
 main "$@"
