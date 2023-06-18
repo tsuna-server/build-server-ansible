@@ -32,42 +32,14 @@
   - name: "Include create_monitors/monitors/main.yml for monitor node of Ceph"
     include_tasks: create_monitors/monitors/main.yml
 
-
-  - name: "Get version of Ceph manager protocol"
-    ansible.builtin.shell: ceph mon stat -f json | jq '.epoch'
-    register: result_of_command
-
-  - name: "Declare a variable version_of_ceph_manager_protocol"
-    set_fact:
-      version_of_ceph_manager_protocol: "{{ result_of_command.stdout_lines[-1] }}"
-
-  - name: "Check whether getting version of Ceph manager has succeeded. (not version_of_ceph_manager_protocol({{ version_of_ceph_manager_protocol }}) | regex_search(\"^[0-9]+$\"))"
-    ansible.builtin.fail:
-      msg: "Failed to get version of Ceph protocol. A resultt of \"ceph mon stat -f json | jq '.epoch'\" is not a number. An actual result is \"version_of_ceph_manager_protocol={{ version_of_ceph_manager_protocol }}\""
-    when: not version_of_ceph_manager_protocol | regex_search("^[0-9]+$")
-
-  # We have to validate version_of_ceph_manager_protocol as a string not as a integer. https://stackoverflow.com/a/69109779
-  - name: "Enabling manager v2 protocol for Ceph if current version of it was version \"1\". Current version is \"{{ version_of_ceph_manager_protocol }}\""
-    ansible.builtin.command: ceph mon enable-msgr2
-    when: version_of_ceph_manager_protocol == "1"
-
-  - name: "Get current status of \"auth_allow_insecure_global_id_reclaim\""
-    ansible.builtin.shell: ceph config get mon -f json | jq -r .auth_allow_insecure_global_id_reclaim.value
-    register: result_of_ceph_config_get
-
-  - name: "Set a parameter auth_allow_insecure_global_id_reclaim=false for Ceph if it has not false. (current auth_allow_insecure_global_id_reclaim={{ result_of_ceph_config_get.stdout_lines[-1] }})"
-    ansible.builtin.command: ceph config set mon auth_allow_insecure_global_id_reclaim false
-    when: result_of_ceph_config_get.stdout_lines[-1] != "false"
+  - name: "Include configure_ceph/monitors/main.yml for monitor node of Ceph"
+    include_tasks: configure_ceph/monitors/main.yml
 
 
-  # To detect pg_autoscaler is enabled or not, check elements in either always_on_modules[] or enabled_modules[]
-  - name: "Get current status of pg_autosclaer has already enabled or not on Ceph"
-    ansible.builtin.shell: ceph mgr module ls -f json | jq -r '.always_on_modules[], .enabled_modules[] | select(contains("pg_autoscaler"))'
-    register: result_of_ceph_mgr_mocule_ls
 
-  - name: "Enable auto scale module for Ceph if it has not enabled ({{ result_of_ceph_mgr_mocule_ls.stdout_lines[-1] == \"pg_autoscaler\" }})"
-    ansible.builtin.command: ceph mgr module enable pg_autoscaler
-    when: result_of_ceph_mgr_mocule_ls.stdout_lines[-1] != "pg_autoscaler"
+
+
+
 
 
   - name: "Creating a directory \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\" for a daemon of Ceph monitor"
