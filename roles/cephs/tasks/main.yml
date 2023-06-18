@@ -32,36 +32,6 @@
   - name: "Include create_monitors/monitors/main.yml for monitor node of Ceph"
     include_tasks: create_monitors/monitors/main.yml
 
-  - name: "Find ceph configurations in the directory \"/etc/ceph/ceph*\" on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
-    find:
-      paths: /etc/ceph
-      file_type: file
-      patterns: "ceph.*"
-    register: filelist
-
-  - name: "Change permisions of files \"/etc/ceph/ceph.*\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
-    ansible.builtin.file:
-      dest: "{{ item.path }}"
-      owner: ceph
-      group: ceph
-    with_items: "{{ filelist.files }}"
-
-  - name: "Change permissions of directories recursively on a host {{ group_vars.ceph.monitor.hosts.master }} for Ceph"
-    ansible.builtin.file: 
-      path: "{{ item }}"
-      state: directory
-      recurse: yes
-      owner: ceph
-      group: ceph
-    with_items:
-      - "/var/lib/ceph/mon/ceph-{{ inventory_hostname }}"
-      - "/var/lib/ceph/bootstrap-osd"
-
-  - name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
-    ansible.builtin.systemd:
-      name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
-      state: restarted
-      enabled: true
 
   - name: "Get version of Ceph manager protocol"
     ansible.builtin.shell: ceph mon stat -f json | jq '.epoch'
