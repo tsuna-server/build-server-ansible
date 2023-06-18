@@ -35,52 +35,8 @@
   - name: "Include configure_ceph/monitors/main.yml for monitor node of Ceph"
     include_tasks: configure_ceph/monitors/main.yml
 
-
-
-
-
-
-
-
-  - name: "Creating a directory \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\" for a daemon of Ceph monitor"
-    ansible.builtin.file:
-      path: "/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}"
-      state: directory
-      mode: '0755'
-
-
-  - name: "Get or create mgr auth-key for mgr.{{ inventory_hostname }}"
-    ansible.builtin.command: ceph auth get-or-create mgr.{{ inventory_hostname }} mon 'allow profile mgr' osd 'allow *' mds 'allow *'
-    register: result_of_the_command
-
-  - name: "Declare a result of the command \"ceph auth get-or-create mgr.{{ inventory_hostname }} mon\""
-    set_fact:
-      #auth_key_for_mgr_host: "{{ result_of_the_command.stdout_lines[-1] }}"
-      auth_key_for_mgr_host: "{{ result_of_the_command.stdout }}"
-
-  - name: "Create a file \"/etc/ceph/ceph.mgr.admin.keyring\" for Ceph manager"
-    copy:
-      dest: "/etc/ceph/ceph.mgr.admin.keyring"
-      content: "{{ auth_key_for_mgr_host }}{{ '\n' }}"
-
-  - name: "Copy a file \"/etc/ceph/ceph.mgr.admin.keyring\" to \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring\""
-    copy:
-      src: "/etc/ceph/ceph.mgr.admin.keyring"
-      dest: "/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}/keyring"
-      remote_src: yes
-      owner: ceph
-      group: ceph
-
-
-  - name: "Set permissions any files and directories under \"/var/lib/ceph/mgr/ceph-{{ inventory_hostname }}\""
-    ansible.builtin.command: chown -R ceph. /var/lib/ceph/mgr/ceph-{{ inventory_hostname }}
-
-
-  - name: "Enable \"ceph-mgr@{{ inventory_hostname }}\" on a host \"{{ inventory_hostname }}\""
-    ansible.builtin.systemd:
-      name: "ceph-mgr@{{ inventory_hostname }}"
-      state: restarted
-      enabled: true
+  - name: "Include create_managers/managers/main.yml for manager node of Ceph"
+    include_tasks: create_managers/managers/main.yml
 
 
   - name: "Run a command \"ceph osd lspools\" to list Ceph pools"
