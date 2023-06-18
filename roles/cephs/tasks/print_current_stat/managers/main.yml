@@ -1,0 +1,41 @@
+---
+- name: "Run a command \"ceph osd lspools\" to list Ceph pools"
+  ansible.builtin.command: ceph osd lspools
+  register: result_of_command
+
+- name: "Print a result of \"ceph osd lspools\""
+  ansible.builtin.debug:
+    msg: "{{ result_of_command.stdout.split('\n') }}"
+
+- name: "Run a command \"ceph -s\" to show Ceph status"
+  ansible.builtin.command: ceph -s
+  register: result_of_command
+
+- name: "Print a result of \"ceph -s\""
+  ansible.builtin.debug:
+    msg: "{{ result_of_command.stdout.split('\n') }}"
+
+- name: "Run a command \"ceph osd tree\" to show OSD tree"
+  ansible.builtin.command: ceph osd tree
+  register: result_of_command
+
+- name: "Print a result of \"ceph osd tree\""
+  ansible.builtin.debug:
+    msg: "{{ result_of_command.stdout.split('\n') }}"
+
+- name: "Run a command \"ceph df\" to show Ceph device space usage"
+  ansible.builtin.command: ceph df
+  register: result_of_command
+
+- name: "Print a result of \"ceph df\""
+  ansible.builtin.debug:
+    msg: "{{ result_of_command.stdout.split('\n') }}"
+
+- name: "Run a command \"ceph osd df\" to show OSD device space usage"
+  ansible.builtin.command: ceph osd df
+  register: result_of_command
+
+- name: "Print a result of \"ceph osd df\""
+  ansible.builtin.debug:
+    msg: "{{ result_of_command.stdout.split('\n') }}"
+
