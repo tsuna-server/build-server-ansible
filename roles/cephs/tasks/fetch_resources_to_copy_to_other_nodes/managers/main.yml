@@ -8,4 +8,4 @@
   with_items:
     - "/etc/ceph/ceph.conf"
     - "/etc/ceph/ceph.client.admin.keyring"
-    - "/etc/ceph/ceph.client.admin.keyring"
+    - "/var/lib/ceph/bootstrap-osd/ceph.keyring"
