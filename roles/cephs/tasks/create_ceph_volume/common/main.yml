@@ -1,7 +1,21 @@
 ---
+# Target hosts to create ceph volumes are belonging groups 'cinders' or 'storages'.
+- name: Declare a variable group_for_ceph to detect to create ceph volumes for 'cinder' nodes
+  set_fact:
+    group_for_ceph: "cinders"
+  when: '"cinders" in group_names'
+
+- name: Declare a variable group_for_ceph to detect to create ceph volumes for 'storage' nodes
+  set_fact:
+    group_for_ceph: "storages"
+  when: '"storages" in group_names'
+
+# Create ceph volumes if current host is belonging in group 'cinders' or 'storages'.
+# And each group_vars.hosts.${group_name}[] have elements 'storage' and 'storage.cinder'.
+# ex) group_vars.hosts.cinders[0].
 - name: "Create ceph volume for {{ inventory_hostname }}"
   include_tasks: do_create_ceph_volume.yml
   loop_control:
     loop_var: node
-  with_items: "{{ group_vars.hosts }}"
-  when: ('storage' in node) and ('cinder' in node.storage)
+  with_items: "{{ group_vars.hosts[group_for_ceph] }}"
+  when: (group_for_ceph is defined) and ('storage' in node) and ('cinder' in node.storage)

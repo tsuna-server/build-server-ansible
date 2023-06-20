@@ -4,5 +4,4 @@
 
 - name: "Run create_ceph_volume.sh"
   script: ./create_ceph_volume.sh "{{ item }}"
-  with_items:
-    - node.storage.cinder
+  with_items: "{{ node.storage.cinder }}"

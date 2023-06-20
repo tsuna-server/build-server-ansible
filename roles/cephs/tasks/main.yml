@@ -54,3 +54,5 @@
 
   when: inventory_hostname != group_vars.ceph.monitor.hosts.master
 
+- name: "Include create_ceph_volume/common/main.yml"
+  include_tasks: create_ceph_volume/common/main.yml
