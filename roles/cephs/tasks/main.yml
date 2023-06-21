@@ -56,3 +56,8 @@
 
 - name: "Include create_ceph_volume/common/main.yml"
   include_tasks: create_ceph_volume/common/main.yml
+
+- name: "Include print_current_stat/managers/main.yml"
+  include_tasks: print_current_stat/managers/main.yml
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
