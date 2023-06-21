@@ -11,6 +11,22 @@
 #    "group_vars.hosts['cephs']"
 #  when: "'cephs' in group_vars.hosts"
 
+- name: "Declare primary_group_name as \"cinders\""
+  set_fact:
+    parimary_group_name: "cinders"
+  when: '"cinders" in group_names'
+
+- name: "Declare primary_group_name as \"storages\""
+  set_fact:
+    parimary_group_name: "storages"
+  when: '"storages" in group_names'
+
+- name: "Declare primary_group_name as \"computes\""
+  set_fact:
+    parimary_group_name: "computes"
+  when: '"computes" in group_names'
+
+
 - name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/monitors/main.yml
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
@@ -59,5 +75,5 @@
 
 - name: "Include print_current_stat/managers/main.yml"
   include_tasks: print_current_stat/managers/main.yml
-  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+  when: inventory_hostname == group_vars.ceph.monitorhosts.master
 
