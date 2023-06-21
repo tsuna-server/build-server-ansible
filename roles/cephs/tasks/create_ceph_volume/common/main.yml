@@ -1,18 +1,12 @@
 ---
-# Target hosts to create ceph volumes are belonging groups 'cinders' or 'storages'.
-- name: Declare a variable group_for_ceph to detect to create ceph volumes for 'cinder' nodes
-  set_fact:
-    group_for_ceph: "cinders"
-  when: '"cinders" in group_names'
+# Variables
+#   parimary_group_name: Primary group name of current node
 
-- name: Declare a variable group_for_ceph to detect to create ceph volumes for 'storage' nodes
-  set_fact:
-    group_for_ceph: "storages"
-  when: '"storages" in group_names'
+# Target hosts to create ceph volumes are belonging groups 'cinders' or 'storages'.
 
 - name: "Find an element of hosts"
   set_fact:
-    element_of_node: "{{ group_vars.hosts[group_for_ceph] | selectattr(\"name\", \"equalto\", inventory_hostname) | first }}"
+    element_of_node: "{{ group_vars.hosts[primary_group_name] | selectattr(\"name\", \"equalto\", inventory_hostname) | first }}"
 
 - name: "Failed if the variable \"element_of_node\" has not be declared."
   ansible.builtin.fail:

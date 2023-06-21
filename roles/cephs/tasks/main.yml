@@ -13,17 +13,17 @@
 
 - name: "Declare primary_group_name as \"cinders\""
   set_fact:
-    parimary_group_name: "cinders"
+    primary_group_name: "cinders"
   when: '"cinders" in group_names'
 
 - name: "Declare primary_group_name as \"storages\""
   set_fact:
-    parimary_group_name: "storages"
+    primary_group_name: "storages"
   when: '"storages" in group_names'
 
 - name: "Declare primary_group_name as \"computes\""
   set_fact:
-    parimary_group_name: "computes"
+    primary_group_name: "computes"
   when: '"computes" in group_names'
 
 
@@ -73,7 +73,7 @@
 - name: "Include create_ceph_volume/common/main.yml"
   include_tasks: create_ceph_volume/common/main.yml
 
-- name: "Include print_current_stat/managers/main.yml"
-  include_tasks: print_current_stat/managers/main.yml
-  when: inventory_hostname == group_vars.ceph.monitorhosts.master
+#- name: "Include print_current_stat/managers/main.yml"
+#  include_tasks: print_current_stat/managers/main.yml
+#  when: inventory_hostname == group_vars.ceph.monitorhosts.master
 
