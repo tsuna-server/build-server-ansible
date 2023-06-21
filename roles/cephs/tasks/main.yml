@@ -26,6 +26,11 @@
     primary_group_name: "computes"
   when: '"computes" in group_names'
 
+- name: "Check whether a variable \"primary_group_name\" has declared"
+  ansible.builtin.fail:
+    msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"computes\"."
+  when: primary_group_name is not defined
+
 
 - name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/monitors/main.yml
