@@ -34,11 +34,11 @@
 
 - name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/monitors/main.yml
-  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 - name: "Include \"install_packages/nodes/main.yml\" if a current host is a monitor of Ceph. // conditionals -> \"inventory_hostname({{ inventory_hostname }}) != group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/nodes/main.yml
-  when: inventory_hostname != group_vars.ceph.monitor.hosts.master
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
 
 - name: Block for monitor node for Ceph cluster
@@ -65,7 +65,7 @@
   - name: "Include fetch_resources_to_copy_to_other_nodes/managers/main.yml"
     include_tasks: fetch_resources_to_copy_to_other_nodes/managers/main.yml
 
-  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 - name: Block for general nodes for Ceph cluster
   block:
@@ -73,10 +73,11 @@
   - name: "Include push_resources_to_other_nodes/monitors/main.yml for monitor node of Ceph"
     include_tasks: push_resources_to_other_nodes/monitors/main.yml
 
-  when: inventory_hostname != group_vars.ceph.monitor.hosts.master
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
 - name: "Include create_ceph_volume/common/main.yml"
   include_tasks: create_ceph_volume/common/main.yml
+  when: primary_group_name == "cinders" or primary_group_name == "storages"
 
 - name: "Include print_current_stat/managers/main.yml"
   include_tasks: print_current_stat/managers/main.yml
