@@ -83,3 +83,11 @@
   include_tasks: print_current_stat/managers/main.yml
   when: inventory_hostname == group_vars.ceph.monitor.hosts.master
 
+- name: "Block for ompute node for Ceph cluster"
+  block:
+
+  - name: "Include \"install_packages/clients/main.yml\" if current host is a client of Ceph"
+    include_tasks: install_packages/clients/main.yml
+
+  when: primary_group_name == "computes"
+
