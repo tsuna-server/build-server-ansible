@@ -8,5 +8,5 @@
     - { role: storage_common, tags: ['role_storage_common'] }
     - { role: swift, tags: ['role_swift']}
     - { role: cinder, tags: ['role_ciner']}
-    - { role: cephs, tags: ['role_cephs']}
+    - { role: cephs, tags: ['role_ceph']}
     #- { role: neutron, tags: ['role_neutron']}
