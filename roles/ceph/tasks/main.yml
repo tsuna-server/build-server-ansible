@@ -101,5 +101,8 @@
   #- name: "Include \"push_resource_to_other_nodes/monitors/main.yml\""
   #  include_tasks: push_resource/to_controller_nodes/monitors/main.yml
 
+  - name: "Include \"create_ceph_osd_pools/main.yml\" if current host is a controller of Ceph"
+    include_tasks: create_ceph_osd_pools/main.yml
+
   when: primary_group_name == "controllers"
 
