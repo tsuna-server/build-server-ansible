@@ -97,7 +97,7 @@
   - name: "Include \"install_packages/controllers/main.yml\" if current host is a controller of Ceph"
     include_tasks: install_packages/controllers/main.yml
 
-  # # This instruction does not needed because these instructions are assumed that features of monitor and controller are on same controller nodes.
+  # # This instruction (copying ceph.conf) does not needed because these instructions are assumed that features of monitor and controller are on same controller nodes.
   #- name: "Include \"push_resource_to_other_nodes/monitors/main.yml\""
   #  include_tasks: push_resource/to_controller_nodes/monitors/main.yml
 
