@@ -26,6 +26,11 @@
     primary_group_name: "computes"
   when: '"computes" in group_names'
 
+- name: "Declare primary_group_name as \"controllers\""
+  set_fact:
+    primary_group_name: "controllers"
+  when: '"controllers" in group_names'
+
 - name: "Check whether a variable \"primary_group_name\" has declared"
   ansible.builtin.fail:
     msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"computes\"."
