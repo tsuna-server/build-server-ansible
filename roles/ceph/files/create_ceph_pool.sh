@@ -15,7 +15,7 @@ main() {
         log_err "This script requires 2 argument, pool_name and num_of_placment_groups. But you specified ${#@} arguments (arguments=${@})"
         return 1
     fi
-    if [[ "$num_of_placement_groups" =~ ^[0-9]+$ ]]; then
+    if [[ ! "$num_of_placement_groups" =~ ^[0-9]+$ ]]; then
         log_err "A 2nd parameter must be a numeric. But you specified it as \"$num_of_placement_groups\""
         return 1
     fi
