@@ -42,6 +42,13 @@ create_client_credential() {
         return 1
     }
 
+    # Create a credential as a file
+    # FIXME: A name of file is depends on a name of Ceph cluster. This command assumes that the name of it is always \"ceph\".
+    ceph auth get-or-create "$name_of_credential" > "/etc/ceph/ceph.${name_of_credential}.keyring" || {
+        log_err "Failed to create a file \"/etc/ceph/ceph.${name_of_credential}.keyring\" of client-credential for some reason."
+        return 1
+    }
+
     return 0
 }
 
