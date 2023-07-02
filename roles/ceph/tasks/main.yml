@@ -70,6 +70,9 @@
   - name: "Include fetch_resources_to_copy_to_other_nodes/managers/main.yml"
     include_tasks: fetch_resources_to_copy_to_other_nodes/managers/main.yml
 
+  # TODO: Must it be running after controllers and other Ceph storage nodes nodes have already set up?
+  - name: "Include \"create_ceph_osd_pools/main.yml\" if current host is a controller of Ceph"
+    include_tasks: create_ceph_osd_pools/main.yml
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 - name: Block for general nodes for Ceph cluster
@@ -105,9 +108,6 @@
   # # This instruction (copying ceph.conf) does not needed because these instructions are assumed that features of monitor and controller are on same controller nodes.
   #- name: "Include \"push_resource_to_other_nodes/monitors/main.yml\""
   #  include_tasks: push_resource/to_controller_nodes/monitors/main.yml
-
-  - name: "Include \"create_ceph_osd_pools/main.yml\" if current host is a controller of Ceph"
-    include_tasks: create_ceph_osd_pools/main.yml
 
   when: primary_group_name == "controllers"
 

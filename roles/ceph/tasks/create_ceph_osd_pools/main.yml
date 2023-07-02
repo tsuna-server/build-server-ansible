@@ -1,5 +1,6 @@
 ---
 - name: "Creating pool for Ceph => {{ item }}"
-  ansible.builtin.command: ceph osd pool create {{ item.name }} {{ item.num_of_placement_groups }}
+  #ansible.builtin.command: ceph osd pool create {{ item.name }} {{ item.num_of_placement_groups }}
+  ansible.builtin.script: ./create_a_pool_if_not_existed.sh "{{ item }}"
   with_items: "{{ group_vars.ceph.pools }}"
 
