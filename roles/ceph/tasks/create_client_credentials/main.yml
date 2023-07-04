@@ -1,8 +1,19 @@
 ---
 - name: "Creating a client credential (name=\"{{ item.name }}\", permission_of_mon={{ item.permission_of_mon }}, permission_of_osd={{ item.permission_of_osd }})"
-  ansible.builtin.script: create_client_credential.sh "{{ item.name }}" "{{ item.permission_of_mon }}" "{{ item.permission_of_osd }}"
+  include_tasks: do_create_client_credential.yml
+  loop_control:
+    index_var: client_credential
   with_items:
-    - {name: "client.cinder", permission_of_mon: "allow r", permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images"}
-    - {name: "client.cinder-backup", permission_of_mon: "allow r", permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=backups"}
-    - {name: "client.glance", permission_of_mon: "allow r", permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=images"}
+    - name: "client.cinder"
+      path: "/etc/ceph/ceph.client.cinder.keyring"
+      permission_of_mon: "allow r"
+      permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images"
+    - name: "client.cinder-backup"
+      path: "/etc/ceph/ceph.client.cinder.keyring"
+      permission_of_mon: "allow r"
+      permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=backups"
+    - name: "client.glance"
+      path: "/etc/ceph/ceph.client.cinder-backup.keyring"
+      permission_of_mon: "allow r"
+      permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=images"
 
