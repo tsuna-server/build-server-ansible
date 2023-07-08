@@ -1,8 +1,8 @@
 ---
-- name: "Creating a client credential (name=\"{{ item.name }}\", permission_of_mon={{ item.permission_of_mon }}, permission_of_osd={{ item.permission_of_osd }})"
+- name: "Creating a client credential (name=\"{{ client_credential.name }}\", permission_of_mon=\"{{ client_credential.permission_of_mon }}\", permission_of_osd=\"{{ client_credential.permission_of_osd }}\")"
   include_tasks: do_create_client_credential.yml
   loop_control:
-    index_var: client_credential
+    loop_var: client_credential
   with_items:
     - name: "client.cinder"
       path: "/etc/ceph/ceph.client.cinder.keyring"
