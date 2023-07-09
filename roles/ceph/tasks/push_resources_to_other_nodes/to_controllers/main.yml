@@ -1,5 +1,5 @@
 ---
-- name: "Push the file to {{ inventory_hostname }} for compute nodes of Ceph"
+- name: "Push the file to {{ inventory_hostname }} for controller nodes of Ceph"
   copy:
     src: ".buffer/{{ item | basename }}"
     dest: "{{ item }}"

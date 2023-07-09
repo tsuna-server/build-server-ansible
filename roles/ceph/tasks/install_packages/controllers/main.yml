@@ -3,6 +3,7 @@
   apt:
     name:
       - python3-rbd
+      - ceph-common
   register: apt_result
   retries: 360
   delay: 5
