@@ -85,8 +85,8 @@
 - name: Block for general nodes for Ceph cluster
   block:
 
-  - name: "Include push_resources_to_other_nodes/monitors/main.yml for cinder or storage nodes of Ceph"
-    include_tasks: push_resources_to_other_nodes/monitors/main.yml
+  - name: "Include \"push_resources_to_other_nodes/to_storages/main.yml\" for cinder or storage nodes of Ceph"
+    include_tasks: push_resources_to_other_nodes/to_storages/main.yml
 
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
@@ -101,7 +101,10 @@
 - name: "Block for compute nodes for Ceph cluster"
   block:
 
-  - name: "Include \"install_packages/clients/main.yml\" if current host is a client of Ceph"
+  - name: "Include \"install_packages/clients/main.yml\" if a group of current node is \"computes\""
+    include_tasks: install_packages/clients/main.yml
+
+  - name: "Include \"push_resources_to_other_nodes/to_computes/main.yml\" if a group of current node is \"computes\""
     include_tasks: install_packages/clients/main.yml
 
   when: primary_group_name == "computes"
