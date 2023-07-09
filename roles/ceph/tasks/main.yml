@@ -85,7 +85,7 @@
 - name: Block for general nodes for Ceph cluster
   block:
 
-  - name: "Include push_resources_to_other_nodes/monitors/main.yml for monitor node of Ceph"
+  - name: "Include push_resources_to_other_nodes/monitors/main.yml for cinder or storage nodes of Ceph"
     include_tasks: push_resources_to_other_nodes/monitors/main.yml
 
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
