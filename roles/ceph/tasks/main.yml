@@ -105,7 +105,7 @@
     include_tasks: install_packages/clients/main.yml
 
   - name: "Include \"push_resources_to_other_nodes/to_computes/main.yml\" if a group of current node is \"computes\" of Ceph"
-    include_tasks: install_packages/clients/main.yml
+    include_tasks: push_resources_to_other_nodes/to_computes/main.yml
 
   when: primary_group_name == "computes"
 
@@ -116,7 +116,7 @@
     include_tasks: install_packages/controllers/main.yml
 
   - name: "Include \"push_resources_to_other_nodes/to_controllers/main.yml\" if a group of current node is \"controllers\" of Ceph"
-    include_tasks: install_packages/controllers/main.yml
+    include_tasks: push_resources_to_other_nodes/to_controllers/main.yml
 
   when: primary_group_name == "controllers"
 
