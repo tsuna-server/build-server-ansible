@@ -8,5 +8,4 @@
     - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
     - { role: storage_common, tags: ['role_storage_common'] }
     - { role: cinder, tags: ['role_cinder']}
-    - { role: ceph, tags: ['role_ceph']}
     #- { role: neutron, tags: ['role_neutron']}

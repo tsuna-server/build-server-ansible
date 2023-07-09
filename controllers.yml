@@ -14,7 +14,6 @@
     - { role: nova, tags: ['role_nova']}
     - { role: swift, tags: ['role_swift'] }
     - { role: cinder, tags: ['role_cinder']}
-    - { role: ceph, tags: ['role_ceph']}
     - { role: neutron, tags: ['role_neutron']}
     - { role: horizon, tags: ['role_horizon']}
   environment:

@@ -7,4 +7,3 @@
     - { role: nova, tags: ['role_nova']}
     - { role: neutron, tags: ['role_neutron']}
     - { role: cinder, tags: ['role_cinder']}
-    - { role: ceph, tags: ['role_ceph']}
