@@ -6,7 +6,6 @@
   with_items:
     # "/etc/ceph/ceph.client.cinder.keyring" will also be used as a secret of libvirtd.
     - "/etc/ceph/ceph.client.cinder.keyring"
-    - "/etc/ceph/ceph.client.cinder-backup.keyring"
 
 - name: "Find ceph configurations in the directory \"/etc/ceph/ceph*\" on a monitor node \"{{ inventory_hostname }}\" for Ceph"
   find:
