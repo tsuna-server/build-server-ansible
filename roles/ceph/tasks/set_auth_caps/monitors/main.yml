@@ -1,0 +1,4 @@
+---
+# It assumes that a variable "client_credentials" has already declared.
+- name: ""
+client_credentials
