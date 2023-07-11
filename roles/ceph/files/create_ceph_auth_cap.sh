@@ -29,13 +29,22 @@ is_a_cap_client_cinder_already_existed() {
     is_a_cap_already_exists "client.cinder" "$type_of_client" "$cap_mon" "$cap_osd"
 }
 
-is_a_cap_already_exists() {
+is_a_cap_mon_already_exists() {
     local type_of_cap="$1"
     local type_of_client="$2"
     local cap_mon="$3"
     local cap_osd="$4"
 
-    is_a_cap_already_exists "$type_of_cap" "$type_of_client" ".[0].caps.mon"
+    is_a_cap_already_exists "$type_of_cap" "$type_of_client" ".[0].caps.mon" "$cap_mon" "$cap_osd"
+}
+
+is_a_cap_osd_already_exists() {
+    local type_of_cap="$1"
+    local type_of_client="$2"
+    local cap_mon="$3"
+    local cap_osd="$4"
+
+    is_a_cap_already_exists "$type_of_cap" "$type_of_client" ".[0].caps.osd" "$cap_mon" "$cap_osd"
 }
 
 
@@ -51,8 +60,7 @@ is_a_cap_already_exists() {
     local cap_osd="$5"
 
     local output=
-    local current_cap_mon=
-    local current_osd_mon=
+    local current_cap=
 
     # # An example output
     # [
@@ -65,13 +73,21 @@ is_a_cap_already_exists() {
     #     }
     #   }
     # ]
-    output="$(ceph auth get ${type_of_cap} --format json 2> /dev/null)"
-    current_cap_mon="$(jq '.[0].caps.mon' <<< "$output")" || {
+    output="$(ceph auth get ${type_of_cap} --format json 2> /dev/null)" || {
+        log_err "Failed to get an output of a command \"ceph auth get ${type_of_cap}\" --format json. A return code of it was non 0."
+        return 1
+    }
+
+
+    current_cap="$(jq -r "$filter_format" <<< "$output")" || {
         log_err "Failed to get current_cap_mon. A command \"ceph auth get ${type_of_cap} --format json\" might be failed. Actual output is -> ${output}"
         return 1
     }
 
-    if [ "$output" = "\"allow r, allow command \\\"osd blacklist\\\"\"" ]; then
+    if [ -z "$output" = "allow r, allow command \"osd blacklist\"" ]
+
+    if [ "$output" = "allow r, allow command \"osd blacklist\"" ]; then
+
     fi
 
     current_cap_osd="$(jq '.[0].caps.osd' <<< "$output")" || {
