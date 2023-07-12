@@ -6,6 +6,9 @@ log_info() {
     echo "$(date) - INFO: $1"
 }
 
+# Parameters
+#   type_of_client: A type of client. (ex: "client.cinder", "client.cinder-backup", "client.glance")
+#   cap_mon=
 main() {
     local type_of_client="$1"
     local cap_mon="$2"
@@ -21,43 +24,14 @@ main() {
     is_a_cap_already_exists "$type_of_client" "$cap_mon" "$cap_osd"
 }
 
-is_a_cap_client_cinder_already_existed() {
-    local type_of_client="$1"
-    local cap_mon="$2"
-    local cap_osd="$3"
-
-    is_a_cap_already_exists "client.cinder" "$type_of_client" "$cap_mon" "$cap_osd"
-}
-
-is_a_cap_mon_already_exists() {
-    local type_of_cap="$1"
-    local type_of_client="$2"
-    local cap_mon="$3"
-    local cap_osd="$4"
-
-    is_a_cap_already_exists "$type_of_cap" "$type_of_client" ".[0].caps.mon" "$cap_mon" "$cap_osd"
-}
-
-is_a_cap_osd_already_exists() {
-    local type_of_cap="$1"
-    local type_of_client="$2"
-    local cap_mon="$3"
-    local cap_osd="$4"
-
-    is_a_cap_already_exists "$type_of_cap" "$type_of_client" ".[0].caps.osd" "$cap_mon" "$cap_osd"
-}
-
-
 # Check whether caps "cap_mon" and "cap_osd" have already created.
 # Returns:
 #   0: Caps have already created.
 #   1: Others. Caps have not created yet.
 is_a_cap_already_exists() {
-    local type_of_cap="$1"
-    local type_of_client="$2"
-    local filter_format="$3"
-    local cap_mon="$4"
-    local cap_osd="$5"
+    local type_of_client="$1"       # A type of cap. That assumes "client.cinder", "client.cinder-backup" or "client.glance" currently.
+    local mon_cap="$2"              # A text of cap for mon. (ex: allow r, allow command "osd blacklist")
+    local osd_cap="$3"              # A text of cap for osd. (ex: allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images)
 
     local output=
     local current_cap=
@@ -84,19 +58,19 @@ is_a_cap_already_exists() {
         return 1
     }
 
-    if [ -z "$output" = "allow r, allow command \"osd blacklist\"" ]
-
-    if [ "$output" = "allow r, allow command \"osd blacklist\"" ]; then
-
+    if [ -z "$output" ]; then
+        log_err "Failed to get an output of current_cap_mon. An output of the command \"jq -r "$filter_format" <<< \\\"$output\\\" \""
+        return 1
     fi
 
-    current_cap_osd="$(jq '.[0].caps.osd' <<< "$output")" || {
-        log_err "Failed to parse a JSON. (type_of_cap=${type_of_cap}, type_of_client=${type_of_client}, cap_mon=${cap_mon}, cap_osd=${cap_osd})"
-        return 1
-    }
+    if [ "$output" = "allow r, allow command \"osd blacklist\"" ]; then
+        log_info "A cap \"${type_of_cap}\" has already set as \"allow r, allow command \\\"osd blacklist\\\"\". An instruction to set a cap will be skipped."
+        return 0
+    fi
 
+    ceph auth caps "$type_of_cap" "$type_of_client" "$filter_format"
 
-
+    'allow r, allow command "osd blacklist"' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images'
 }
 
 main "$@"
