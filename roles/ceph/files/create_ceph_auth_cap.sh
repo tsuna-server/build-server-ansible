@@ -29,7 +29,8 @@ main() {
 # Check whether caps "cap_mon" and "cap_osd" have already created.
 # Returns:
 #   0: Caps have already created.
-#   1: Others. Caps have not created yet.
+#   1: Caps has NOT already created.
+#   others: A something error.
 is_a_cap_already_exists() {
     local type_of_client="$1"       # A type of cap. That assumes "client.cinder", "client.cinder-backup" or "client.glance" currently.
     local mon_cap="$2"              # A text of cap for mon. (ex: allow r, allow command "osd blacklist")
@@ -51,18 +52,18 @@ is_a_cap_already_exists() {
     # ]
     output="$(ceph auth get ${type_of_client} --format json 2> /dev/null)" || {
         log_err "Failed to get an output of a command \"ceph auth get ${type_of_client}\" --format json. A return code of it was non 0."
-        return 1
+        return 2
     }
 
 
     current_cap="$(jq -r "$filter_format" <<< "$output")" || {
         log_err "Failed to get current_cap_mon. A command \"ceph auth get ${type_of_client} --format json\" might be failed. Actual output is -> ${output}"
-        return 1
+        return 2
     }
 
     if [ -z "$output" ]; then
         log_err "Failed to get an output of current_cap_mon. An output of the command \"jq -r "$filter_format" <<< \\\"$output\\\" \""
-        return 1
+        return 2
     fi
 
     if [ "$output" = "allow r, allow command \"osd blacklist\"" ]; then
@@ -70,7 +71,18 @@ is_a_cap_already_exists() {
         return 0
     fi
 
-    ceph auth caps "$type_of_client" mon "$mon_cap" osd "$osd_cap"
+    ceph auth caps "$type_of_client" mon "$mon_cap" osd "$osd_cap" || {
+        log_err "Failed to execute a command. (ceph auth caps \"$type_of_client\" mon \"$mon_cap\" osd \"$osd_cap\")"
+        return 0
+    }
+
+    return 1
 }
+
+create_a_cap() {
+
+    log_info "Succeeded adding a cap of ceph. (ceph auth caps \"$type_of_client\" mon \"$mon_cap\" osd \"$osd_cap\")"
+}
+
 
 main "$@"
