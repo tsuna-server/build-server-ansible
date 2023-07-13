@@ -6,6 +6,8 @@ log_info() {
     echo "$(date) - INFO: $1"
 }
 
+FILTER_FORMAT_MON=".[0]"
+
 # Parameters
 #   type_of_client: A type of client. (ex: "client.cinder", "client.cinder-backup", "client.glance")
 #   cap_mon=
@@ -47,14 +49,14 @@ is_a_cap_already_exists() {
     #     }
     #   }
     # ]
-    output="$(ceph auth get ${type_of_cap} --format json 2> /dev/null)" || {
-        log_err "Failed to get an output of a command \"ceph auth get ${type_of_cap}\" --format json. A return code of it was non 0."
+    output="$(ceph auth get ${type_of_client} --format json 2> /dev/null)" || {
+        log_err "Failed to get an output of a command \"ceph auth get ${type_of_client}\" --format json. A return code of it was non 0."
         return 1
     }
 
 
     current_cap="$(jq -r "$filter_format" <<< "$output")" || {
-        log_err "Failed to get current_cap_mon. A command \"ceph auth get ${type_of_cap} --format json\" might be failed. Actual output is -> ${output}"
+        log_err "Failed to get current_cap_mon. A command \"ceph auth get ${type_of_client} --format json\" might be failed. Actual output is -> ${output}"
         return 1
     }
 
@@ -64,13 +66,11 @@ is_a_cap_already_exists() {
     fi
 
     if [ "$output" = "allow r, allow command \"osd blacklist\"" ]; then
-        log_info "A cap \"${type_of_cap}\" has already set as \"allow r, allow command \\\"osd blacklist\\\"\". An instruction to set a cap will be skipped."
+        log_info "A cap \"${type_of_client}\" has already set as \"allow r, allow command \\\"osd blacklist\\\"\". An instruction to set a cap will be skipped."
         return 0
     fi
 
-    ceph auth caps "$type_of_cap" "$type_of_client" "$filter_format"
-
-    'allow r, allow command "osd blacklist"' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images'
+    ceph auth caps "$type_of_client" mon "$mon_cap" osd "$osd_cap"
 }
 
 main "$@"
