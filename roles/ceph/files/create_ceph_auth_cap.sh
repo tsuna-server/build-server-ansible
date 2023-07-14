@@ -15,6 +15,7 @@ main() {
     local type_of_client="$1"
     local cap_mon="$2"
     local cap_osd="$3"
+    local ret=0
 
     #echo "cap_mon=${cap_mon}, cap_osd=${cap_osd}"
 
@@ -24,6 +25,19 @@ main() {
     fi
 
     is_a_cap_already_exists "$type_of_client" "$cap_mon" "$cap_osd"
+    ret=$?
+
+    [ $ret -eq 2 ] && {
+        log_err "This script will be finished due to a previous error."
+        return 1
+    }
+
+    [ $ret -eq 0 ] && {
+        log_info "Creating a cap (type_of_client=\"${type_of_client}\", cap_mon=\"${cap_mon}\", cap_osd=\"${cap_osd}\") will be skipped because it has already registered."
+        return 0
+    }
+
+    create_a_cap "$type_of_client" "$cap_mon" "$cap_osd"
 }
 
 # Check whether caps "cap_mon" and "cap_osd" have already created.
@@ -71,11 +85,6 @@ is_a_cap_already_exists() {
         return 0
     fi
 
-    ceph auth caps "$type_of_client" mon "$mon_cap" osd "$osd_cap" || {
-        log_err "Failed to execute a command. (ceph auth caps \"$type_of_client\" mon \"$mon_cap\" osd \"$osd_cap\")"
-        return 0
-    }
-
     return 1
 }
 
@@ -93,6 +102,5 @@ create_a_cap() {
 
     return 0
 }
-
 
 main "$@"
