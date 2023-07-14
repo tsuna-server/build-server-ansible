@@ -80,8 +80,18 @@ is_a_cap_already_exists() {
 }
 
 create_a_cap() {
+    local type_of_client="$1"
+    local mon_cap="$2"
+    local osd_cap="$3"
+
+    ceph auth caps $type_of_client mon "$mon_cap" osd "$osd_cap" || {
+        log_err "Failed to execute a command. (ceph auth caps $type_of_client mon \"$mon_cap\" osd \"$osd_cap\")"
+        return 1
+    }
 
     log_info "Succeeded adding a cap of ceph. (ceph auth caps \"$type_of_client\" mon \"$mon_cap\" osd \"$osd_cap\")"
+
+    return 0
 }
 
 
