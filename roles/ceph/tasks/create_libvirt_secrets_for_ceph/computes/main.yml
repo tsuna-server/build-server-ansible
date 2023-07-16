@@ -29,3 +29,23 @@
 #    path: /root/secret.xml
 #    state: absent
 
+# TODO: Put an instruction to check secret value has already set or not
+
+- name: "Get a variable of key of client.cinder"
+  ansible.builtin.script: get_key_of_client_cinder.py
+  register: result_of_check_secret_value
+
+- name: "Declare a variable key_of_client_cinder"
+  ansible.builtin.set_fact:
+    key_of_client_cinder: result_of_check_secret_value.stdout_lines[-1]
+
+- name: "Fail if a variable \"value_of_secret\" is empty."
+  ansible.builtin.fail:
+    msg: "Failed to get a variable \"key_of_client_cinder\". Parsing ini file \"/etc/ceph_ceph.client.cinder.keyring\" might be failed."
+  when: key_of_client_cinder == ""
+
+- name: "Setting secret value for ceph"
+  ansible.biltin.command: virsh secret-set-value --secret {{ group_vars.ceph.uuid }} --base64 $(cat /etc/ceph/ceph.client.cinder.keyring)
+  # when: result_of_check_secret_value.rc == 0
+
+
