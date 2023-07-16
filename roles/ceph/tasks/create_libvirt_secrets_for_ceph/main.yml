@@ -1,15 +1,31 @@
 ---
 
 # This script returns...
-#   0: If a ceph-client-secret has NOT existed.
-#   1: If a ceph-client-secret has already existed.
+#   0: If a ceph-client-secret has already existed.
+#   1: If a ceph-client-secret has NOT existed.
 #   2: Some errors were occurred
 - name: "Check a secret of \"ceph client.cinder secret\" has already existed"
   ansible.builtin.script: ./check_ceph_client_secret_has_already_existed.sh "{{ group_vars.ceph.uuid }}"
   register: result_of_command
+  failed_when: ( result_of_command.rc not in [0, 1] )
 
+- name: "Block of adding virsh secret for Ceph"
+  block:
 
-# virsh --quiet secret-list | sed -e 's/ [0-9a-z]\{8\}\-[0-9a-z]\{4\}\-[0-9a-z]\{4\}\-[0-9a-z]\{4\}\-[0-9a-z]\{12\} \+\([^ ]\+\)/\1/g'
+  # Run this section if a secret of virsh has not declared.
 
-ceph client.cinder secret
+  - name: "Create a file to declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\")"
+    ansible.builtin.template:
+      src: computes/secret.xml
+      dest: /var/tmp/secret.xml
+
+  - name: "Declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\", tmp_file=/var/tmp/secret.xml)"
+    ansible.builtin.command: virsh secret-define --file /var/tmp/secret.xml
+
+  when: result_of_command.rc == 1
+
+- name: "Delete a file to declare virsh secret"
+  ansible.builtin.file:
+    path: /var/tmp/secret.xml
+    state: absent
 
