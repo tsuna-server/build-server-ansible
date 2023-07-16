@@ -1,0 +1,15 @@
+---
+
+# This script returns...
+#   0: If a ceph-client-secret has NOT existed.
+#   1: If a ceph-client-secret has already existed.
+#   2: Some errors were occurred
+- name: "Check a secret of \"ceph client.cinder secret\" has already existed"
+  ansible.builtin.script: ./check_ceph_client_secret_has_already_existed.sh "{{ group_vars.ceph.uuid }}"
+  register: result_of_command
+
+
+# virsh --quiet secret-list | sed -e 's/ [0-9a-z]\{8\}\-[0-9a-z]\{4\}\-[0-9a-z]\{4\}\-[0-9a-z]\{4\}\-[0-9a-z]\{12\} \+\([^ ]\+\)/\1/g'
+
+ceph client.cinder secret
+

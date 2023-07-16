@@ -127,6 +127,10 @@
   - name: "Include \"push_resources_to_other_nodes/to_computes/main.yml\" if a group of current node is \"computes\" of Ceph"
     include_tasks: push_resources_to_other_nodes/to_computes/main.yml
 
+  # TODO: Should this instruction done after all instructions on any node about Ceph?
+  - name: "Include \"create_libvirt_secrets_for_ceph/computes/main.yml\""
+    include_tasks: create_libvirt_secrets_for_ceph/computes/main.yml
+
   when: primary_group_name == "computes"
 
 - name: "Block for controller nodes for Ceph cluster"
