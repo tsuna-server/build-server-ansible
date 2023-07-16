@@ -17,15 +17,15 @@
   - name: "Create a file to declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\")"
     ansible.builtin.template:
       src: computes/secret.xml
-      dest: /var/tmp/secret.xml
+      dest: /root/secret.xml
 
-  - name: "Declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\", tmp_file=/var/tmp/secret.xml)"
-    ansible.builtin.command: virsh secret-define --file /var/tmp/secret.xml
+  - name: "Declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\", tmp_file=/root/secret.xml)"
+    ansible.builtin.command: virsh secret-define --file /root/secret.xml
 
   when: result_of_command.rc == 1
 
-- name: "Delete a file to declare virsh secret"
-  ansible.builtin.file:
-    path: /var/tmp/secret.xml
-    state: absent
+#- name: "Delete a file to declare virsh secret"
+#  ansible.builtin.file:
+#    path: /root/secret.xml
+#    state: absent
 
