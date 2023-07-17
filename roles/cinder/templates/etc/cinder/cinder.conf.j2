@@ -20,7 +20,6 @@ my_ip = {{ (group_vars.hosts.cinders|selectattr('names', 'contains', inventory_h
 {% endif %}
 
 {% if 'cinders' in group_names %}
-enabled_backends = lvm
 glance_api_servers = http://{{ group_vars.hosts.controllers[0].names[0] }}:9292
 
 backup_driver = cinder.backup.drivers.swift.SwiftBackupDriver
