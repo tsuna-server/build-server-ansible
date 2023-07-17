@@ -31,6 +31,7 @@
 
 # TODO: Put an instruction to check secret value has already set or not
 
+# Getting a value of key "/etc/ceph/ceph.client.cinder.keyring" to set it as secret for libvirt.
 - name: "Get a variable of key of client.cinder"
   ansible.builtin.script: get_key_of_client_cinder.py
   register: result_of_check_secret_value
@@ -44,12 +45,7 @@
     msg: "Failed to get a variable \"key_of_client_cinder\". Parsing ini file \"/etc/ceph_ceph.client.cinder.keyring\" might be failed."
   when: key_of_client_cinder == ""
 
-- name: "Debug print a variable for \"key_of_client_cinder\""
-  ansible.builtin.debug:
-   msg: "key_of_client_cinder => {{ key_of_client_cinder }}"
-
+# virsh secret-set-value always set it even if its value has already set and returns 0.
 - name: "Setting secret value for ceph"
   ansible.builtin.command: virsh secret-set-value --secret {{ group_vars.ceph.uuid }} --base64 {{ key_of_client_cinder }}
-  # when: result_of_check_secret_value.rc == 0
-
 
