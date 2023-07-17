@@ -50,7 +50,7 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 username = {{ group_vars.cinder.user }}
 password = {{ group_vars.cinder.password }}
 
-{% if 'controllers' in group_names %}
+{% if 'controllers' in group_names and group_vars.cinder.enabled_backends == "lvm" %}
 [lvm]
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 volume_group = cinder-volumes
