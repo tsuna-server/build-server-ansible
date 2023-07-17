@@ -9,7 +9,13 @@ auth_strategy = keystone
 state_path = /var/lib/cinder
 lock_path = /var/lock/cinder
 volumes_dir = /var/lib/cinder/volumes
-enabled_backends = {% if 'enabled_backends' not in group_vars.cinder %}lvm{% else %}{{ group_vars.cinder.enabled_backends }}{% endif %}
+{# Supported "lvm" or "ceph" currently. And it must be declaread as a parameter group_vars.cinder.enabled_backends. Otherwise it will throw an error when Cinder has started. -#}
+enabled_backends = {{ group_vars.cinder.enabled_backends }}
+
+{% if group_vars.cinder.enabled_backends == "ceph" -%}
+# You have to set "glance_api_version = 2" if you enable multiple_cinder_back_ends
+glance_api_version = 2
+{%- endif %}
 
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
 auth_strategy = keystone
@@ -55,3 +61,23 @@ target_helper = tgtadm
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
 
+{% if group_vars.cinder.enabled_backends == "ceph" -%}
+[ceph]
+volume_driver = cinder.volume.drivers.rbd.RBDDriver
+
+# Specify a name of cluster and location of a config file of it. If you want to specify a name of cluster other than "ceph", you have to specify a name of cluster and change the location of it.
+##rbd_cluster_name = jp-east
+##rbd_ceph_conf = /etc/ceph/jp-east.conf
+
+# Set a name of pool as "rbd". If you want to specify it to store data, you should specify like "rbd_pool".
+rbd_pool = volumes
+
+# Specify user-name and password
+rbd_user = cinder
+rbd_secret_uuid = 3753f63d-338b-4f3d-b54e-a9117e7d9990
+
+rbd_flatten_volume_from_snapshot = false
+rbd_max_clone_depth = 5
+rbd_store_chunk_size = 4
+rados_connect_timeout = -1
+{%- endif %}
