@@ -100,6 +100,10 @@
   - name: "Include set_auth_caps/monitors/main.yml"
     include_tasks: set_auth_caps/monitors/main.yml
 
+  # TODO: Should this instruction done after registering libvirt secret on compute node?
+  #- name: "Include configure_cinder/controllers/main.yml"
+  #  include_tasks: configure_cinder/controllers/main.yml
+
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 - name: Block for general nodes for Ceph cluster

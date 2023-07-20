@@ -80,4 +80,18 @@ rbd_flatten_volume_from_snapshot = false
 rbd_max_clone_depth = 5
 rbd_store_chunk_size = 4
 rados_connect_timeout = -1
+
+# Specify a driver ceph for backup_driver
+backup_driver = cinder.backup.drivers.ceph
+# Specify a location of file of backup_ceph_conf. You can specify it another file of ceph.
+# You can specify another name of cluster by specifying another configuration for example.
+backup_ceph_conf = /etc/ceph/ceph.conf
+# A pool for backup_ceph
+backup_ceph_pool = backups
+backup_ceph_user = cinder-backup
+# Specify configurations below additionally.
+backup_ceph_chunk_size = 134217728
+backup_ceph_stripe_unit = 0
+backup_ceph_stripe_count = 0
+restore_discard_excess_bytes = true
 {%- endif %}
