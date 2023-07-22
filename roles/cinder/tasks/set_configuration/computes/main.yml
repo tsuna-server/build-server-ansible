@@ -1,0 +1,13 @@
+---
+# Create a directory /etc/cinder/ on compute nodes because packages related cinder are not installed in this point
+- name: "A directory /etc/cinder/ should be existed on compute nodes"
+  ansible.builtin.file:
+    path: /etc/cinder/
+    state: directory
+    mode: '0755'
+
+- name: "Configure /etc/cinder/cinder.conf of Cinder for compute node"
+  ansible.builtin.template:
+    src: "etc/cinder/cinder.conf.j2"
+    dest: /etc/cinder/cinder.conf
+    mode: 0644
