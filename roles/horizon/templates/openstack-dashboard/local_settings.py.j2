@@ -401,3 +401,10 @@ ALLOWED_HOSTS = '*'
 
 # Compress all assets offline as part of packaging installation
 COMPRESS_OFFLINE = True
+
+{% if group_vars.cinder.enabled_backends == "ceph" -%}
+# A setting for cinder when using ceph
+OPENSTACK_CINDER_FEATURES = {
+    'enable_backup': True,
+}
+{% elif %}
