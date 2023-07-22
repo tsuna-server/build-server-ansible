@@ -134,6 +134,9 @@
   # TODO: Should this instruction done after all instructions on any node about Ceph?
   - name: "Include \"create_libvirt_secrets_for_ceph/computes/main.yml\""
     include_tasks: create_libvirt_secrets_for_ceph/computes/main.yml
+  # TODO: Should this instruction done after all instructions on any node about Ceph?
+  - name: "Include \"create_ceph_conf/computes/main.yml\""
+    include_tasks: create_libvirt_secrets_for_ceph/computes/main.yml
 
   when: primary_group_name == "computes"
 
