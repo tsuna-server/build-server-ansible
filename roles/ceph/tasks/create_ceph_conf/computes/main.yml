@@ -1,9 +1,0 @@
----
-- name: "Creating /etc/ceph/ceph.conf for compute nodes"
-  ansible.builtin.template:
-    src: monitor/etc/ceph/ceph.conf
-    dest: /etc/ceph/ceph.conf
-    owner: root
-    group: root
-    mode: '0644'
-
