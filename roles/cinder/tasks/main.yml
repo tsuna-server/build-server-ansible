@@ -41,6 +41,13 @@
     - name: Include set_services_of_cinder_for_computes/main.yml
       include_tasks: set_services_of_cinder_for_computes/main.yml
 
+    # Create a directory /etc/cinder/ on compute nodes because packages related cinder are not installed in this point
+    - name: "A directory /etc/cinder/ should be existed on compute nodes"
+      ansible.builtin.file:
+        path: /etc/cinder/
+        state: directory
+        mode: '0755'
+
     - name: "Include set_configuration/cinders/main.yml of cinder for computes (Configurations are same between cinder(storage) nodes and compute nodes)"
       include_tasks: set_configuration/cinders/main.yml
   when: "'computes' in group_names"
