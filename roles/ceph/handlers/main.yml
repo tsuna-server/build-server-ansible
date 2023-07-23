@@ -1,0 +1,5 @@
+---
+- name: Restart apparmor
+  ansible.builtin.systemd:
+    state: restarted
+    name: apparmor
