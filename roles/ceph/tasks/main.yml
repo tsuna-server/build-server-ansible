@@ -61,12 +61,12 @@
   include_tasks: install_packages/nodes/main.yml
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
+- name: "Include \"create_ceph_conf/masters/main.yml\" for monitor, storage, compute nodes"
+  include_tasks: create_ceph_conf/masters/main.yml
+  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "computes"
 
 - name: Block for monitor node for Ceph cluster
   block:
-
-  - name: "Include create_ceph_conf/monitors/main.yml for monitor node of Ceph"
-    include_tasks: create_ceph_conf/monitors/main.yml
 
   - name: "Include create_keyrings/monitors/main.yml for monitor node of Ceph"
     include_tasks: create_keyrings/monitors/main.yml
@@ -110,9 +110,6 @@
 - name: Block for general nodes for Ceph cluster
   block:
 
-  - name: "Include \"create_ceph_conf/monitors/main.yml\" for storage nodes of Ceph"
-    include_tasks: create_ceph_conf/monitors/main.yml
-
   - name: "Include \"push_resources_to_other_nodes/to_storages/main.yml\" if a group of current node is \"cinders\" or \"storages\" of Ceph"
     include_tasks: push_resources_to_other_nodes/to_storages/main.yml
 
@@ -138,9 +135,6 @@
   # TODO: Should this instruction done after all instructions on any node about Ceph?
   - name: "Include \"create_libvirt_secrets_for_ceph/computes/main.yml\""
     include_tasks: create_libvirt_secrets_for_ceph/computes/main.yml
-  # TODO: Should this instruction done after all instructions on any node about Ceph?
-  - name: "Include \"create_ceph_conf/monitors/main.yml\" for computes. It will use common template for monitors"
-    include_tasks: create_ceph_conf/monitors/main.yml
 
   when: primary_group_name == "computes"
 
