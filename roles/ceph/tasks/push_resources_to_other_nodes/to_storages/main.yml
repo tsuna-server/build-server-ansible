@@ -4,7 +4,6 @@
     src: ".buffer/{{ item | basename }}"
     dest: "{{ item }}"
   with_items:
-    - "/etc/ceph/ceph.conf"
     - "/etc/ceph/ceph.client.admin.keyring"
     - "/var/lib/ceph/bootstrap-osd/ceph.keyring"
     - "/etc/ceph/ceph.client.cinder.keyring"
