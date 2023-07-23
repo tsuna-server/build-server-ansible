@@ -136,6 +136,9 @@
   - name: "Include \"create_libvirt_secrets_for_ceph/computes/main.yml\""
     include_tasks: create_libvirt_secrets_for_ceph/computes/main.yml
 
+  - name: "Include \"modify_apparmor/computes/main.yml\""
+    include_tasks: modify_apparmor/computes/main.yml
+
   when: primary_group_name == "computes"
 
 - name: "Block for controller nodes for Ceph cluster"

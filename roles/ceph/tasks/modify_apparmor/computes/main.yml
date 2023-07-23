@@ -1,0 +1,11 @@
+---
+- name: "Modify \"/etc/apparmor.d/abstractions/libvirt-qemu\" to add a line \"/var/log/ceph/** rw,\""
+  ansible.builtin.lineinfile:
+    path: /etc/apparmor.d/abstractions/libvirt-qemu
+    line: "  /var/log/ceph/** rw,"
+
+- name: "Modify \"/etc/apparmor.d/abstractions/libvirt-qemu\" to add a line \"/var/run/ceph/guests/** rw,\""
+  ansible.builtin.lineinfile:
+    path: /etc/apparmor.d/abstractions/libvirt-qemu
+    line: "  /var/run/ceph/guests/** rw,"
+
