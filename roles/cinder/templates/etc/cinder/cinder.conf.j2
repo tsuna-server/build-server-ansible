@@ -73,8 +73,8 @@ volume_driver = cinder.volume.drivers.rbd.RBDDriver
 rbd_pool = volumes
 
 # Specify user-name and password
-rbd_user = cinder
-rbd_secret_uuid = 3753f63d-338b-4f3d-b54e-a9117e7d9990
+rbd_user = {{ group_vars.cinder.user }}
+rbd_secret_uuid = {{ group_vars.ceph.uuid }}
 
 rbd_flatten_volume_from_snapshot = false
 rbd_max_clone_depth = 5
