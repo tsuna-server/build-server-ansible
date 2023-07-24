@@ -3,3 +3,21 @@
   ansible.builtin.systemd:
     state: restarted
     name: apparmor
+
+# A handler for cinder nodes if its configurations have modified
+- name: Restart cinder-scheduler
+  ansible.builtin.systemd:
+    state: restarted
+    name: cinder-scheduler
+
+# A handler for cinder nodes if its configurations have modified
+- name: Restart glance-api
+  ansible.builtin.systemd:
+    state: restarted
+    name: glance-api
+
+# A handler for nova nodes if its configurations have modified
+- name: Restart nova-compute
+  ansible.builtin.systemd:
+    state: restarted
+    name: nova-compute
