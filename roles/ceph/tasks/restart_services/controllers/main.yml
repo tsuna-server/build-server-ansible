@@ -8,8 +8,3 @@
   ansible.builtin.systemd:
     state: restarted
     name: glance-api
-
-- name: "Restart nova-compute"
-  ansible.builtin.systemd:
-    state: restarted
-    name: nova-compute
