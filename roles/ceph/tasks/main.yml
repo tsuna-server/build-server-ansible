@@ -104,10 +104,6 @@
   #- name: "Include configure_cinder/controllers/main.yml"
   #  include_tasks: configure_cinder/controllers/main.yml
 
-  # TODO: This instruction should be restarted only when there are changes about cinder
-  - name: "Include \"restart_services/cinders/main.yml\""
-    include_tasks: restart_services/cinders/main.yml
-
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 
@@ -117,10 +113,6 @@
   - name: "Include \"push_resources_to_other_nodes/to_storages/main.yml\" if a group of current node is \"cinders\" or \"storages\" of Ceph"
     include_tasks: push_resources_to_other_nodes/to_storages/main.yml
 
-  # TODO: This instruction should be restarted only when there are changes about cinder
-  - name: "Include \"restart_services/cinders/main.yml\""
-    include_tasks: restart_services/cinders/main.yml
-
   when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
 
@@ -129,10 +121,6 @@
 
   - name: "Include create_ceph_volume/common/main.yml"
     include_tasks: create_ceph_volume/common/main.yml
-
-  # TODO: This instruction should be restarted only when there are changes about cinder
-  - name: "Include \"restart_services/cinders/main.yml\""
-    include_tasks: restart_services/cinders/main.yml
 
   when: primary_group_name == "cinders" or primary_group_name == "storages"
 
