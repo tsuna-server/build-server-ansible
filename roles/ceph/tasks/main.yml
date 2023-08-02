@@ -145,6 +145,9 @@
   - name: "Include \"modify_apparmor/computes/main.yml\""
     include_tasks: modify_apparmor/computes/main.yml
 
+  - name: "Include \"restart_services/computes/main.yml\""
+    include_tasks: restart_services/computes/main.yml
+
   when: primary_group_name == "computes"
 
 - name: "Block for controller nodes for Ceph cluster"

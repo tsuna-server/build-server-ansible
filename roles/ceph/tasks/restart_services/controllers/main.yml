@@ -1,4 +1,14 @@
 ---
+- name: "Restart cinder-scheduler"
+  ansible.builtin.systemd:
+    state: restarted
+    name: cinder-scheduler
+
+- name: "Restart glance-api"
+  ansible.builtin.systemd:
+    state: restarted
+    name: glance-api
+
 - name: "Restart nova-compute"
   ansible.builtin.systemd:
     state: restarted
