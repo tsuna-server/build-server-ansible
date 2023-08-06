@@ -1,0 +1,9 @@
+---
+- hosts:
+    - cinders
+    - storages
+    - computes
+    - controllers
+  become: yes
+  roles:
+    - { role: ceph, tags: ['role_ceph']}

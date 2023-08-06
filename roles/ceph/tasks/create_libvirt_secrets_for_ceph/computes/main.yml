@@ -1,0 +1,51 @@
+---
+
+# This script returns...
+#   0: If a ceph-client-secret has already existed.
+#   1: If a ceph-client-secret has NOT existed.
+#   2: Some errors were occurred
+- name: "Check a secret of \"ceph client.cinder secret\" has already existed"
+  ansible.builtin.script: ./check_ceph_client_secret_has_already_existed.sh "{{ group_vars.ceph.uuid }}"
+  register: result_of_command
+  failed_when: ( result_of_command.rc not in [0, 1] )
+
+- name: "Block of adding virsh secret for Ceph"
+  block:
+
+  # Run this section if a secret of virsh has not declared.
+
+  - name: "Create a file to declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\")"
+    ansible.builtin.template:
+      src: computes/secret.xml
+      dest: /root/secret.xml
+
+  - name: "Declare virsh secret (type=\"ceph\", name=\"client.cinder secret\", uuid=\"...\", tmp_file=/root/secret.xml)"
+    ansible.builtin.command: virsh secret-define --file /root/secret.xml
+
+  when: result_of_command.rc == 1
+
+#- name: "Delete a file to declare virsh secret"
+#  ansible.builtin.file:
+#    path: /root/secret.xml
+#    state: absent
+
+# TODO: Put an instruction to check secret value has already set or not
+
+# Getting a value of key "/etc/ceph/ceph.client.cinder.keyring" to set it as secret for libvirt.
+- name: "Get a variable of key of client.cinder"
+  ansible.builtin.script: get_key_of_client_cinder.py
+  register: result_of_check_secret_value
+
+- name: "Declare a variable key_of_client_cinder"
+  ansible.builtin.set_fact:
+    key_of_client_cinder: "{{ result_of_check_secret_value.stdout_lines[-1] }}"
+
+- name: "Fail if a variable \"value_of_secret\" is empty."
+  ansible.builtin.fail:
+    msg: "Failed to get a variable \"key_of_client_cinder\". Parsing ini file \"/etc/ceph_ceph.client.cinder.keyring\" might be failed."
+  when: key_of_client_cinder == ""
+
+# virsh secret-set-value always set it even if its value has already set and returns 0.
+- name: "Setting secret value for ceph"
+  ansible.builtin.command: virsh secret-set-value --secret {{ group_vars.ceph.uuid }} --base64 {{ key_of_client_cinder }}
+

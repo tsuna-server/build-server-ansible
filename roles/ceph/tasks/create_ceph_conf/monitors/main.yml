@@ -1,0 +1,37 @@
+---
+- name: "Declare a list of host to modify \"/etc/ceph/ceph.conf\" if current host \"{{ inventory_hostname }}\" is in \"group_vars.hosts.cinders\""
+  set_fact:
+    my_ip: "{% if 'cinders' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.cinders %}{% elif 'storages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.storages %}{% endif -%}
+            {% if tmp_hosts is defined -%}
+              {% for item in tmp_hosts -%}
+                {% if item.name == group_vars.ceph.monitor.hosts.master -%}{{ item.management.ip }}{% endif -%}
+              {% endfor -%}
+            {% endif %}"
+
+- name: "Print a variable \"my_ip\" if a current host \"{{ inventory_hostname }}\" is a monitor of Ceph cluster"
+  ansible.builtin.debug:
+    msg: "my_ip={{ my_ip }}"
+
+- name: "Failed if a variable \"my_ip\" has not defined in a monitor node of Ceph \"{{ inventory_hostname }}\""
+  ansible.builtin.fail:
+    msg: "Failed! A variable \"my_ip\" has not defined in a monitor node of Ceph \"{{ inventory_hostname }}\". Does a host \"{{ inventory_hostname }}\" existed in \"group_vars.hosts.cinders\" or \"group_vars.hosts.storages\"?"
+  when: not my_ip | regex_search("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$")
+
+- name: "Create a directory \"/etc/ceph/\" to create Ceph resources"
+  ansible.builtin.file:
+    path: /etc/ceph/
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: "Creating /etc/ceph/ceph.conf only in a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.template:
+    src: monitor/etc/ceph/ceph.conf
+    dest: /etc/ceph/ceph.conf
+    owner: root
+    group: root
+    mode: '0644'
+  #notify:
+  #  - Restart rsync
+

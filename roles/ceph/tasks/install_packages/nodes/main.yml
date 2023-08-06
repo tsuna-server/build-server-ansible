@@ -1,0 +1,10 @@
+---
+# TODO: 
+- name: Installing packages for Ceph monitor nodes
+  apt:
+    name:
+      - ceph
+  register: apt_result
+  retries: 360
+  delay: 5
+  until: apt_result is success

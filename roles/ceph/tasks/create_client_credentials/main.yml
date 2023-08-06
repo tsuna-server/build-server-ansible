@@ -1,0 +1,7 @@
+---
+- name: "Creating a client credential (name=\"{{ client_credential.name }}\", permission_of_mon=\"{{ client_credential.permission_of_mon }}\", permission_of_osd=\"{{ client_credential.permission_of_osd }}\")"
+  include_tasks: do_create_client_credential.yml
+  loop_control:
+    loop_var: client_credential
+  with_items: "{{ client_credentials }}"
+

@@ -1,0 +1,35 @@
+---
+- name: "Push the file to {{ inventory_hostname }} for cinder or storage nodes of Ceph"
+  copy:
+    src: ".buffer/{{ item | basename }}"
+    dest: "{{ item }}"
+  with_items:
+    - "/etc/ceph/ceph.client.admin.keyring"
+    - "/var/lib/ceph/bootstrap-osd/ceph.keyring"
+    - "/etc/ceph/ceph.client.cinder.keyring"
+    - "/etc/ceph/ceph.client.cinder-backup.keyring"
+
+- name: "Find ceph configurations in the directory \"/etc/ceph/ceph*\" on \"{{ inventory_hostname }}\" of storages for Ceph"
+  find:
+    paths: /etc/ceph
+    file_type: file
+    patterns: "ceph.*"
+  register: filelist
+
+# TODO: Should permissions are cinder:cinder on storage nodes?
+- name: "Change permisions of files \"/etc/ceph/ceph.*\" on a host \"{{ inventory_hostname }}\" for Ceph"
+  ansible.builtin.file:
+    dest: "{{ item.path }}"
+    owner: ceph
+    group: ceph
+  with_items: "{{ filelist.files }}"
+
+- name: "Change permissions of directories recursively on a host {{ inventory_hostname }} for Ceph"
+  ansible.builtin.file: 
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: ceph
+    group: ceph
+  with_items:
+    - "/var/lib/ceph/bootstrap-osd"

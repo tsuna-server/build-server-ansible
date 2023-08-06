@@ -16,6 +16,11 @@
   with_items: "{{ group_vars.hosts[primary_group_name] }}"
   when: tmp_target_storage_instance.name == inventory_hostname
 
+- name: "Check whether a \"target_storage_instance\" is declared or not."
+  ansible.builtin.fail:
+    msg: "\"target_storage_instance\" is not declared. A host \"{{ inventory_hostname }}\" is not existed in a group_vars.hosts['{{ primary_group_name }}']. (group_vars.hosts['{{ primary_group_name }}'] -> {{ group_vars.hosts[primary_group_name] }})"
+  when: target_storage_instance is not defined
+
 - name: Declare an empty variable options_of_type
   set_fact:
     options_of_type: []

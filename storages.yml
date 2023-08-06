@@ -7,5 +7,5 @@
     - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
     - { role: storage_common, tags: ['role_storage_common'] }
     - { role: swift, tags: ['role_swift']}
-    - { role: cinder, tags: ['role_cinder']}
+    - { role: cinder, tags: ['role_ciner']}
     #- { role: neutron, tags: ['role_neutron']}

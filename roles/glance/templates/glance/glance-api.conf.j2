@@ -2979,9 +2979,37 @@ backend = sqlalchemy
 
 
 [glance_store]
+{% if group_vars.cinder.enabled_backends == "ceph" -%}
+# Settings for glance when using Ceph as backends
+stores = rbd
+default_store = rbd
+rbd_store_chunk_size = 8
+rbd_store_pool = images
+rbd_store_user = glance
+rbd_store_ceph_conf = /etc/ceph/ceph.conf
+# To enable copy-on-write(CoW) cloning set, set "show_image_direct_url = True".
+# Not to be public an endpoint for API if you enable CoW because the configuration of backend will be exposed.
+show_image_direct_url = True
+
+# Disable "cachemanagement" as you need.
+# You can specify not "keystone+cachemanagement" but "keystone" instead.
+flavor = keystone
+
+# Set values recommended by Red Hat.
+# You may be able to improbe performance and enable discard-operation by specifying "hw_scsi_model=virtio-scsi".
+# // discard-operation is a feature not to use bad blocks on device.
+# Each block devices will connect the controller by using drive of SCSI/SAS.
+# It will also make qemu-guest-agent enabled and be able to send "fs-freeze/thaw" via QEMU guest agent.
+hw_scsi_model=virtio-scsi
+hw_disk_bus=scsi
+hw_qemu_guest_agent=yes
+os_require_quiesce=yes
+{% else %}
+# Settings for glance when using LVM as backends
 stores = file,http
 default_store = file
 filesystem_store_datadir = /var/lib/glance/images/
+{% endif %}
 
 #
 # From glance.multi_store

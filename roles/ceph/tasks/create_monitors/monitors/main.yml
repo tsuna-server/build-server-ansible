@@ -1,0 +1,63 @@
+---
+- name: "Register a variable file_monmap to check a file \"/etc/ceph/monmap\" has alreadu existed"
+  stat:
+    path: "/etc/ceph/monmap"
+    get_checksum: false
+    get_md5: false
+  register: file_ceph_uuid_stat
+
+- name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.command: monmaptool --create --add {{ inventory_hostname }} {{ my_ip }} --fsid {{ group_vars.ceph.uuid }} /etc/ceph/monmap
+  when: file_ceph_uuid_stat.stat.exists == False
+
+- name: "Creating a directory \"/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}\" for a daemon of Ceph monitor"
+  ansible.builtin.file:
+    path: "/var/lib/ceph/mon/ceph-{{ group_vars.ceph.monitor.hosts.master }}"
+    state: directory
+    mode: '0755'
+
+
+- name: "Register a variable result_pgrep_ceph_mon whether ceph-mon has already running or not"
+  ansible.builtin.command: pgrep ceph-mon
+  register: result_pgrep_ceph_mon
+  failed_when: (result_pgrep_ceph_mon.rc not in [1, 0])
+
+- name: "Declare a variable of pid of ceph_mon"
+  set_fact:
+    pid_of_ceph_mon: "{% if result_pgrep_ceph_mon is defined and result_pgrep_ceph_mon.stdout != '' %}{{ result_pgrep_ceph_mon.stdout_lines[-1] }}{% endif %}"
+
+- name: "Create a monitor daemon of Ceph"
+  ansible.builtin.command: ceph-mon --cluster ceph --mkfs -i {{ group_vars.ceph.monitor.hosts.master }} --monmap /etc/ceph/monmap --keyring /etc/ceph/ceph.mon.keyring
+  when: not pid_of_ceph_mon | regex_search("^[0-9]+$")
+
+
+- name: "Find ceph configurations in the directory \"/etc/ceph/ceph*\" on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
+  find:
+    paths: /etc/ceph
+    file_type: file
+    patterns: "ceph.*"
+  register: filelist
+
+- name: "Change permisions of files \"/etc/ceph/ceph.*\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\" for Ceph"
+  ansible.builtin.file:
+    dest: "{{ item.path }}"
+    owner: ceph
+    group: ceph
+  with_items: "{{ filelist.files }}"
+
+- name: "Change permissions of directories recursively on a host {{ group_vars.ceph.monitor.hosts.master }} for Ceph"
+  ansible.builtin.file: 
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: ceph
+    group: ceph
+  with_items:
+    - "/var/lib/ceph/mon/ceph-{{ inventory_hostname }}"
+    - "/var/lib/ceph/bootstrap-osd"
+
+- name: "Enable \"ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}\" on a host \"{{ group_vars.ceph.monitor.hosts.master }}\""
+  ansible.builtin.systemd:
+    name: "ceph-mon@{{ group_vars.ceph.monitor.hosts.master }}"
+    state: restarted
+    enabled: true

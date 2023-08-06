@@ -1,0 +1,166 @@
+---
+#- name: Create a ssh_key on a master node of Ceph if it has not existed
+#  openssh_keypair:
+#    path: "{{ ansible_env.HOME }}/.ssh/ceph"
+#  when: "inventory_hostname == group_vars.ceph.monitor.hosts.master"
+
+#- name: Debug for cephs
+#  ansible.builtin.debug:
+#    msg: "{{ item }}"
+#  with_items:
+#    "group_vars.hosts['cephs']"
+#  when: "'cephs' in group_vars.hosts"
+
+- name: "Declare primary_group_name as \"cinders\""
+  set_fact:
+    primary_group_name: "cinders"
+  when: '"cinders" in group_names'
+
+- name: "Declare primary_group_name as \"storages\""
+  set_fact:
+    primary_group_name: "storages"
+  when: '"storages" in group_names'
+
+- name: "Declare primary_group_name as \"computes\""
+  set_fact:
+    primary_group_name: "computes"
+  when: '"computes" in group_names'
+
+- name: "Declare primary_group_name as \"controllers\""
+  set_fact:
+    primary_group_name: "controllers"
+  when: '"controllers" in group_names'
+
+- name: "Check whether a variable \"primary_group_name\" has declared"
+  ansible.builtin.fail:
+    msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"computes\"."
+  when: primary_group_name is not defined
+
+- name: "Declare credentials for ceph"
+  set_fact:
+    client_credentials:
+      - name: "client.cinder"
+        path: "/etc/ceph/ceph.client.cinder.keyring"
+        permission_of_mon: "allow r"
+        permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images"
+      - name: "client.cinder-backup"
+        path: "/etc/ceph/ceph.client.cinder.keyring"
+        permission_of_mon: "allow r"
+        permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=backups"
+      - name: "client.glance"
+        path: "/etc/ceph/ceph.client.cinder-backup.keyring"
+        permission_of_mon: "allow r"
+        permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=images"
+
+
+- name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
+  include_tasks: install_packages/monitors/main.yml
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
+
+- name: "Include \"install_packages/nodes/main.yml\" if a current host is a monitor of Ceph. // conditionals -> \"inventory_hostname({{ inventory_hostname }}) != group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
+  include_tasks: install_packages/nodes/main.yml
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
+
+- name: "Include \"create_ceph_conf/monitors/main.yml\" for monitor, storage, compute nodes"
+  include_tasks: create_ceph_conf/monitors/main.yml
+  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "computes" or primary_group_name == "controllers"
+
+- name: Block for monitor node for Ceph cluster
+  block:
+
+  - name: "Include create_keyrings/monitors/main.yml for monitor node of Ceph"
+    include_tasks: create_keyrings/monitors/main.yml
+
+  - name: "Include create_monitors/monitors/main.yml for monitor node of Ceph"
+    include_tasks: create_monitors/monitors/main.yml
+
+  - name: "Include configure_ceph/monitors/main.yml for monitor node of Ceph"
+    include_tasks: configure_ceph/monitors/main.yml
+
+  - name: "Include create_managers/managers/main.yml for manager node of Ceph"
+    include_tasks: create_managers/managers/main.yml
+
+  - name: "Include print_current_stat/managers/main.yml"
+    include_tasks: print_current_stat/managers/main.yml
+
+  #- name: "Include fetch_resources_to_copy_to_other_nodes/managers/main.yml"
+  #  include_tasks: fetch_resources_to_copy_to_other_nodes/managers/main.yml
+
+  # TODO: Must it be running after controllers and other Ceph storage nodes nodes have already set up?
+  - name: "Include \"create_ceph_osd_pools/main.yml\" if current host is a controller of Ceph"
+    include_tasks: create_ceph_osd_pools/main.yml
+
+  - name: "Include \"create_client_credentials/main.yml\""
+    include_tasks: create_client_credentials/main.yml
+
+  - name: "Include fetch_resources_to_copy_to_other_nodes/managers/main.yml"
+    include_tasks: fetch_resources_to_copy_to_other_nodes/managers/main.yml
+
+  # TODO: Should this instruction done after all instructions on any node about Ceph?
+  - name: "Include set_auth_caps/monitors/main.yml"
+    include_tasks: set_auth_caps/monitors/main.yml
+
+  # TODO: Should this instruction done after registering libvirt secret on compute node?
+  #- name: "Include configure_cinder/controllers/main.yml"
+  #  include_tasks: configure_cinder/controllers/main.yml
+
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
+
+
+- name: Block for general nodes for Ceph cluster
+  block:
+
+  - name: "Include \"push_resources_to_other_nodes/to_storages/main.yml\" if a group of current node is \"cinders\" or \"storages\" of Ceph"
+    include_tasks: push_resources_to_other_nodes/to_storages/main.yml
+
+  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
+
+
+- name: Block for common cinders or storages
+  block:
+
+  - name: "Include create_ceph_volume/common/main.yml"
+    include_tasks: create_ceph_volume/common/main.yml
+
+  when: primary_group_name == "cinders" or primary_group_name == "storages"
+
+
+- name: "Include print_current_stat/managers/main.yml"
+  include_tasks: print_current_stat/managers/main.yml
+  when: inventory_hostname == group_vars.ceph.monitor.hosts.master
+
+- name: "Block for compute nodes for Ceph cluster"
+  block:
+
+  - name: "Include \"install_packages/clients/main.yml\" if a group of current node is \"computes\""
+    include_tasks: install_packages/clients/main.yml
+
+  - name: "Include \"push_resources_to_other_nodes/to_computes/main.yml\" if a group of current node is \"computes\" of Ceph"
+    include_tasks: push_resources_to_other_nodes/to_computes/main.yml
+
+  # TODO: Should this instruction done after all instructions on any node about Ceph?
+  - name: "Include \"create_libvirt_secrets_for_ceph/computes/main.yml\""
+    include_tasks: create_libvirt_secrets_for_ceph/computes/main.yml
+
+  - name: "Include \"modify_apparmor/computes/main.yml\""
+    include_tasks: modify_apparmor/computes/main.yml
+
+  - name: "Include \"restart_services/computes/main.yml\""
+    include_tasks: restart_services/computes/main.yml
+
+  when: primary_group_name == "computes"
+
+- name: "Block for controller nodes for Ceph cluster"
+  block:
+
+  - name: "Include \"install_packages/controllers/main.yml\" if current host is a controller of Ceph"
+    include_tasks: install_packages/controllers/main.yml
+
+  - name: "Include \"push_resources_to_other_nodes/to_controllers/main.yml\" if a group of current node is \"controllers\" of Ceph"
+    include_tasks: push_resources_to_other_nodes/to_controllers/main.yml
+
+  - name: "Include \"restart_services/controllers/main.yml\""
+    include_tasks: restart_services/controllers/main.yml
+
+  when: primary_group_name == "controllers"
+

@@ -12,7 +12,7 @@
   set_fact:
     backup_swift_url: "{{ result_cinder_backup_swift_url.stdout_lines[-1] }}"
 
-- name: "Configure /etc/cinder/cinder.conf of Cinder for Controller node"
+- name: "Configure /etc/cinder/cinder.conf of Cinder for compute nodes"
   ansible.builtin.template:
     src: "etc/cinder/cinder.conf.j2"
     dest: /etc/cinder/cinder.conf

@@ -1,0 +1,20 @@
+---
+# Fetch items from the Ceph manager node. Primary cinder or storage node.
+#
+#   /etc/ceph/ceph.conf is not needed to fetch from the Ceph manager node because it will be created by instructions on them(controller, compute nodes).
+
+- name: "Fetch the file \"/etc/ceph/ceph.conf\" from the {{ inventory_hostname }} to push any ceph nodes"
+  run_once: yes
+  fetch:
+    src: "{{ item }}"
+    dest: ".buffer/{{ item | basename }}"
+    flat: yes
+  with_items:
+    - "/etc/ceph/ceph.client.admin.keyring"
+    - "/var/lib/ceph/bootstrap-osd/ceph.keyring"
+    - "/etc/ceph/ceph.client.cinder.keyring"
+    - "/etc/ceph/ceph.client.glance.keyring"
+    - "/etc/ceph/ceph.client.cinder-backup.keyring"
+    - "/etc/ceph/ceph.mgr.admin.keyring"
+    - "/etc/ceph/ceph.mon.keyring"
+

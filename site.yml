@@ -4,6 +4,7 @@
 - import_playbook: computes.yml
 - import_playbook: swifts.yml
 - import_playbook: cinders.yml
+- import_playbook: cephs.yml
 - import_playbook: controllers_discover_hosts.yml
 - import_playbook: controllers_create_example_instances.yml
 - import_playbook: verify.yml

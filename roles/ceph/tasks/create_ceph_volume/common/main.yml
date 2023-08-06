@@ -1,0 +1,20 @@
+---
+# Variables
+#   parimary_group_name: Primary group name of current node
+
+# Target hosts to create ceph volumes are belonging groups 'cinders' or 'storages'.
+
+- name: "Find an element of hosts"
+  set_fact:
+    element_of_node: "{{ group_vars.hosts[primary_group_name] | selectattr(\"name\", \"equalto\", inventory_hostname) | first }}"
+
+- name: "Failed if the variable \"element_of_node\" has not be declared."
+  ansible.builtin.fail:
+    msg: "The variable \"element_of_node\" has not declared. Is this host({{ inventory_hostname }}) has belonging in \"group_vars.hosts.cinder\" or \"group_vars.hosts.\"? Content of them will be dumped.{{ '\n' }}group_vars.hosts.cinder => {{ group_vars.hosts.cinder }}{{ '\n' }}group_vars.hosts.storage => {{ group_vars.hosts.storage }}"
+  when: element_of_node is not defined
+
+# Create ceph volumes if current host is belonging in group 'cinders' or 'storages'.
+# And each group_vars.hosts.${group_name}[] have elements 'storage' and 'storage.cinder'.
+# ex) group_vars.hosts.cinders[0].
+- name: "Create ceph volume for {{ inventory_hostname }}"
+  include_tasks: do_create_ceph_volume.yml
