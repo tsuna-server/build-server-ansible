@@ -23,6 +23,9 @@
     - Restart tgt
     - Restart cinder-volume
 
+- name: "Run check_cinder_availability_zone_has_existed.sh"
+  script: ./check_cinder_availability_zone_has_existed.sh "nova"
+
 # Setting cinder.conf for tgt
 - name: Get stats of /etc/tgt/conf.d/cinder.conf
   ansible.builtin.stat:
