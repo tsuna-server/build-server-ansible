@@ -21,8 +21,10 @@ transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{
 auth_strategy = keystone
 {% if 'controllers' in group_names %}
 my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
-{% elif 'cinders' in group_names or 'storages' in group_names %}
+{% elif 'cinders' in group_names %}
 my_ip = {{ (group_vars.hosts.cinders|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% elif 'storages' in group_names %}
+my_ip = {{ (group_vars.hosts.storages|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% endif %}
 
 {% if 'cinders' in group_names or 'storages' in group_names %}
