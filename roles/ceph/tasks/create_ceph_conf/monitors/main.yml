@@ -1,5 +1,5 @@
 ---
-- name: "Declare a list of host to modify \"/etc/ceph/ceph.conf\" if current host \"{{ inventory_hostname }}\" is in \"group_vars.hosts.cinders\""
+- name: "Declare a list of host to modify \"/etc/ceph/ceph.conf\" if current host \"{{ inventory_hostname }}\" is in \"group_vars.hosts.cinders\" or \"group_vars.hosts.storages\""
   set_fact:
     my_ip: "{% if 'cinders' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.cinders %}{% elif 'storages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.storages %}{% endif -%}
             {% if tmp_hosts is defined -%}
