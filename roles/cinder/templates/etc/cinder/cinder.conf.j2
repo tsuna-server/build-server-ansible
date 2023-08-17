@@ -23,9 +23,11 @@ auth_strategy = keystone
 my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% elif 'cinders' in group_names %}
 my_ip = {{ (group_vars.hosts.cinders|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% elif 'storages' in group_names %}
+my_ip = {{ (group_vars.hosts.storages|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% endif %}
 
-{% if 'cinders' in group_names %}
+{% if 'cinders' in group_names or 'storages' in group_names %}
 glance_api_servers = http://{{ group_vars.hosts.controllers[0].names[0] }}:9292
 
 backup_driver = cinder.backup.drivers.swift.SwiftBackupDriver
