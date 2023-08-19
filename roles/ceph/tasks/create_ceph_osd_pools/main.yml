@@ -1,6 +1,6 @@
 ---
 - name: "Creating pool for Ceph => {{ item }}"
-  #ansible.builtin.command: ceph osd pool create {{ item.name }} {{ item.num_of_placement_groups }}
+  # item.key -> name of a pool, item.value -> num of pool
   ansible.builtin.script: ./create_ceph_pool.sh "{{ item.name }}" "{{ item.num_of_placement_groups }}"
-  with_items: "{{ group_vars.ceph.pools }}"
+  with_items: "{{ group_vars.ceph.pools | dict2items }}"
 
