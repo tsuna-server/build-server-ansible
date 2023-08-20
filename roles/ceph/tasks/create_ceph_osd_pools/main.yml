@@ -1,5 +1,5 @@
 ---
-- name: "Creating pool for Ceph => {{ item }}"
+- name: "Creating pool for Ceph. Target of pools are declared in \"group_vars.ceph.pools\"."
   # item.key -> name of a pool, item.value -> num of pool
   ansible.builtin.script: ./create_ceph_pool.sh "{{ item.key }}" "{{ item.value }}"
   with_items: "{{ group_vars.ceph.pools | dict2items }}"
