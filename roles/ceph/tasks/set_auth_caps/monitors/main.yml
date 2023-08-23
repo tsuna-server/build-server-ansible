@@ -1,21 +1,20 @@
 ---
 # Parameters
-#   client_credentials[]:
-#     A list of client credentials.
+#   client_credentials:
+#     A dict of client credentials.
 #
-#   clent_credentials[].name:
+#   clent_credentials.key:
 #     A name of a credential to create for Ceph.
 #
-#   client_credentials[].path:
+#   client_credentials.value.path:
 #     A path of keyring for Ceph.
 #
-#   client_credentials[].permission_of_mon:
+#   client_credentials.value.permission_of_mon:
 #     A filter-text of a permission of mon for Ceph.
-#
 #
 
 # It assumes that a variable "client_credentials" has already declared.
 - name: "Run create_ceph_auth_cap.sh for addming a filter cap."
-  ansible.builtin.script: ./create_ceph_auth_cap.sh "{{ item.name }}" "{{ item.permission_of_mon }}, allow command \"osd blacklist\"" "{{ item.permission_of_osd }}"
-  with_items: "{{ client_credentials }}"
+  ansible.builtin.script: ./create_ceph_auth_cap.sh "{{ item.key }}" "{{ item.permission_of_mon }}, allow command \"osd blacklist\"" "{{ item.permission_of_osd }}"
+  with_items: "{{ client_credentials | dict2items }}"
 

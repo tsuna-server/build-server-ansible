@@ -38,20 +38,7 @@
 
 - name: "Declare credentials for ceph"
   set_fact:
-    client_credentials:
-      - name: "client.cinder"
-        path: "/etc/ceph/ceph.client.cinder.keyring"
-        permission_of_mon: "allow r"
-        permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=vms, allow rx pool=images"
-      - name: "client.cinder-backup"
-        path: "/etc/ceph/ceph.client.cinder.keyring"
-        permission_of_mon: "allow r"
-        permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=backups"
-      - name: "client.glance"
-        path: "/etc/ceph/ceph.client.cinder-backup.keyring"
-        permission_of_mon: "allow r"
-        permission_of_osd: "allow class-read object_prefix rbd_children, allow rwx pool=images"
-
+    client_credentials: "{{ group_vars.ceph.client_credentials }}"
 
 - name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/monitors/main.yml

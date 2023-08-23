@@ -3,5 +3,5 @@
   include_tasks: do_create_client_credential.yml
   loop_control:
     loop_var: client_credential
-  with_items: "{{ client_credentials }}"
+  with_items: "{{ client_credentials | dict2items }}"
 
