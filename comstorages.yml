@@ -1,0 +1,11 @@
+---
+- hosts: storages
+  become: yes
+  roles:
+    - { role: ntp, tags: ['role_ntp']}
+    - { role: add_openstack_repository, tags: ['role_add_openstack_repository']}
+    - { role: storage_common, tags: ['role_storage_common'] }
+    - { role: nova, tags: ['role_nova']}
+    - { role: neutron, tags: ['role_neutron']}
+    - { role: swift, tags: ['role_swift']}
+    - { role: cinder, tags: ['role_ciner']}
