@@ -21,12 +21,17 @@ dev-swift03
 dev-storage01
 dev-storage02
 
+[comstorages]
+dev-comstorage01
+dev-comstorage02
+
 [default:children]
 controllers
 computes
 cinders
 swifts
 storages
+comstorages
 
 [all:children]
 default
