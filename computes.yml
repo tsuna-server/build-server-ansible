@@ -1,5 +1,7 @@
 ---
-- hosts: computes
+- hosts:
+    - computes
+    - comstorages
   become: yes
   roles:
     - { role: ntp, tags: ['role_ntp']}
