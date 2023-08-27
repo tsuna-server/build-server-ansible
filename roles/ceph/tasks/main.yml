@@ -21,6 +21,11 @@
     primary_group_name: "storages"
   when: '"storages" in group_names'
 
+- name: "Declare primary_group_name as \"comstorages\""
+  set_fact:
+    primary_group_name: "comstorages"
+  when: '"comstorages" in group_names'
+
 - name: "Declare primary_group_name as \"computes\""
   set_fact:
     primary_group_name: "computes"
@@ -33,7 +38,7 @@
 
 - name: "Check whether a variable \"primary_group_name\" has declared"
   ansible.builtin.fail:
-    msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"computes\"."
+    msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"comstorages\" \"computes\"."
   when: primary_group_name is not defined
 
 - name: "Declare credentials for ceph"
@@ -42,15 +47,15 @@
 
 - name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/monitors/main.yml
-  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
+  when: (primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 - name: "Include \"install_packages/nodes/main.yml\" if a current host is a monitor of Ceph. // conditionals -> \"inventory_hostname({{ inventory_hostname }}) != group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/nodes/main.yml
-  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
+  when: (primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
 - name: "Include \"create_ceph_conf/monitors/main.yml\" for monitor, storage, compute nodes"
   include_tasks: create_ceph_conf/monitors/main.yml
-  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "computes" or primary_group_name == "controllers"
+  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages" or primary_group_name == "computes" or primary_group_name == "controllers"
 
 - name: Block for monitor node for Ceph cluster
   block:
@@ -91,25 +96,24 @@
   #- name: "Include configure_cinder/controllers/main.yml"
   #  include_tasks: configure_cinder/controllers/main.yml
 
-  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
+  when: (primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages" ) and (inventory_hostname == group_vars.ceph.monitor.hosts.master)
 
 
 - name: Block for general nodes for Ceph cluster
   block:
 
-  - name: "Include \"push_resources_to_other_nodes/to_storages/main.yml\" if a group of current node is \"cinders\" or \"storages\" of Ceph"
+  - name: "Include \"push_resources_to_other_nodes/to_storages/main.yml\" if a group of current node is \"cinders\" or \"storages\" or \"comstorages\" of Ceph"
     include_tasks: push_resources_to_other_nodes/to_storages/main.yml
+  when: (primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
-  when: (primary_group_name == "cinders" or primary_group_name == "storages") and (inventory_hostname != group_vars.ceph.monitor.hosts.master)
 
-
-- name: Block for common cinders or storages
+- name: Block for common cinders or storages or comstorages
   block:
 
   - name: "Include create_ceph_volume/common/main.yml"
     include_tasks: create_ceph_volume/common/main.yml
 
-  when: primary_group_name == "cinders" or primary_group_name == "storages"
+  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages"
 
 
 - name: "Include print_current_stat/managers/main.yml"
