@@ -1,4 +1,34 @@
 ---
+- name: "Declare primary_group_name as \"cinders\""
+  set_fact:
+    primary_group_name: "cinders"
+  when: '"cinders" in group_names'
+
+- name: "Declare primary_group_name as \"storages\""
+  set_fact:
+    primary_group_name: "storages"
+  when: '"storages" in group_names'
+
+- name: "Declare primary_group_name as \"comstorages\""
+  set_fact:
+    primary_group_name: "comstorages"
+  when: '"comstorages" in group_names'
+
+- name: "Declare primary_group_name as \"computes\""
+  set_fact:
+    primary_group_name: "computes"
+  when: '"computes" in group_names'
+
+- name: "Declare primary_group_name as \"controllers\""
+  set_fact:
+    primary_group_name: "controllers"
+  when: '"controllers" in group_names'
+
+- name: "Check whether a variable \"primary_group_name\" has declared"
+  ansible.builtin.fail:
+    msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"comstorages\" or \"computes\"."
+  when: primary_group_name is not defined
+
 - name: Include format_volumes/main.yml
   include: format_volumes/main.yml
-  when: inventory_hostname | regex_search("^.*(storage|cinder|swift)[0-9]+$")
+  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages"
