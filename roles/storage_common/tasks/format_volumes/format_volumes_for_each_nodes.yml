@@ -2,7 +2,7 @@
 # TODO: Should this variable declared in another variable file?
 - name: Declare available groups for storages like Swift, Cinder etc
   set_fact:
-    available_format_groups: ["swifts", "cinders", "storages"]
+    available_format_groups: ["swifts", "cinders", "storages", "comstorages"]
 
 - name: Declare a primary_group_name for getting target host elements
   set_fact:
