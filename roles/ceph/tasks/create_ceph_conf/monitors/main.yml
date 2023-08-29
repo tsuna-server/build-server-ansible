@@ -2,7 +2,7 @@
 # It requires one of host that have been deploying by Ansible as a master of ceph. The host must be declared a variable `group_vars.ceph.monitor.hosts.master`.
 - name: "Declare a list of host to modify \"/etc/ceph/ceph.conf\" if current host \"{{ inventory_hostname }}\" is in \"group_vars.hosts.cinders\" or \"group_vars.hosts.storages\""
   set_fact:
-    my_ip: "{% if 'cinders' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.cinders %}{% elif 'storages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.storages %}{% endif -%}{% elif 'comstorages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.comstorages %}{% endif -%}
+    my_ip: "{% if 'cinders' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.cinders %}{% elif 'storages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.storages %}{% elif 'comstorages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.comstorages %}{% endif -%}
             {% if tmp_hosts is defined -%}
               {% for item in tmp_hosts -%}
                 {% if item.name == group_vars.ceph.monitor.hosts.master -%}{{ item.management.ip }}{% endif -%}
