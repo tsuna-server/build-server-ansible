@@ -2,6 +2,7 @@
 - hosts:
     - cinders
     - storages
+    - comstorages
     - computes
     - controllers
   become: yes
