@@ -3,6 +3,7 @@
     # TODO: Consider change "all" if all instructions are implemented
     - controllers
     - computes
+    - comstorages
   become: yes
   roles:
     - { role: post_configuration, tags: ['role_post_configuration']}
