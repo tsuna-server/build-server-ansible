@@ -10,9 +10,21 @@
   ansible.builtin.command:
     argv: ["ovs-vsctl", "set", "open", ".", "external-ids:ovn-encap-type=geneve"]
 
-- name: Declare my IP for setting ovn-encap-ip
+# It requires one of host that have been deploying by Ansible as a master of ceph. The host must be declared a variable `group_vars.ceph.monitor.hosts.master`.
+- name: "Declare my IP for setting ovn-encap-ip in \"compute\" or \"comstorages\""
   set_fact:
-    my_ip: "{{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}"
+    my_ip: "{% if 'compute' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.compute %}{% elif 'comstorages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.comstorages %}{% endif -%}
+            {% if tmp_hosts is defined -%}
+              {% if item.name == inventory_hostname -%}{{ item.management.ip }}{% endif -%}
+            {% endif %}"
+
+- name: "Print a variable \"my_ip\" if a current host \"{{ inventory_hostname }}\" to add \"OVN external-ids:ovn-encap-ip\""
+  ansible.builtin.debug:
+    msg: "my_ip={{ my_ip }}"
+
+- name: "Failed if a variable \"my_ip\" has not defined to add \"OVN external-ids:ovn-encap-ip\" Ceph \"{{ inventory_hostname }}\""
+  ansible.builtin.fail:
+    msg: "Failed! An variable \"my_ip\" has not defined on \"{{ inventory_hostname }}\". Is a host \"{{ inventory_hostname }}\" in group \"computes\" or \"comstorages\" or a variable \"group_vars.hosts.computes\" or \"group_vars.hosts.comstorages\"?"
 
 - name: Set ovn-remote for compute node
   ansible.builtin.command:
