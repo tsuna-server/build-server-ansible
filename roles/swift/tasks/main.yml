@@ -60,10 +60,11 @@
       set_fact:
         tmp_swift_nodes: "{{ group_vars.hosts['swifts'] | default([]) }}"
         tmp_storage_nodes: "{{ group_vars.hosts['storages'] | default([]) }}"
+        tmp_comstorage_nodes: "{{ group_vars.hosts['comstorages'] | default([]) }}"
 
-    - name: "Join nodes of swifts ant storages(tmp_all_swift_nodes = tmp_swift_nodes + tmp_storage_nodes)"
+    - name: "Join nodes of swifts ant storages(tmp_all_swift_nodes = tmp_swift_nodes + tmp_storage_nodes + tmp_comstorage_nodes)"
       set_fact:
-        tmp_all_swift_nodes: "{{ tmp_swift_nodes + tmp_storage_nodes }}"
+        tmp_all_swift_nodes: "{{ tmp_swift_nodes + tmp_storage_nodes + tmp_comstorage_nodes }}"
 
     # This instruction can not use "first" at here because "selectattr" will return dict not array.
     - name: "Declare config_element_of_swift"
