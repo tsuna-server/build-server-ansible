@@ -27,6 +27,7 @@
 - name: "Failed if a variable \"my_ip\" has not defined to add \"OVN external-ids:ovn-encap-ip\" Ceph \"{{ inventory_hostname }}\""
   ansible.builtin.fail:
     msg: "Failed! An variable \"my_ip\" has not defined on \"{{ inventory_hostname }}\". Is a host \"{{ inventory_hostname }}\" in group \"computes\" or \"comstorages\" or a variable \"group_vars.hosts.computes\" or \"group_vars.hosts.comstorages\"?"
+  when: not my_ip | regex_search("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$")
 
 - name: Set ovn-remote for compute node
   ansible.builtin.command:
