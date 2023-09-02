@@ -18,7 +18,7 @@
 
 - name: Declare host group
   set_fact:
-    host_group: "{% if 'controllers' in group_names %}controllers{% elif 'computes' in group_names %}computes{% elif 'comstorages' in group_name %}comstorages{% endif %}"
+    host_group: "{% if 'controllers' in group_names %}controllers{% elif 'computes' in group_names %}computes{% elif 'comstorages' in group_names %}comstorages{% endif %}"
 
 - name: Declare provider interface name of this node (controller node)
   set_fact:
