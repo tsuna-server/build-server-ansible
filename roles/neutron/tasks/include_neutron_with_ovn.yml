@@ -36,4 +36,4 @@
 
     - name: Include configure_ovs_services/computes/main.yml
       include_tasks: configure_ovs_services/computes/main.yml
-  when: "'computes' in group_names"
+  when: ('computes' in group_names) or ('comstorages' in group_names)
