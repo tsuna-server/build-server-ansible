@@ -15,7 +15,9 @@
   set_fact:
     my_ip: "{% if 'compute' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.compute %}{% elif 'comstorages' in group_vars.hosts %}{% set tmp_hosts = group_vars.hosts.comstorages %}{% endif -%}
             {% if tmp_hosts is defined -%}
-              {% if item.name == inventory_hostname -%}{{ item.management.ip }}{% endif -%}
+              {% for item in tmp_hosts -%}
+                {% if item.name == inventory_hostname -%}{{ item.management.ip }}{% endif -%}
+              {% endfor -%}
             {% endif %}"
 
 - name: "Print a variable \"my_ip\" if a current host \"{{ inventory_hostname }}\" to add \"OVN external-ids:ovn-encap-ip\""
