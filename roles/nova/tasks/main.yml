@@ -26,4 +26,4 @@
 
     - name: Include set_configuration/computes/main.yml for computes
       include_tasks: set_configuration/computes/main.yml
-  when: "'computes' in group_names"
+  when: ('computes' in group_names) or ('comstorages' in group_names)
