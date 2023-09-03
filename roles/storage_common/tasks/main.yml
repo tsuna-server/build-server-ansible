@@ -10,4 +10,4 @@
 
 - name: Include format_volumes/main.yml
   include: format_volumes/main.yml
-  when: primary_group_name == "cinders" or primary_group_name == "storages" or primary_group_name == "comstorages"
+  when: primary_group_name == "cinders" or primary_group_name == "swift" or primary_group_name == "storages" or primary_group_name == "comstorages"
