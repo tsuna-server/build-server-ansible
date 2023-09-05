@@ -4,7 +4,7 @@ log_err() { echo "$(date) - ERROR: $1" >&2; }
 log_info() { echo "$(date) - INFO: $1"; }
 
 main() {
-    local target_hosts="$@"
+    declare -a target_hosts=($@)
     local clause=""
     local delimiter=""
     local target
@@ -14,13 +14,14 @@ main() {
         return 1
     fi
 
-    for target in ${target_hosts}; do
-        clause+="${delimiter}${target}"
+    for target in "${target_hosts[@]}"; do
+        clause+="${delimiter}\"${target}\""
         delimiter=","
     done
 
+    echo $clause
     #mysql -D nova_api <<< 'select id , cell_id, host from host_mappings;'
-    mysql -N -D nova_api <<< "select host from host_mappings where host in (\"${clause}\");"
+    mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});"
 }
 
 main "$@"
