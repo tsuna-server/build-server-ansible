@@ -17,7 +17,12 @@
     loop_var: tmp_compute
   with_items: "{{ group_vars.hosts.comstorages }}"
 
+- name: "Debug a variable \"options_of_computes_should_be_registered\""
+  ansible.builtin.debug:
+    msg: "{{ options_of_computes_should_be_registered }}"
 
+- name: "Run discover_hosts.sh to add compute nodes to a cell"
+  ansible.builtin.script: discover_hosts.sh {{ options_of_computes_should_be_registered }}
 
 #- name: Discover compute hosts in nova
 #  ansible.builtin.command:
