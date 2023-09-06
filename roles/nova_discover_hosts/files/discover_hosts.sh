@@ -8,6 +8,7 @@ main() {
     local clause=""
     local delimiter=""
     local target
+    local num_of_record
 
     if [ ${#target_hosts[@]} -eq 0 ]; then
         log_err "This script requires target hosts that will be added in a cell with \"cell_id == 1\""
@@ -19,9 +20,16 @@ main() {
         delimiter=","
     done
 
-    echo $clause
     #mysql -D nova_api <<< 'select id , cell_id, host from host_mappings;'
-    mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});"
+    num_of_record=$(mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});" | wc -l)
+    echo $num_of_record
+
+    if [[ ! "$num_of_record" =~ ^[0-9]+$ ]]; then
+        log_err "Num of records that obtained an SQL query \"select host from host_mappings where host in (${clause}); | wc -l\" might be failed. The result was not a number(actual = \"${num_of_record}\")."
+        return 1
+    fi
+
+    return 0
 }
 
 main "$@"
