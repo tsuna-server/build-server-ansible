@@ -8,31 +8,47 @@ main() {
     local clause=""
     local delimiter=""
     local target
-    local num_of_record
+    local num_of_record=0
+    local max_attempts=120
+    local current_attempts=0
 
     if [ ${#target_hosts[@]} -eq 0 ]; then
         log_err "This script requires target hosts that will be added in a cell with \"cell_id == 1\""
         return 1
     fi
 
+    log_info "${target_hosts[@]}"
+
     for target in "${target_hosts[@]}"; do
         clause+="${delimiter}\"${target}\""
         delimiter=","
     done
 
-    #mysql -D nova_api <<< 'select id , cell_id, host from host_mappings;'
-    num_of_record=$(mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});" | wc -l)
-    echo $num_of_record
+    while [ $num_of_record -ne ${target_hosts[@]} ]; do
+        #mysql -D nova_api <<< 'select id , cell_id, host from host_mappings;'
+        num_of_record=$(mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});" | wc -l)
 
-    if [[ ! "$num_of_record" =~ ^[0-9]+$ ]]; then
-        log_err "Num of records that obtained an SQL query \"select host from host_mappings where host in (${clause}); | wc -l\" might be failed. The result was not a number(actual = \"${num_of_record}\")."
-        return 1
-    fi
+        if [[ ! "$num_of_record" =~ ^[0-9]+$ ]]; then
+            log_err "Num of records that obtained an SQL query \"select host from host_mappings where host in (${clause}); | wc -l\" might be failed. The result was not a number(actual = \"${num_of_record}\")."
+            return 1
+        fi
 
-    if [ ${num_of_record} -ne ${#target_hosts[@]} ]; then
+        [ $num_of_record -eq ${target_hosts[@]} ] && break
+        [ $current_attempts -ge $max_attempts ] && {
+            log_err "Failed to register target_hosts even attempting it ${current_attempts} times (max_attempts == ${max_attempts})."
+            return 1
+        }
+        (( ++current_attempts ))
+
+        sleep 2
+    done
+
+    [ $current_attempts -ge $max_attempts ] && {
         log_err "Num of records that is registered in a cell and num of targets host (that you specified) are difference. [num_of_records_registered_in_a_cell(${num_of_record}), num_of_target_hosts(${#target_hosts[@]})]"
         return 1
-    fi
+    }
+
+    log_info "Succeeded in registering target_hosts. Target hosts are ... ${target_hosts[@]}"
 
     return 0
 }
