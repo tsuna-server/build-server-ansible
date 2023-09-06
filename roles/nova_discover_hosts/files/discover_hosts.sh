@@ -29,6 +29,11 @@ main() {
         return 1
     fi
 
+    if [ ${num_of_record} -ne ${#target_hosts[@]} ]; then
+        log_err "Num of records that is registered in a cell and num of targets host (that you specified) are difference. [num_of_records_registered_in_a_cell(${num_of_record}), num_of_target_hosts(${#target_hosts[@]})]"
+        return 1
+    fi
+
     return 0
 }
 
