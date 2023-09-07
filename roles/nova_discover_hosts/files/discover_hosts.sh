@@ -8,7 +8,7 @@ main() {
     local clause=""
     local delimiter=""
     local target
-    local num_of_record=0
+    local num_of_records=0
     local max_attempts=120
     local current_attempts=0
 
@@ -17,23 +17,30 @@ main() {
         return 1
     fi
 
-    log_info "${target_hosts[@]}"
+    #log_info "${target_hosts[@]}"
 
     for target in "${target_hosts[@]}"; do
         clause+="${delimiter}\"${target}\""
         delimiter=","
     done
 
-    while [ $num_of_record -ne ${target_hosts[@]} ]; do
+    while [ $num_of_records -ne ${#target_hosts[@]} ]; do
         #mysql -D nova_api <<< 'select id , cell_id, host from host_mappings;'
-        num_of_record=$(mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});" | wc -l)
+        num_of_records=$(mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});" | wc -l)
 
-        if [[ ! "$num_of_record" =~ ^[0-9]+$ ]]; then
-            log_err "Num of records that obtained an SQL query \"select host from host_mappings where host in (${clause}); | wc -l\" might be failed. The result was not a number(actual = \"${num_of_record}\")."
+        if [[ ! "$num_of_records" =~ ^[0-9]+$ ]]; then
+            log_err "Num of records that obtained an SQL query \"select host from host_mappings where host in (${clause}); | wc -l\" might be failed. The result was not a number(actual = \"${num_of_records}\")."
             return 1
         fi
 
-        [ $num_of_record -eq ${target_hosts[@]} ] && break
+        [ $num_of_records -eq ${#target_hosts[@]} ] && break
+
+        # Add compute nodes to the cell
+        su -s /bin/sh -c 'nova-manage cell_v2 discover_hosts --verbose' nova || {
+            log_err "Failed to run a command (\"nova-manage cell_v2 discover_hosts --verbose=\" nova)"
+            return 1
+        }
+
         [ $current_attempts -ge $max_attempts ] && {
             log_err "Failed to register target_hosts even attempting it ${current_attempts} times (max_attempts == ${max_attempts})."
             return 1
