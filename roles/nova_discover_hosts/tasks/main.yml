@@ -9,6 +9,7 @@
   loop_control:
     loop_var: tmp_compute
   with_items: "{{ group_vars.hosts.computes }}"
+  when: "'computes' in group_vars.hosts"
 
 - name: "Declare list of hosts in \"comstorages\" to add them to cells"
   set_fact:
@@ -16,6 +17,7 @@
   loop_control:
     loop_var: tmp_compute
   with_items: "{{ group_vars.hosts.comstorages }}"
+  when: "'comstorages' in group_vars.hosts"
 
 - name: "Debug a variable \"options_of_computes_should_be_registered\""
   ansible.builtin.debug:
