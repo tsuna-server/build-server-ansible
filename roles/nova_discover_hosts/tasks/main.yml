@@ -5,7 +5,8 @@
 
 - name: "Declare list of hosts in \"computes\" to add them to cells"
   set_fact:
-    options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [\"-h\", tmp_compute.name] }}"
+    #options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [\"-h\", tmp_compute.name] }}"
+    options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [tmp_compute.name] }}"
   loop_control:
     loop_var: tmp_compute
   with_items: "{{ group_vars.hosts.computes }}"
@@ -13,7 +14,8 @@
 
 - name: "Declare list of hosts in \"comstorages\" to add them to cells"
   set_fact:
-    options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [\"-h\", tmp_compute.name] }}"
+    #options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [\"-h\", tmp_compute.name] }}"
+    options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [tmp_compute.name] }}"
   loop_control:
     loop_var: tmp_compute
   with_items: "{{ group_vars.hosts.comstorages }}"
