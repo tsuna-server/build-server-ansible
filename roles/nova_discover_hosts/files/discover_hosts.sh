@@ -26,7 +26,7 @@ main() {
 
     while [ $num_of_records -ne ${#target_hosts[@]} ]; do
         #mysql -D nova_api <<< 'select id , cell_id, host from host_mappings;'
-        num_of_records=$(mysql -N -D nova_api <<< "select host from host_mappings where host in (${clause});" | wc -l)
+        num_of_records=$(mysql -N -D nova_api <<< "select count(host) from host_mappings where host in (${clause});")
 
         if [[ ! "$num_of_records" =~ ^[0-9]+$ ]]; then
             log_err "Num of records that obtained an SQL query \"select host from host_mappings where host in (${clause}); | wc -l\" might be failed. The result was not a number(actual = \"${num_of_records}\")."
