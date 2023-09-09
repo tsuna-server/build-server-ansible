@@ -139,7 +139,7 @@
   - name: "Include \"restart_services/computes/main.yml\""
     include_tasks: restart_services/computes/main.yml
 
-  when: primary_group_name == "computes"
+  when: primary_group_name == "computes" or primary_group_name == "comstorages"
 
 - name: "Block for controller nodes for Ceph cluster"
   block:
