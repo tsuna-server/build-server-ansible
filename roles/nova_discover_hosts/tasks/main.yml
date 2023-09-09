@@ -26,8 +26,5 @@
     msg: "{{ options_of_computes_should_be_registered }}"
 
 - name: "Run discover_hosts.sh to add compute nodes to a cell"
-  ansible.builtin.script: discover_hosts.sh {{ options_of_computes_should_be_registered }}
+  ansible.builtin.script: discover_hosts.sh {{ options_of_computes_should_be_registered | join(' ') }}
 
-#- name: Discover compute hosts in nova
-#  ansible.builtin.command:
-#    argv: ['su', '-s', '/bin/sh', '-c', 'nova-manage cell_v2 discover_hosts --verbose', 'nova']
