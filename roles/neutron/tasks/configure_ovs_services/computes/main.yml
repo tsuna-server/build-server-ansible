@@ -21,7 +21,7 @@
 #            {% endif %}"
 - name: "Declare my IP for setting ovn-encap-ip in \"compute\" or \"comstorages\""
   set_fact:
-    my_ip: "{% if 'computes' in group_names %}{% set tmp_hosts = group_vars.hosts.compute %}{% elif 'comstorages' in group_names %}{% set tmp_hosts = group_vars.hosts.comstorages %}{% endif -%}
+    my_ip: "{% if 'computes' in group_names %}{% set tmp_hosts = group_vars.hosts.computes %}{% elif 'comstorages' in group_names %}{% set tmp_hosts = group_vars.hosts.comstorages %}{% endif -%}
             {% if tmp_hosts is defined -%}
               {% for item in tmp_hosts -%}
                 {% if item.name == inventory_hostname -%}{{ item.management.ip }}{% endif -%}
