@@ -1,4 +1,30 @@
 ---
-- name: Discover compute hosts in nova
-  ansible.builtin.command:
-    argv: ['su', '-s', '/bin/sh', '-c', 'nova-manage cell_v2 discover_hosts --verbose', 'nova']
+- name: "Declare an empty variable \"options_of_computes_should_be_registered\""
+  set_fact:
+    options_of_computes_should_be_registered: []
+
+- name: "Declare list of hosts in \"computes\" to add them to cells"
+  set_fact:
+    #options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [\"-h\", tmp_compute.name] }}"
+    options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [tmp_compute.name] }}"
+  loop_control:
+    loop_var: tmp_compute
+  with_items: "{{ group_vars.hosts.computes }}"
+  when: "'computes' in group_vars.hosts"
+
+- name: "Declare list of hosts in \"comstorages\" to add them to cells"
+  set_fact:
+    #options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [\"-h\", tmp_compute.name] }}"
+    options_of_computes_should_be_registered: "{{ options_of_computes_should_be_registered + [tmp_compute.name] }}"
+  loop_control:
+    loop_var: tmp_compute
+  with_items: "{{ group_vars.hosts.comstorages }}"
+  when: "'comstorages' in group_vars.hosts"
+
+- name: "Debug a variable \"options_of_computes_should_be_registered\""
+  ansible.builtin.debug:
+    msg: "{{ options_of_computes_should_be_registered }}"
+
+- name: "Run discover_hosts.sh to add compute nodes to a cell"
+  ansible.builtin.script: discover_hosts.sh {{ options_of_computes_should_be_registered | join(' ') }}
+

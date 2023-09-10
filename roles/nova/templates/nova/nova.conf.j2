@@ -7,7 +7,7 @@ use_neutron = True
 {% if 'controllers' in group_names %}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
 my_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
-{% elif 'computes' in group_names %}
+{% elif 'computes' in group_names or 'comstorages' in group_names %}
 transport_url = rabbit://{{ group_vars.mq.user }}:{{ group_vars.mq.password }}@{{ group_vars.hosts.controllers[0].names[0] }}:5672/
 {% if 'Linux Bridge' == group_vars.openstack.network.plugin %}
 # For using Linux bridge.
@@ -898,6 +898,8 @@ vif_plugging_timeout = 300
 auth_strategy = keystone
 {% if 'computes' in group_names %}
 my_ip = {{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% elif 'comstorages' in group_names %}
+my_ip = {{ (group_vars.hosts.comstorages|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% endif %}
 
 #
@@ -2835,7 +2837,7 @@ password = {{ group_vars.nova.password }}
 
 
 [libvirt]
-{% if 'computes' in group_names and (group_vars.cinder.enabled_backends == "ceph" and 'vms' in group_vars.ceph.pools) %}
+{% if ('computes' in group_names or 'comstorages' in group_names) and (group_vars.cinder.enabled_backends == "ceph" and 'vms' in group_vars.ceph.pools) %}
 images_type = rbd
 images_rbd_pool = vms
 images_rbd_ceph_conf = /etc/ceph/ceph.conf
@@ -3512,7 +3514,7 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 username = {{ group_vars.neutron.user }}
 password = {{ group_vars.neutron.password }}
 
-{% if ('controllers' in group_names) or ('computes' in group_names) %}
+{% if ('controllers' in group_names) or ('computes' in group_names) or ('comstorages' in group_names) %}
 {# TODO: Is it needed to add these lines if a conditional ('computes' in group_names and 'OVN' == group_vars.openstack.network.plugin) #}
 service_metadata_proxy = true
 metadata_proxy_shared_secret = {{ group_vars.neutron.password }}
@@ -5322,7 +5324,7 @@ enabled = true
 server_proxyclient_address = $my_ip
 {% if 'controllers' in group_names %}
 server_listen = $my_ip
-{% elif 'computes' in group_names %}
+{% elif 'computes' in group_names or 'comstorages' in group_names %}
 server_listen = 0.0.0.0
 novncproxy_base_url = http://{{ group_vars.hosts.controllers[0].names[0] }}:6080/vnc_auto.html
 {% endif %}

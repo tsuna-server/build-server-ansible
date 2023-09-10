@@ -1,5 +1,5 @@
 [DEFAULT]
-{% if 'OVN' == group_vars.openstack.network.plugin and 'computes' in group_names %}
+{% if 'OVN' == group_vars.openstack.network.plugin and ('computes' in group_names or 'comstorages' in group_names) %}
 nova_metadata_host = {{ group_vars.hosts.controllers[0].names[0] }}
 metadata_proxy_shared_secret = {{ group_vars.nova.password }}
 {% endif %}
@@ -230,7 +230,7 @@ metadata_proxy_shared_secret = {{ group_vars.nova.password }}
 
 
 [ovs]
-{% if 'OVN' == group_vars.openstack.network.plugin and 'computes' in group_names %}
+{% if 'OVN' == group_vars.openstack.network.plugin and ('computes' in group_names or 'comstorages' in group_names) %}
 ovsdb_connection = tcp:127.0.0.1:6640
 {% endif %}
 
@@ -248,12 +248,12 @@ ovsdb_connection = tcp:127.0.0.1:6640
 #ovsdb_connection_timeout = 180
 
 [agent]
-{% if 'OVN' == group_vars.openstack.network.plugin and 'computes' in group_names %}
+{% if 'OVN' == group_vars.openstack.network.plugin and ('computes' in group_names or 'comstorages' in group_names) %}
 root_helper = sudo neutron-rootwrap /etc/neutron/rootwrap.conf
 {% endif %}
 
 [ovn]
-{% if 'OVN' == group_vars.openstack.network.plugin and 'computes' in group_names %}
+{% if 'OVN' == group_vars.openstack.network.plugin and ('computes' in group_names or 'comstorages' in group_names) %}
 ovn_sb_connection = tcp:{{ group_vars.hosts.controllers[0].management.ip }}:6642
 {% endif %}
 

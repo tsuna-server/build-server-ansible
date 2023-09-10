@@ -2,6 +2,7 @@
 - hosts:
     - cinders
     - storages
+    - comstorages
   become: yes
   roles:
     - { role: ntp, tags: ['role_ntp']}

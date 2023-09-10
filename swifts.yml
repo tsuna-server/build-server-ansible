@@ -2,6 +2,7 @@
 - hosts:
     - swifts
     - storages
+    - comstorages
   become: yes
   roles:
     - { role: storage_common, tags: ['role_storage_common'] }

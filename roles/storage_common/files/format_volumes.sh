@@ -58,6 +58,9 @@ main() {
     #if [[ "${HOSTNAME}" =~ ^.*storage[0-9]+$ ]]; then
     if [ "${TYPE}" = "storage" ]; then
         prepare_storages_for_storage_node || return 1
+    elif [ "${TYPE}" = "comstorage" ]; then
+        # Comstorage (that has features "compute" and "storage" node) should be run a function same as storage nodes.
+        prepare_storages_for_storage_node || return 1
     elif [ "${TYPE}" = "swift" ]; then
         prepare_storages_for_swift || return 1
     elif [ "${TYPE}" = "cinder" ]; then

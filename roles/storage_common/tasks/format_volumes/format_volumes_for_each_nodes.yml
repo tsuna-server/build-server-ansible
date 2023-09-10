@@ -2,7 +2,7 @@
 # TODO: Should this variable declared in another variable file?
 - name: Declare available groups for storages like Swift, Cinder etc
   set_fact:
-    available_format_groups: ["swifts", "cinders", "storages"]
+    available_format_groups: ["swifts", "cinders", "storages", "comstorages"]
 
 - name: Declare a primary_group_name for getting target host elements
   set_fact:
@@ -25,14 +25,27 @@
   set_fact:
     options_of_type: []
 
+# TODO: This instruction should set options_of_type by group_names not host name
+##- name: Set a variable options_of_type
+##  set_fact:
+##    options_of_type: "{% if inventory_hostname | regex_search('^.*storage[0-9]+.*$') -%}
+##                                  {{ options_of_type + ['--type', 'storage'] }}
+##                                {% elif inventory_hostname | regex_search('^.*cinder[0-9]+.*$') -%}
+##                                  {{ options_of_type + ['--type', 'cinder'] }}
+##                                {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
+##                                  {{ options_of_type + ['--type', 'swift'] }}
+##                                {% endif %}"
+
 - name: Set a variable options_of_type
   set_fact:
-    options_of_type: "{% if inventory_hostname | regex_search('^.*storage[0-9]+.*$') -%}
+    options_of_type: "{% if 'storages' in group_names -%}
                                   {{ options_of_type + ['--type', 'storage'] }}
-                                {% elif inventory_hostname | regex_search('^.*cinder[0-9]+.*$') -%}
+                                {% elif 'cinders' in group_names -%}
                                   {{ options_of_type + ['--type', 'cinder'] }}
-                                {% elif inventory_hostname | regex_search('^.*swift[0-9]+.*$') -%}
+                                {% elif 'swifts' in group_names -%}
                                   {{ options_of_type + ['--type', 'swift'] }}
+                                {% elif 'comstorages' in group_names -%}
+                                  {{ options_of_type + ['--type', 'comstorage'] }}
                                 {% endif %}"
 
 - name: Declare an empty variable option_swift_volumes
