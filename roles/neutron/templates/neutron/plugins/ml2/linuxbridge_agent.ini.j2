@@ -187,11 +187,13 @@
 
 
 [linux_bridge]
-{# "physical_interface_mappings" should be declaread both controllers and computes in the driver Linux Bridge -#}
+{# "physical_interface_mappings" should be declaread both controllers and computes and comstorages in the driver Linux Bridge -#}
 {% if 'controllers' in group_names %}
 physical_interface_mappings = provider:{{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}
 {% elif 'computes' in group_names %}
 physical_interface_mappings = provider:{{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}
+{% elif 'comstorages' in group_names %}
+physical_interface_mappings = provider:{{ (group_vars.hosts.comstorages|selectattr('names', 'contains', inventory_hostname)|first).provider.interface }}
 {% endif %}
 
 #
@@ -228,7 +230,7 @@ physical_interface_mappings = provider:{{ (group_vars.hosts.computes|selectattr(
 
 
 [securitygroup]
-{# These parameters should be declaread both controllers and computes in the driver Linux Bridge -#}
+{# These parameters should be declaread both controllers and computes and comstorages in the driver Linux Bridge -#}
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 enable_ipset = true
@@ -255,12 +257,14 @@ enable_ipset = true
 
 
 [vxlan]
-{# These parameters should be declaread both controllers and computes in the driver Linux Bridge -#}
+{# These parameters should be declaread both controllers and computes and comstorages in the driver Linux Bridge -#}
 enable_vxlan = true
 {% if 'controllers' in group_names %}
 local_ip = {{ (group_vars.hosts.controllers|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% elif 'computes' in group_names %}
 local_ip = {{ (group_vars.hosts.computes|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
+{% elif 'comstorages' in group_names %}
+local_ip = {{ (group_vars.hosts.comstorages|selectattr('names', 'contains', inventory_hostname)|first).management.ip }}
 {% endif %}
 l2_population = true
 
