@@ -1,49 +1,8 @@
 ---
-#- name: Create a ssh_key on a master node of Ceph if it has not existed
-#  openssh_keypair:
-#    path: "{{ ansible_env.HOME }}/.ssh/ceph"
-#  when: "inventory_hostname == group_vars.ceph.monitor.hosts.master"
-
-#- name: Debug for cephs
-#  ansible.builtin.debug:
-#    msg: "{{ item }}"
-#  with_items:
-#    "group_vars.hosts['cephs']"
-#  when: "'cephs' in group_vars.hosts"
-
-- name: "Declare primary_group_name as \"cinders\""
-  set_fact:
-    primary_group_name: "cinders"
-  when: '"cinders" in group_names'
-
-- name: "Declare primary_group_name as \"storages\""
-  set_fact:
-    primary_group_name: "storages"
-  when: '"storages" in group_names'
-
-- name: "Declare primary_group_name as \"comstorages\""
-  set_fact:
-    primary_group_name: "comstorages"
-  when: '"comstorages" in group_names'
-
-- name: "Declare primary_group_name as \"computes\""
-  set_fact:
-    primary_group_name: "computes"
-  when: '"computes" in group_names'
-
-- name: "Declare primary_group_name as \"controllers\""
-  set_fact:
-    primary_group_name: "controllers"
-  when: '"controllers" in group_names'
-
-- name: "Check whether a variable \"primary_group_name\" has declared"
-  ansible.builtin.fail:
-    msg: "Failed due to undefined variable \"primary_group_name\". Current node \"{{ inventory_hostname }}\" must belonging in \"cinders\" or \"storages\" or \"comstorages\" \"computes\"."
-  when: primary_group_name is not defined
-
-- name: "Declare credentials for ceph"
-  set_fact:
-    client_credentials: "{{ group_vars.ceph.client_credentials }}"
+- name: "Include a function declare_variable_primary_group_name/main.yml in a ceph role"
+  include_role:
+    name: functions
+    tasks_from: declare_variable_primary_group_name/main.yml
 
 - name: "Include \"install_packages/monitors/main.yml\" if a current host is a monitor of Ceph. // Conditionals -> \"inventory_hostname({{ inventory_hostname }}) == group_vars.ceph.monitor.hosts.master({{ group_vars.ceph.monitor.hosts.master }})\""
   include_tasks: install_packages/monitors/main.yml
