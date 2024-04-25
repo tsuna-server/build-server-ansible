@@ -9,9 +9,10 @@
   until: apt_result is success
   timeout: 600
 
+# This instruction assumes that IPv6 is disabled on this host and a value of {{ inventory_hostname }} is registered in /etc/hosts on this host.
 - name: Get IP address from a hostname
   ansible.builtin.shell:
-    cmd: getent hosts {{ inventory_hostname }} | cut -d ' ' -f 1
+    cmd: getent ahosts {{ inventory_hostname }} | head -1 | cut -d ' ' -f 1
   register: ret_getent
 
 - name: Declare a variable for IP address
