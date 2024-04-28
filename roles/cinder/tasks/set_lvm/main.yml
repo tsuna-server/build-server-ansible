@@ -7,7 +7,7 @@
   set_fact:
     lvm_filter_string: "{{ result_lvm_filter_string.stdout_lines[-1] }}"
 
-- name: Configure /etc/lvm/lvm.conf
+- name: "Configure /etc/lvm/lvm.conf (LVM filter string: {{ lvm_filter_string }})"
   ansible.builtin.template:
     src: lvm/lvm.conf.j2
     dest: /etc/lvm/lvm.conf
