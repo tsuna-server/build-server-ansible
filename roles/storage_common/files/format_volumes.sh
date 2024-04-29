@@ -169,6 +169,7 @@ create_storage_for_cinder() {
     local output_of_pvdisplay ret_of_pvdisplay
     local output_of_vg_name ret_of_vg_name
     local output_of_blkid ret_of_blkid
+    local ret
 
     log_info "Creating LVM named \"cinder-volumes\" on a device \"${device}\" for Cinder."
 
@@ -176,6 +177,36 @@ create_storage_for_cinder() {
         log_err "A device \"${device}\" is not present."
         return 1
     }
+
+    check_lvm_has_already_created "${device}"
+    ret=$?
+
+    if [ ${ret} -eq 2 ]; then
+        log_err "Failed to create LVM for Cinder. An error has occured while checking the device \"${device}\"."
+        return 1
+    fi
+    if [ ${ret} -eq 0 ]; then
+        log_info "A device \"${device}\" has already been formatted as LVM for Cinder. Then creating LVM will be skipped."
+        return 0
+    fi
+
+    create_lvm_for_cinder "${device}" || return 1
+
+    return 0
+}
+
+# Return 0: A device has already been formatted as LVM for Cinder.
+# Return 1: A device has existed but has not been formatted as LVM. It can be formatted as LVM.
+# Return 2: ERROR. Un supported conditions.
+check_lvm_has_already_created() {
+    local device="$1"
+    local output_of_pvdisplay ret_of_pvdisplay
+    local output_of_vg_name ret_of_vg_name
+
+    if [ -b "${device}" ]; then
+        log_err "A device \"${device}\" does not exist."
+        return 2
+    fi
 
     output_of_pvdisplay="$(pvdisplay "${device}")"
     ret_of_pvdisplay=$?
@@ -186,58 +217,18 @@ create_storage_for_cinder() {
         output_of_vg_name=$(grep -q -P '^.*VG Name .*cinder\-volumes$' <<< "${output_of_pvdisplay}")
         ret_of_vg_name=$?
         if [ ${ret_of_vg_name} -ne 0 ]; then
-            log_err "Failed to create LVM for Cinder. A device \"${device}\" has already been formatted as LVM but name of VG is different from \"cinder-volumes\". An output of volume name is \"${output_of_vg_name}\"."
-            return 1
+            log_err "A device \"${device}\" has already been formatted as LVM but name of VG is different from \"cinder-volumes\". An output of volume name is \"${output_of_vg_name}\"."
+            log_err "This script can not handle this situation. Please format the device \"${device}\" manually if you could."
+            return 2
         fi
 
         log_info "Creating LVM has been skipped for Cinder. A device \"${device}\" has already been formatted as LVM for Cinder."
         return 0
     fi
 
-    # |    | Partitioned     | Partitioned     | Formatted       | Proceed         |
-    # | No | other than LVM  | labeled LVM     | with any FS(*1) | creating LVM?   |
-    # +----+-----------------+-----------------+-----------------+-----------------|
-    # | 1  | False           | False           | False           | True            |
-    # | 2  | True            | False           | False           | False(Error)    |
-    # | 3  | False           | True            | False           | False(Skipped)  |
-    # | 4  | False           | False           | True            | False(Error)    |
-    # | 5  | True            | True            | False           | False           | Unrealized
-    # | 6  | True            | False           | True            | False(Error)    |
-    # | 7  | False           | True            | True            | False(Error)    | Unrealized?
-    # | 8  | True            | True            | True            | False           | Unrealized
-    #
-    # *1: Except LVM. LVM is not considered as FS in this scenario.
-
-    output_of_blkid="$(grep -P "^${device}: " < <(blkid))"
-    if [ -n "${output_of_blkid}" ]; then
-        # A device has already been partitioned or formatted any file system.
-
-        grep -q -i '^.* PARTLABEL="Linux LVM" .*$' <<< "${output_of_blkid}"
-        ret_of_blkid=$?
-        if [ ${ret_of_blkid} -ne 0 ]; then
-            # No 2, No 4, No 6
-            log_err "A device \"${device}\" has already been formatted and not labeld \"Linux LVM\" for Cinder."
-            return 1
-        fi
-
-        TYPE="ext4" 
-        output_of_blkid="$(grep -P '^.* TYPE="[a-zA-Z0-9_\- ]" .*$' <<< "${output_of_blkid}")"
-        ret_of_blkid=$?
-        if [ ${ret_of_blkid} -eq 0 ]; then
-            # No 8
-            log_err "A device \"${device}\" has been already formatted. Could not create LVM for Cinder. (${output_of_blkid})"
-            return 1
-        fi
-
-        # no 3
-        log_info "A device \"${device}\" has already been formatted by LVM and labeld \"Linux LVM\". Nothing to do. Skipped to create a LVM for cinder."
-        return 0
-    fi
-
-    # No 1
-    create_lvm_for_cinder "${device}" || return 1
-
-    return 0
+    # No output of pvdisplay, then the device has not been formatted as LVM.
+    log_info "A device \"${device}\" has not"
+    return 1
 }
 
 create_lvm_for_cinder() {
