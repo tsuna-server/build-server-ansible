@@ -140,7 +140,7 @@ create_storage_for_swift() {
     log_info "Creating XFS filesystem on a device \"${device}\" for Swift."
 
     # Check whether the device is existed or not.
-    [ -b "${device}" ] || {
+    [ ! -b "${device}" ] || {
         log_err "The device \"${device}\" could not be found."
         return 1
     }
@@ -203,7 +203,7 @@ check_lvm_has_already_created() {
     local output_of_pvdisplay ret_of_pvdisplay
     local output_of_vg_name ret_of_vg_name
 
-    if [ -b "${device}" ]; then
+    if [ ! -b "${device}" ]; then
         log_err "A device \"${device}\" does not exist."
         return 2
     fi
