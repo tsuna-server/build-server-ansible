@@ -6,6 +6,6 @@
   ansible.builtin.debug:
     msg: "{{ element_of_node }}"
 
-- name: "Run create_ceph_volume.sh"
+- name: "Run create_ceph_volume.sh with args [\"{{ item }}\"]"
   script: ./create_ceph_volume.sh "{{ item }}"
   with_items: "{{ element_of_node.storage.cinder }}"
