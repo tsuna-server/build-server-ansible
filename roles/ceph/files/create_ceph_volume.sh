@@ -36,16 +36,22 @@ format_device() {
     local device="$1"
     local vg_name=
 
-    parted --script ${device} 'mklabel gpt'
-    parted --script ${device} "mkpart primary 0% 100%"
+    if [[ ! "${device}" =~ [0-9]+$ ]]; then
+        # If the name of device is end with numbers, it is assumed that the device has NOT been partitioned.
+        log_info "Create a partition on ${device}."
+        parted --script ${device} 'mklabel gpt'
+        parted --script ${device} "mkpart primary 0% 100%"
+        # Create a ceph volume on the partition.
+        device="${device}1"
+    fi
 
-    log_info "Creating a ceph volume at ${device}1 on ${HOSTNAME}"
+    log_info "Creating a ceph volume at ${device} on ${HOSTNAME}"
 
     count=0
 
     while [ ${count} -lt 30 ]; do
-        ceph-volume lvm create --data ${device}1
-        vg_name=$(pvdisplay ${device}1 | grep -P "^ *VG Name *ceph\-.*\$" | grep -o '[^ ]*$')
+        ceph-volume lvm create --data ${device}
+        vg_name=$(pvdisplay ${device} | grep -P "^ *VG Name *ceph\-.*\$" | grep -o '[^ ]*$')
         if [[ "${vg_name}" =~ ^ceph\-.*$ ]]; then
             log_info "Volume group for Ceph has found. vg_name=${vg_name}."
             break
