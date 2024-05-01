@@ -66,6 +66,8 @@ format_device() {
         return 1
     fi
 
+    # TODO: Create a ceph volume and activate it.
+
     return 0
 }
 
