@@ -103,7 +103,7 @@ create_lvm_volume_for_ceph() {
 
     # TODO: Create a ceph volume and activate it.
     # https://forum.proxmox.com/threads/ceph-osd-creation-using-a-partition.58170/
-    if [ -z "${lv_name}" ]; then
+    if [ ! -z "${lv_name}" ]; then
         activate_ceph_volume "${device}" "${lv_name}" || return 1
     fi
 
