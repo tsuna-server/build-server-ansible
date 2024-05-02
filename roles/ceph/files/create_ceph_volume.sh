@@ -66,16 +66,12 @@ format_device() {
         return 1
     fi
 
-    # TODO: Create a ceph volume and activate it.
-    # https://forum.proxmox.com/threads/ceph-osd-creation-using-a-partition.58170/
-    activate_ceph_volume "${device}" || return 1
-
     return 0
 }
 
 create_lvm_volume_for_ceph() {
     local device="$1"
-    local output_pvdisplay output_lvdisplay pv_name vg_name new_vg_name ret
+    local output_pvdisplay output_lvdisplay pv_name vg_name lv_name ret
 
     # Create a LVM volume group
     output_pvdisplay="$(pvdisplay ${device} 2> /dev/null)" || {
@@ -101,7 +97,14 @@ create_lvm_volume_for_ceph() {
 
     output_lvdisplay=$(lvdisplay ${vg_name} 2> /dev/null | grep -P "LV Name\s+osd-block-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
     if [[ -z "${output_lvdisplay}" ]]; then
-        create_lv "${device}" "${vg_name}" || return 1
+        lv_name="osd-block-$(uuidgen)"
+        create_lv "${device}" "${vg_name}" "${lv_name}" || return 1
+    fi
+
+    # TODO: Create a ceph volume and activate it.
+    # https://forum.proxmox.com/threads/ceph-osd-creation-using-a-partition.58170/
+    if [ -z "${lv_name}" ]; then
+        activate_ceph_volume "${device}" "${lv_name}" || return 1
     fi
 
     return 0
@@ -131,7 +134,7 @@ create_vg() {
 create_lv() {
     local device="$1"
     local vg_name="$2"
-    local lv_name="osd-block-$(uuidgen)"
+    local lv_name="$3"
 
     lvcreate -l 100%FREE -n ${lv_name} ${vg_name} || {
         log_err "Failed to create a LVM logical volume \"${lv_name}\". [command:lvcreate -l 100%FREE -n \"${lv_name}\" \"${vg_name}\"]."
