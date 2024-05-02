@@ -67,6 +67,8 @@ format_device() {
     fi
 
     # TODO: Create a ceph volume and activate it.
+    # https://forum.proxmox.com/threads/ceph-osd-creation-using-a-partition.58170/
+    activate_ceph_volume "${device}" || return 1
 
     return 0
 }
@@ -82,7 +84,7 @@ create_lvm_volume_for_ceph() {
 
     # Get a volume group name from the output.
     # This instruction assumes that the physical volume has already been existed by do_create_phiysical_volume().
-    vg_name=$(pvdisplay ${device} | grep "VG Name" | sed -e 's/.*VG Name \+\(.\+\)/\1/g')
+    vg_name=$(pvdisplay ${device} | grep "VG Name" | sed -e 's/.*VG Name \+\(.\+\)/\1/g' | xargs echo -n)
 
     if [[ ! "${vg_name}" =~ ^\ *$ ]]; then
         if [[ ! "${vg_name}" =~ ^ceph\-[0-9a-z]{8}(\-[0-9a-z]{4}){3}\-[0-9a-z]{12}$ ]]; then
@@ -135,6 +137,24 @@ create_lv() {
         log_err "Failed to create a LVM logical volume \"${lv_name}\". [command:lvcreate -l 100%FREE -n \"${lv_name}\" \"${vg_name}\"]."
         return 1
     }
+    return 0
+}
+
+activate_ceph_volume() {
+    local lv_name="$1"
+    local lv_path
+    lv_name="${lv_name//-/\\-}"
+    lv_path=$(lvdisplay | grep -P "LV Path .*/${lv_name}$" 2> /dev/null | awk '{print $3}')
+
+    if [ -z "${lv_path}" ]; then
+        log_err "Failed to get a path of logical volume \"${lv_name}\". [command: lvdisplay | grep -P \"LV Path .*/${lv_name}$\"]."
+        return 1
+    fi
+
+    # TODO: Add error handling.
+    ceph-volume lvm prepare --data "${lv_path}"
+    ceph-volume lvm activate --all
+
     return 0
 }
 
