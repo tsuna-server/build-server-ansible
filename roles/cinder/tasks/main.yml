@@ -28,6 +28,7 @@
   block:
     - name: Include set_lvm/main.yml of cinder for controllers
       include_tasks: set_lvm/main.yml
+      when: "'cinder' in group_vars and 'enabled_backends' in group_vars.cinder and group_vars.cinder.enabled_backends != 'ceph'"
 
     - name: Include install_packages/cinders/main.yml
       include_tasks: install_packages/cinders/main.yml
