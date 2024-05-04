@@ -29,19 +29,24 @@ main() {
 
 format_device() {
     local device="$1"
-    local vg_name=
+    local vg_name parted_device
 
     if [[ ! "${device}" =~ [0-9]+$ ]]; then
         # If the name of device is end with numbers (eg. /dev/vda3), it is assumed that the device has NOT been partitioned.
-        log_info "Create a partition on ${device}."
-        parted --script ${device} 'mklabel gpt' || {
-            log_err "Failed to create a partition table on ${device}. [command: parted --script ${device} 'mklabel gpt']."
-            return 1
-        }
-        parted --script ${device} "mkpart primary 0% 100%" || {
-            log_err "Failed to create a partition on ${device}. [command: parted --script ${device} 'mkpart primary 0% 100%']."
-            return 1
-        }
+        parted_device="${device}1"
+
+        if [ ! -b "${parted_device}" ]; then
+            log_info "Create a partition \"${parted_device}\" on \"${device}\"."
+            parted --script ${device} 'mklabel gpt' || {
+                log_err "Failed to create a partition table on ${device}. [command: parted --script ${device} 'mklabel gpt']."
+                return 1
+            }
+            parted --script ${device} "mkpart primary 0% 100%" || {
+                log_err "Failed to create a partition on ${device}. [command: parted --script ${device} 'mkpart primary 0% 100%']."
+                return 1
+            }
+        fi
+
         # Create a ceph volume on the partition.
         device="${device}1"
     fi
@@ -71,7 +76,7 @@ format_device() {
 
 create_lvm_volume_for_ceph() {
     local device="$1"
-    local output_pvdisplay output_lvdisplay pv_name vg_name lv_name ret
+    local output_pvdisplay output_lvdisplay pv_name vg_name lv_name activated_lv_name ret
 
     # Create a LVM volume group
     output_pvdisplay="$(pvdisplay ${device} 2> /dev/null)" || {
@@ -103,8 +108,9 @@ create_lvm_volume_for_ceph() {
 
     # TODO: Create a ceph volume and activate it.
     # https://forum.proxmox.com/threads/ceph-osd-creation-using-a-partition.58170/
-    if [ ! -z "${lv_name}" ]; then
-        activate_ceph_volume "${device}" "${lv_name}" || return 1
+    activated_lv_name=$(ceph-volume lvm list --format json 2> /dev/null | jq -r ".[][][\"lv_name\"] | select(. == \"${lv_name}\")")
+    if [ -z "${activated_lv_name}" ]; then
+        activate_ceph_volume "${lv_name}" || return 1
     fi
 
     return 0
