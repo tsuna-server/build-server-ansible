@@ -70,7 +70,7 @@
   loop_control:
     loop_var: tmp_option_cinder_volume
   with_items: "{{ target_storage_instance.storage.cinder }}"
-  when: '"cinder" in target_storage_instance.storage'
+  when: '("cinder" in target_storage_instance.storage) and ("enabled_backends" not in group_vars.cinder or group_vars.cinder.enabled_backends != "ceph")'
 
 - name: "Copy format_volumes.sh to \"/opt/format_volumes.sh\" on {{ inventory_hostname }}"
   ansible.builtin.copy:
