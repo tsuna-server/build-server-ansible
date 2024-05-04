@@ -33,7 +33,7 @@ main() {
 
 init_parameters() {
     local name_of_device="$1"
-    UUID_OF_DEVICE=$(grep -P "^${name_of_device}:.*" <<< "$(blkid)" | sed -e 's/.* UUID="\([a-z0-9\-]\+\).*" .*/\1/g')
+    UUID_OF_DEVICE=$(blkid "${name_of_device}" | sed -e 's/.* UUID="\([a-z0-9\-]\+\).*" .*/\1/g')
     if [ -z "${UUID_OF_DEVICE}" ]; then
         # A device has already registered. Then return 1.
         log_err "The device \"${name_of_device}\" has NOT been formatted. A device of UUID could not be obtained with the command \"blkid\"."
