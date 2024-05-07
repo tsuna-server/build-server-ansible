@@ -2979,7 +2979,7 @@ backend = sqlalchemy
 
 
 [glance_store]
-{% if group_vars.cinder.enabled_backends == "ceph" -%}
+{% if "enabled_backends" in group_vars.cinder and group_vars.cinder.enabled_backends == "ceph" -%}
 # Settings for glance when using Ceph as backends
 stores = rbd
 default_store = rbd
