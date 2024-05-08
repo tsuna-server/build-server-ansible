@@ -10,9 +10,13 @@ state_path = /var/lib/cinder
 lock_path = /var/lock/cinder
 volumes_dir = /var/lib/cinder/volumes
 {# Supported "lvm" or "ceph" currently. And it must be declaread as a parameter group_vars.cinder.enabled_backends. Otherwise it will throw an error when Cinder has started. -#}
-enabled_backends = {{ group_vars.cinder.enabled_backends }}
+{% if ('enabled_backends' not in group_vars.cinder) or (group_vars.cinder.enabled_backends != "ceph") %}
+enabled_backends = "lvm"
+{% else %}
+enabled_backends = "ceph"
+{%- endif %}
 
-{% if group_vars.cinder.enabled_backends == "ceph" -%}
+{% if ('enabled_backends' in group_vars.cinder) and (group_vars.cinder.enabled_backends == "ceph") -%}
 # You have to set "glance_api_version = 2" if you enable multiple_cinder_back_ends
 glance_api_version = 2
 {%- endif %}
@@ -54,7 +58,7 @@ project_name = {% for domain in group_vars.openstack.domains if domain.name.uppe
 username = {{ group_vars.cinder.user }}
 password = {{ group_vars.cinder.password }}
 
-{% if 'controllers' in group_names and group_vars.cinder.enabled_backends == "lvm" %}
+{% if ('controllers' in group_names) and ('enabled_backends' in group_vars.cinder and group_vars.cinder.enabled_backends == "lvm") %}
 [lvm]
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 volume_group = cinder-volumes
@@ -65,7 +69,7 @@ target_helper = tgtadm
 [oslo_concurrency]
 lock_path = /var/lib/cinder/tmp
 
-{% if group_vars.cinder.enabled_backends == "ceph" -%}
+{% if 'enabled_backends' in group_vars.cinder and group_vars.cinder.enabled_backends == "ceph" -%}
 [ceph]
 volume_driver = cinder.volume.drivers.rbd.RBDDriver
 
