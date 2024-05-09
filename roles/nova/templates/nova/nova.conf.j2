@@ -2837,7 +2837,7 @@ password = {{ group_vars.nova.password }}
 
 
 [libvirt]
-{% if ('computes' in group_names or 'comstorages' in group_names) and (group_vars.cinder.enabled_backends == "ceph" and 'vms' in group_vars.ceph.pools) %}
+{% if ('computes' in group_names or 'comstorages' in group_names) and ('enabled_backends' in group_vars.cinder and group_vars.cinder.enabled_backends == "ceph" and 'vms' in group_vars.ceph.pools) %}
 images_type = rbd
 images_rbd_pool = vms
 images_rbd_ceph_conf = /etc/ceph/ceph.conf
