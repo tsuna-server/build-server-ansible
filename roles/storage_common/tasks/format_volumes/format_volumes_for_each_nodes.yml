@@ -85,15 +85,20 @@
     msg: "ERROR: Failed to format volumes for storage nodes. The option --type to format volumes for storage nodes is empty."
   when: 'options_of_type | length <= 0'
 
-- name: Error if both of the option --swift-volume and --cinder-volume are empty
-  ansible.builtin.fail:
-    msg: "ERROR: Failed to format volumes for storage nodes. Both the option --swift-volume and --cinder-volume for storage nodes are empty."
-  when: '(option_swift_volumes | length <= 0) and (option_cinder_volumes | length <= 0)'
+- name: "Error if both of options --swift-volume(option_swift_volumes) and --cinder-volume(option_cinder_volumes) are empty and there are no element \"group_vars.ceph\""
+  when: '(option_swift_volumes | length <= 0) and (option_cinder_volumes | length <= 0) and ("ceph" not in group_vars)'
 
-- name: Set variable options_of_format_volumes
-  set_fact:
-    options_of_format_volumes: "{{ options_of_type + option_cinder_volumes + option_swift_volumes }}"
+# Here is a section to create swift or cinder (except ceph) volumes.
+# If there are NOT any volumes in options --swift-volumes and (or) --cinder-volume, but there is a section "group_vars.ceph" in a variable,
+# proceed without any errors because Ceph's volumes will be created in later instructions.
+- name: "Block to create swift and/or cinder volumes"
+  block:
+    - name: Set variable options_of_format_volumes
+      set_fact:
+        options_of_format_volumes: "{{ options_of_type + option_cinder_volumes + option_swift_volumes }}"
 
-- name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-  ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes | join(' ') }}
+    - name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
+      ansible.builtin.script: ./format_volumes.sh "{{ options_of_format_volumes | join(' ') }}"
+
+  when: '(option_swift_volumes | length > 0) or (option_cinder_volumes | length > 0)'
 
