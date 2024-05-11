@@ -26,4 +26,4 @@
         msg: "{{ result_of_the_command.stdout.split('\n') }}"
 
     # TODO: This instruction should verify whether uploading files are succeeded.
-  when: "'controllers' in group_names"
+  when: "('controllers' in group_names) and ('swift' in group_vars)"
