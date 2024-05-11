@@ -7,15 +7,20 @@
   set_fact:
     backup_swift_url: "{{ result_get_backup_swift_url.stdout_lines[-1] }}"
 
-- name: Creating a file of backup_swift_url
-  copy:
-    dest: /root/.cinder_backup_swift_url
-    content: "{{ backup_swift_url }}"
+- name: "Block fetching cinder backup_swift_url if backup_swift_url is defined. [command: openstack catalog show object-store -f json]"
+  block:
 
-- name: "Fetch the file \"/root/.cinder_backup_swift_url\" from the \"{{ inventory_hostname }}\" to push any cinder nodes"
-  run_once: yes
-  fetch:
-    src: "/root/.cinder_backup_swift_url"
-    dest: .buffer/
-    flat: yes
+  - name: Creating a file of backup_swift_url
+    copy:
+      dest: /root/.cinder_backup_swift_url
+      content: "{{ backup_swift_url }}"
+
+  - name: "Fetch the file \"/root/.cinder_backup_swift_url\" from the \"{{ inventory_hostname }}\" to push any cinder nodes"
+    run_once: yes
+    fetch:
+      src: "/root/.cinder_backup_swift_url"
+      dest: .buffer/
+      flat: yes
+
+  when: "backup_swift_url.stdout | length > 0"
 
