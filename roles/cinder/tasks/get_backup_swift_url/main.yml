@@ -22,5 +22,5 @@
       dest: .buffer/
       flat: yes
 
-  when: "backup_swift_url.stdout | length > 0"
+  when: "backup_swift_url | length > 0"
 
