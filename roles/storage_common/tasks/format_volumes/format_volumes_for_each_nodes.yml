@@ -86,6 +86,8 @@
   when: 'options_of_type | length <= 0'
 
 - name: "Error if both of options --swift-volume(option_swift_volumes) and --cinder-volume(option_cinder_volumes) are empty and there are no element \"group_vars.ceph\""
+  ansible.builtin.fail:
+    msg: "ERROR: Options --swift-volume(option_swift_volumes) and --cinder-volume(option_cinder_volumes) are empty and there are no element \"group_vars.ceph\". Any of elements are needed at least to create any volume systems."
   when: '(option_swift_volumes | length <= 0) and (option_cinder_volumes | length <= 0) and ("ceph" not in group_vars)'
 
 # Here is a section to create swift or cinder (except ceph) volumes.
