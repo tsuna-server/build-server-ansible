@@ -1,5 +1,7 @@
 ---
 - name: "Run a role ceph only if 'group_vars.cinder.enabled_backends == \"ceph\"'"
+  block:
+
   - name: "Include a function declare_variable_primary_group_name/main.yml in a ceph role"
     include_role:
       name: functions
