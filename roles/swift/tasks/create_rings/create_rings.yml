@@ -22,7 +22,7 @@
   register: stat_builder
 
 - name: Include do_create_ring.yml
-  include: do_create_ring.yml
+  include_tasks: do_create_ring.yml
   when: not stat_builder.stat.exists
 
 - name: Declare a variable target_swift_nodes
@@ -40,7 +40,7 @@
   when: '{{ "storages" in group_vars.hosts }}'
 
 - name: Include add_swift_ring_builder_for_each_nodes.yml
-  include: add_swift_ring_builder_for_each_nodes.yml
+  include_tasks: add_swift_ring_builder_for_each_nodes.yml
   loop_control:
     loop_var: swift_node
   with_items: "{{ target_storage_nodes }}"

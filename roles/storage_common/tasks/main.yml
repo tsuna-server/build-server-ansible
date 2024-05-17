@@ -9,5 +9,5 @@
     msg: "primary_group_name = {{ primary_group_name }}"
 
 - name: Include format_volumes/main.yml
-  include: format_volumes/main.yml
+  include_tasks: format_volumes/main.yml
   when: primary_group_name == "cinders" or primary_group_name == "swifts" or primary_group_name == "storages" or primary_group_name == "comstorages"
