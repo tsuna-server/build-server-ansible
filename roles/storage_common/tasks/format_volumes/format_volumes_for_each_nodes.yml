@@ -100,7 +100,7 @@
         options_of_format_volumes: "{{ options_of_type + option_cinder_volumes + option_swift_volumes }}"
 
     - name: "Format volumes that has a role for storage (hostname={{ inventory_hostname }}, options={{ options_of_format_volumes }})"
-      ansible.builtin.script: ./format_volumes.sh "{{ options_of_format_volumes | join(' ') }}"
+      ansible.builtin.script: ./format_volumes.sh {{ options_of_format_volumes | join(' ') }}
 
   when: '(option_swift_volumes | length > 0) or (option_cinder_volumes | length > 0)'
 
