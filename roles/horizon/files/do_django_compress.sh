@@ -10,23 +10,36 @@ SHA256_OPENSTACK_DASHBOARD_CONF=
 SHA256_LOCAL_SETTINGS_PY=
 
 main() {
+    local ret_validate_openstack_dashboard_conf ret_validate_sha256_local_settings_py
+
     set_sha256_openstack_dashboard_conf || return 1
     set_sha256_local_settings_py        || return 1
 
     validate_sha256_openstack_dashboard_conf
+    ret_validate_openstack_dashboard_conf=$?
     validate_sha256_local_settings_py
+    ret_validate_sha256_local_settings_py=$?
 
     echo "SHA256_OPENSTACK_DASHBOARD_CONF=${SHA256_OPENSTACK_DASHBOARD_CONF}, SHA256_LOCAL_SETTINGS_PY=${SHA256_LOCAL_SETTINGS_PY}"
+
+    # TODO: check django compressed and check the result
+
+    if [ ${ret_validate_openstack_dashboard_conf} = 1 ] && [ ${ret_validate_sha256_local_settings_py} = 1 ]; then
+        /usr/share/openstack-dashboard/manage.py compress
+    fi
+
 
     return 0
 }
 
 validate_sha256_openstack_dashboard_conf() {
     validate_sha256 "${SHA256_PATH_OPENSTACK_DASHBOARD_CONF}" "${SHA256_OPENSTACK_DASHBOARD_CONF}"
+    return $?
 }
 
 validate_sha256_local_settings_py() {
     validate_sha256 "${SHA256_PATH_LOCAL_SETTINGS_PY}" "${SHA256_LOCAL_SETTINGS_PY}"
+    return $?
 }
 
 # Meanings of return values are...
