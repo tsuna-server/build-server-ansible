@@ -2,7 +2,9 @@
 - name: Install packages of Horizon for controllers
   apt:
     name:
+      # Install python3-django-environ to enabling Django compressor
       - openstack-dashboard
+      - python3-django-environ
   register: apt_result
   retries: 360
   delay: 5
