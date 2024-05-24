@@ -17,33 +17,33 @@ main() {
     validate_sha256_openstack_dashboard_conf
     ret_validate_openstack_dashboard_conf=$?
     if [ ! ${ret_validate_openstack_dashboard_conf} = 0 ] && [ ! ${ret_validate_openstack_dashboard_conf} = 1 ]; then
-	echo "ERROR: Result of checking sha256 of \"${PATH_OPENSTACK_DASHBOARD_CONF}\". Return code is \"${ret_validate_openstack_dashboard_conf}\"."
-	return 1
+        echo "ERROR: Result of checking sha256 of \"${PATH_OPENSTACK_DASHBOARD_CONF}\". Return code is \"${ret_validate_openstack_dashboard_conf}\"."
+        return 1
     fi
 
     validate_sha256_local_settings_py
     ret_validate_sha256_local_settings_py=$?
     if [ ! ${ret_validate_sha256_local_settings_py} = 0 ] && [ ! ${ret_validate_sha256_local_settings_py} = 1 ]; then
-	echo "ERROR: Result of checking sha256 of \"${PATH_LOCAL_SETTINGS_PY}\". Return code is \"${ret_validate_sha256_local_settings_py}\"."
-	return 1
+        echo "ERROR: Result of checking sha256 of \"${PATH_LOCAL_SETTINGS_PY}\". Return code is \"${ret_validate_sha256_local_settings_py}\"."
+        return 1
     fi
 
     # TODO: check django compressed and check the result
     need_to_be_compressed
     ret_need_to_be_compressed=$?
     if [ ! ${ret_need_to_be_compressed} = 0 ] && [ ! ${ret_need_to_be_compressed} = 1 ]; then
-	echo "ERROR: Result of checking need to be compressed[need_to_be_compressed()]. Return code is \"${ret_need_to_be_compressed}\"."
-	return 1
+        echo "ERROR: Result of checking need to be compressed[need_to_be_compressed()]. Return code is \"${ret_need_to_be_compressed}\"."
+        return 1
     fi
 
     echo "DEBUG: SHA256_OPENSTACK_DASHBOARD_CONF=${SHA256_OPENSTACK_DASHBOARD_CONF}, SHA256_LOCAL_SETTINGS_PY=${SHA256_LOCAL_SETTINGS_PY}, ret_validate_openstack_dashboard_conf=${ret_validate_openstack_dashboard_conf}, ret_validate_sha256_local_settings_py=${ret_validate_sha256_local_settings_py}, ret_need_to_be_compressed=${ret_need_to_be_compressed}"
 
     if ([ ${ret_validate_openstack_dashboard_conf} = 1 ] || [ ${ret_validate_sha256_local_settings_py} = 1 ]) && [ ${ret_need_to_be_compressed} = 0 ]; then
-	echo "INFO: /usr/share/openstack-dashboard/manage.py compress"
+        echo "INFO: /usr/share/openstack-dashboard/manage.py compress"
         /usr/share/openstack-dashboard/manage.py compress || {
             echo "ERROR: Failed to the command \"/usr/share/openstack-dashboard/manage.py compress\". Its return code is \"$?\"" >&2
-	    return 1
-	}
+            return 1
+        }
     fi
 
     return 0
