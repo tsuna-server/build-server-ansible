@@ -87,10 +87,15 @@ validate_sha256() {
 
     if [ -f "${sha256_path}" ]; then
         read previous_sha256_value < "${sha256_path}"
-        [[ "${previous_sha256_value}" == "${sha256_value}" ]] || return 1
+        [[ "${previous_sha256_value}" == "${sha256_value}" ]] || {
+            echo "INFO: Updating sha256 file \"${sha256_path}\" with value \"${sha256_value}\""
+            echo -n "${sha256_value}" > "${sha256_path}"
+            return 1
+        }
         return 0
     fi
 
+    echo "INFO: Creating sha256 file \"${sha256_path}\" with value \"${sha256_value}\""
     echo -n "${sha256_value}" > "${sha256_path}"
     return 1
 }
