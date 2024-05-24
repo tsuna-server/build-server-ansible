@@ -30,6 +30,9 @@
     backup: yes
   notify: ["Restart apache2"]
 
+- name: Run a script do_django_compress.sh if compressing is needed
+  ansible.builtin.script: do_django_compress.sh
+
 - name: Run notified handlers of Horizon
   meta: flush_handlers
 
