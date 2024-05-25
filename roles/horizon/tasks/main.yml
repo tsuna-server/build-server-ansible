@@ -10,6 +10,14 @@
   delay: 5
   until: apt_result is success
 
+- name: Update alternatives for python3
+  community.general.alternatives:
+    name: python
+    path: /usr/bin/python3
+    link: /usr/bin/python
+    state: present
+    priority: 10
+
 - name: Set /etc/openstack-dashboard/local_settings.py for Horizon
   ansible.builtin.template:
     src: openstack-dashboard/local_settings.py.j2
