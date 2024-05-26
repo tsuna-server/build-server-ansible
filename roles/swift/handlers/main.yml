@@ -2,6 +2,8 @@
   ansible.builtin.systemd:
     state: restarted
     name: memcached
+  retries: 32
+  delay: 3
 
 - name: Restart swift-proxy
   ansible.builtin.systemd:

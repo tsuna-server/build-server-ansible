@@ -3,3 +3,5 @@
   service:
     name: memcached
     state: restarted
+  retries: 32
+  delay: 3
