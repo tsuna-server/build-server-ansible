@@ -14,7 +14,7 @@
 
 import os
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from horizon.utils import secret_key
 
@@ -92,10 +92,9 @@ SECRET_KEY = secret_key.generate_or_read_from_file('/var/lib/openstack-dashboard
 # memcached set CACHES to something like below.
 # For more information, see
 # https://docs.djangoproject.com/en/1.11/topics/http/sessions/.
-
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
         'LOCATION': '{{ inventory_hostname }}:11211',
     }
 }
@@ -109,8 +108,8 @@ CACHES = {
 # If you use ``tox -e runserver`` for developments,then configure
 # SESSION_ENGINE to django.contrib.sessions.backends.signed_cookies
 # as shown below:
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -242,6 +241,14 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        # VariableDoesNotExist error in the debug level from django.template
+        # is VERY noisy and it is output even for valid cases,
+        # so set the default log level of django.template to INFO.
+        'django.template': {
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': False,
         },
         # Logging from django.db.backends is VERY verbose, send to null
@@ -397,7 +404,7 @@ WEBROOT='/horizon/'
 # By default, validation of the HTTP Host header is disabled.  Production
 # installations should have this set accordingly.  For more information
 # see https://docs.djangoproject.com/en/dev/ref/settings/.
-ALLOWED_HOSTS = '*'
+ALLOWED_HOSTS = ['*']
 
 # Compress all assets offline as part of packaging installation
 COMPRESS_OFFLINE = True

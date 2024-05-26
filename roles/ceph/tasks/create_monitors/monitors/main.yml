@@ -3,7 +3,6 @@
   stat:
     path: "/etc/ceph/monmap"
     get_checksum: false
-    get_md5: false
   register: file_ceph_uuid_stat
 
 - name: "Creating a monitor-map for Ceph cluster on a monitor node \"{{ group_vars.ceph.monitor.hosts.master }}\""
