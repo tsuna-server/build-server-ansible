@@ -3,17 +3,23 @@
   apt:
     name:
       - python3-pip
+
+      - python3-openstackclient
+      - python3-openstacksdk
+      - python3-mysqldb
+      - python3-mysql.connector
+      - uwsgi
   register: apt_result
   retries: 360
   delay: 5
   until: apt_result is success
 
-- name: Install placement from PyPI
-  pip:
-    name:
-      - openstack-placement
-      - pymysql
-      - uwsgi
+#- name: Install placement from PyPI
+#  pip:
+#    name:
+#      - openstack-placement
+#      - pymysql
+#      - uwsgi
 
 - name: Group placement should be existed
   ansible.builtin.group:
