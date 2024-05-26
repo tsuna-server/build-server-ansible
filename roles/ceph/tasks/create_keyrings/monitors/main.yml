@@ -3,7 +3,6 @@
     stat:
       path: "/etc/ceph/ceph.mon.keyring"
       get_checksum: false
-      get_checksum: false
     register: flag_file
 
   - name: "Generating a key for monitoring a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
@@ -15,7 +14,6 @@
     stat:
       path: "/etc/ceph/ceph.client.admin.keyring"
       get_checksum: false
-      get_checksum: false
     register: flag_file
 
   - name: "Generating a key for managing a Ceph cluster on \"{{ group_vars.ceph.monitor.hosts.master }}\""
@@ -26,7 +24,6 @@
   - name: "Stat \"/var/lib/ceph/bootstrap-osd/ceph.keyring\" whether the file has already existed"
     stat:
       path: "/var/lib/ceph/bootstrap-osd/ceph.keyring"
-      get_checksum: false
       get_checksum: false
     register: flag_file
 
