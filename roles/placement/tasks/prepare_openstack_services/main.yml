@@ -8,6 +8,7 @@
       - python3-openstacksdk
       - python3-mysqldb
       - python3-mysql.connector
+      - python3-placement
       - uwsgi
   register: apt_result
   retries: 360
