@@ -1,19 +1,43 @@
 ---
-- name: Install packages of placement-api
-  apt:
-    name:
-      - python3-pip
-  register: apt_result
-  retries: 360
-  delay: 5
-  until: apt_result is success
+- name: Set a flag to install placement package from PyPI or package manager
+  ansible.builtin.set_fact:
+    flag_install_from_pypi: ('use_pypi' in group_vars.placement) and group_vars.placement.use_pypi
 
-- name: Install placement from PyPI
-  pip:
-    name:
-      - openstack-placement
-      - pymysql
-      - uwsgi
+- name: Debug flag_install_from_pypi
+  ansible.builtin.debug:
+    msg: "flag_install_from_pypi => {{ flag_install_from_pypi }}"
+
+- name: A block of installing placement-api from package manager
+  block:
+    - name: Install placment packages from package manager
+      apt:
+        name:
+          - python3-pip
+          - placement-api
+       register: apt_result
+       retries: 360
+       delay: 5
+       until: apt_result is success
+  when: flag_install_from_pypi == False
+
+- name: A block of installing placement-api from PyPI
+  block:
+    - name: Install python3-pip
+      apt:
+        name:
+          - python3-pip
+       register: apt_result
+       retries: 360
+       delay: 5
+       until: apt_result is success
+
+    - name: Install placement packages from PyPI
+      pip:
+        name:
+          - openstack-placement
+          - pymysql
+          - uwsgi
+  when: flag_install_from_pypi == True
 
 - name: Group placement should be existed
   ansible.builtin.group:
