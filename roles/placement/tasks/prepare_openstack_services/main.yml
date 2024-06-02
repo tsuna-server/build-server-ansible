@@ -1,7 +1,7 @@
 ---
 - name: Set a flag to install placement package from PyPI or package manager
   ansible.builtin.set_fact:
-    flag_install_from_pypi: ('use_pypi' in group_vars.placement) and group_vars.placement.use_pypi
+    flag_install_from_pypi: "{% if ('use_pypi' in group_vars.placement) and group_vars.placement.use_pypi %}true{% else %}false{% endif %}"
 
 - name: Debug flag_install_from_pypi
   ansible.builtin.debug:
