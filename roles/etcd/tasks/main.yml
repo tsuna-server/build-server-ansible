@@ -1,11 +1,7 @@
 ---
 - name: "Declare packages to install etcd depends on versions of Ubuntu"
   ansible.builtin.set_fact:
-    packages_etcd: "{% if ansible_distribution_version is version('24.04', '>=') -%}
-                      {{ [\"etcd-server\"] }}
-                    {% else %}
-                      {{ [\"etcd\"] }}
-                    {% endif %}"
+    packages_etcd: "{% if ansible_distribution_version is version('24.04', '>=') -%}[\"etcd-server\"]{% else %}[\"etcd\"]{% endif %}"
 
 - name: "Debug a variable \"packages_etcd\""
   ansible.builtin.debug:
