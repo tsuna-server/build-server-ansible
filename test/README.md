@@ -25,4 +25,9 @@ host$ virsh edit ${DOMAIN_NAME}
 ```
 vm$ sudo mkdir /build_server_ansible
 vm$ sudo mount -t virtiofs build_server_ansible /build_server_ansible
+
+vm$ cat << 'EOF' > /etc/fstab
+build_server_ansible /build_server_ansible virtiofs defaults 0 1
+EOF
 ```
+
