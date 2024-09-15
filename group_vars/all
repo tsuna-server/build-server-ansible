@@ -174,11 +174,11 @@ group_vars:
       public:
         regions:
           - name: RegionOne
-            url: "http://dev-controller01:8080/v1/AUTH_%\(project_id\)s"
+            url: "http://dev-controller01:8080/v1/AUTH_%(project_id)s"
       internal:
         regions:
           - name: RegionOne
-            url: "http://dev-controller01:8080/v1/AUTH_%\(project_id\)s"
+            url: "http://dev-controller01:8080/v1/AUTH_%(project_id)s"
       admin:
         regions:
           - name: RegionOne
