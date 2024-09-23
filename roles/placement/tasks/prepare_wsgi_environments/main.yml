@@ -7,24 +7,26 @@
     shell: /bin/false
     create_home: true
 
-- name: Configure wsgi for placement to apache2
-  ansible.builtin.template:
-    src: apache2/sites-available/placement-api.conf.j2
-    dest: /etc/apache2/sites-available/placement-api.conf
-    owner: root
-    group: root
-    mode: 0644
-    backup: yes
-  register: template_result
-
-- name: a2ensite placement-api
-  ansible.builtin.command:
-    argv: ["a2ensite", "placement-api"]
-  register: result
-
-- name: Restart apache2 if required
-  ansible.builtin.service:
-    name: apache2
-    state: restarted
-  when: (template_result.changed) or (result.rc == 0 and result.stdout != "Site placement-api already enabled")
-
+- name: Block setting wsgi for placement on apache2
+  block:
+    - name: Configure wsgi for placement to apache2
+      ansible.builtin.template:
+        src: apache2/sites-available/placement-api.conf.j2
+        dest: /etc/apache2/sites-available/placement-api.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      register: template_result
+    
+    - name: a2ensite placement-api
+      ansible.builtin.command:
+        argv: ["a2ensite", "placement-api"]
+      register: result
+    
+    - name: Restart apache2 if required
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
+      when: (template_result.changed) or (result.rc == 0 and result.stdout != "Site placement-api already enabled")
+  when: ({{ ansible_distribution }} == "Ubuntu") and ({{ ansible_distribution_version }} <= "22.04")
