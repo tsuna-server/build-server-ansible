@@ -7,7 +7,7 @@
     shell: /bin/false
     create_home: true
 
-- name: Block setting wsgi for placement on apache2
+- name: Block setting wsgi for placement on apache2 for Ubuntu 22.04
   block:
     - name: Configure wsgi for placement to apache2
       ansible.builtin.template:
@@ -29,4 +29,4 @@
         name: apache2
         state: restarted
       when: (template_result.changed) or (result.rc == 0 and result.stdout != "Site placement-api already enabled")
-  when: ({{ ansible_distribution }} == "Ubuntu") and ({{ ansible_distribution_version }} <= "22.04")
+  when: (ansible_distribution == "Ubuntu") and (ansible_distribution_version == "22.04")
