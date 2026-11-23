@@ -1,0 +1,48 @@
+# This file is managed by Ansible (role bastion_proxy). Do not edit by hand.
+# A forward proxy that lets the servers in the home network download packages.
+# Clients set http_proxy/https_proxy=http://{{ inventory_hostname }}:{{ bastion_proxy_port }}.
+# Only plain HTTP mirrors are cached. HTTPS is tunneled with CONNECT and is not cached.
+
+acl localnet src {{ bastion_proxy_allow | join(' ') }}
+
+acl SSL_ports port 443
+acl Safe_ports port 80
+acl Safe_ports port 443
+acl Safe_ports port 1025-65535
+acl CONNECT method CONNECT
+
+http_access deny !Safe_ports
+http_access deny CONNECT !SSL_ports
+http_access allow localhost manager
+http_access deny manager
+http_access allow localnet
+http_access allow localhost
+http_access deny all
+
+http_port {{ bastion_proxy_port }}
+visible_hostname {{ inventory_hostname }}
+connect_timeout {{ bastion_proxy_connect_timeout }}
+
+cache_mem {{ bastion_proxy_cache_mem_mb }} MB
+maximum_object_size_in_memory 8 MB
+maximum_object_size {{ bastion_proxy_maximum_object_size_mb }} MB
+cache_dir aufs {{ bastion_proxy_cache_dir }} {{ bastion_proxy_cache_size_mb }} 16 256
+cache_replacement_policy heap LFUDA
+coredump_dir {{ bastion_proxy_cache_dir }}
+
+# The first matching refresh_pattern is used.
+# 1. Files named by their hash never change. Cache them for 90 days.
+#    Debian/Ubuntu: dists/*/by-hash/, Fedora: repodata/<sha256>-*.xml.*
+refresh_pattern -i /by-hash/ 129600 100% 129600 override-expire
+refresh_pattern -i /repodata/[0-9a-f]{40,}- 129600 100% 129600 override-expire
+# 2. Repository indexes change at any time. Always revalidate them.
+#    Debian/Ubuntu: dists/, Fedora: repomd.xml, Alpine: APKINDEX, Arch: *.db, *.files
+refresh_pattern -i /dists/ 0 0% 0 refresh-ims
+refresh_pattern -i /repomd\.xml(\.asc)?$ 0 0% 0 refresh-ims
+refresh_pattern -i /APKINDEX\.tar\.gz$ 0 0% 0 refresh-ims
+refresh_pattern -i \.(db|files)(\.sig)?$ 0 0% 0 refresh-ims
+# 3. A package file never changes once it is published. Cache it for 90 days.
+refresh_pattern -i \.(deb|udeb|ddeb|rpm|drpm|apk|pkg\.tar(\.(xz|zst|gz))?(\.sig)?)$ 129600 100% 129600 override-expire
+# 4. Everything else
+refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
+refresh_pattern . 0 20% 4320

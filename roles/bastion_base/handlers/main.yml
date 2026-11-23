@@ -1,0 +1,10 @@
+---
+# "netplan generate" fails on an invalid config before "netplan apply" touches the interfaces.
+- name: Apply netplan
+  ansible.builtin.shell: netplan generate && netplan apply
+  changed_when: true
+
+- name: Restart ssh
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted

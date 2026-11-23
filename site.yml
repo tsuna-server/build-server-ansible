@@ -8,3 +8,4 @@
 - import_playbook: controllers_discover_hosts.yml
 - import_playbook: controllers_create_example_instances.yml
 - import_playbook: verify.yml
+- import_playbook: bastions.yml

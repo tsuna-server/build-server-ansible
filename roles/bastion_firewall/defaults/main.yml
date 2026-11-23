@@ -1,0 +1,14 @@
+---
+# The interface and the network of the home LAN that bastion serves.
+bastion_lan_interface: enp1s0
+bastion_lan_cidr: 172.31.0.0/16
+
+# TCP ports opened to the home LAN. 22 = ssh, 3128 = squid
+bastion_firewall_lan_tcp_ports: [22, 3128]
+# UDP ports opened to the home LAN. 123 = NTP
+bastion_firewall_lan_udp_ports: [123]
+
+# TCP ports opened on the WireGuard interface. The VPS DNATs these ports to bastion,
+# and the source address is the client on the internet (it is not masqueraded).
+bastion_firewall_wireguard_interface: wg0
+bastion_firewall_wireguard_tcp_ports: [22]

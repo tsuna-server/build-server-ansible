@@ -1,0 +1,46 @@
+---
+- name: Install chrony
+  ansible.builtin.apt:
+    name: chrony
+    update_cache: yes
+    cache_valid_time: 3600
+
+# The vendor /etc/chrony/chrony.conf is not modified. It reads the files below
+# by "sourcedir /etc/chrony/sources.d" and "confdir /etc/chrony/conf.d".
+- name: Add the upstream NTP servers
+  ansible.builtin.template:
+    src: bastion.sources.j2
+    dest: /etc/chrony/sources.d/bastion.sources
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart chrony
+
+- name: Serve NTP to the home network
+  ansible.builtin.template:
+    src: bastion-server.conf.j2
+    dest: /etc/chrony/conf.d/bastion-server.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart chrony
+
+- name: chrony should be enabled and started
+  ansible.builtin.systemd:
+    name: chrony
+    state: started
+    enabled: yes
+
+- name: Run notified handlers of bastion_ntp
+  ansible.builtin.meta: flush_handlers
+
+- name: Check the sources of chrony
+  ansible.builtin.command:
+    argv: ["chronyc", "-n", "sources"]
+  register: result_of_chrony_sources
+  changed_when: false
+  check_mode: false
+
+- name: Print the sources of chrony
+  ansible.builtin.debug:
+    msg: "{{ result_of_chrony_sources.stdout_lines }}"

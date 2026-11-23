@@ -1,0 +1,7 @@
+---
+- name: Restart squid
+  ansible.builtin.systemd:
+    name: squid
+    state: restarted
+  # The package is not installed in check mode, so the service may not exist yet.
+  ignore_errors: "{{ ansible_check_mode }}"

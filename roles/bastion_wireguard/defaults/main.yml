@@ -1,0 +1,21 @@
+---
+# bastion is the office side of the tunnel, like office-server-01 in
+# note2/20_WireGuard/01_DevTunnelToOfficeConohaVPS/README.md.
+# It initiates the tunnel to the VPS, so no port forwarding is needed on the office router.
+bastion_wireguard_interface: wg0
+bastion_wireguard_address: 10.8.0.2/24
+bastion_wireguard_mtu: 1380
+
+# Packets from bastion_wireguard_address are routed to the tunnel with this table,
+# so replies to the clients DNATed by the VPS go back through the VPS.
+bastion_wireguard_route_table: 51820
+bastion_wireguard_rule_priority: 100
+
+# The VPS (e.g. ConoHa VPS). It is not built yet, so [Peer] is not written until
+# both public_key and endpoint are set in the inventory.
+bastion_wireguard_peer:
+  name: vps-wire-guard-01
+  public_key: ""
+  endpoint: ""            # e.g. "203.0.113.10:51820"
+  allowed_ips: 0.0.0.0/0
+  persistent_keepalive: 25

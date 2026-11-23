@@ -1,0 +1,62 @@
+---
+- name: Install wireguard-tools
+  ansible.builtin.apt:
+    name: wireguard-tools
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Ensure /etc/wireguard exists
+  ansible.builtin.file:
+    path: /etc/wireguard
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+# The private key is created on bastion and is never copied out of it.
+# An existing key is kept, so the public key registered on the VPS stays valid.
+- name: Generate the private key of WireGuard
+  ansible.builtin.shell: umask 077 && wg genkey > /etc/wireguard/privatekey
+  args:
+    creates: /etc/wireguard/privatekey
+
+- name: Generate the public key of WireGuard
+  ansible.builtin.shell: umask 077 && wg pubkey < /etc/wireguard/privatekey > /etc/wireguard/publickey
+  args:
+    creates: /etc/wireguard/publickey
+
+- name: Configure /etc/wireguard/{{ bastion_wireguard_interface }}.conf
+  ansible.builtin.template:
+    src: wg.conf.j2
+    dest: "/etc/wireguard/{{ bastion_wireguard_interface }}.conf"
+    owner: root
+    group: root
+    mode: '0600'
+  notify: Restart wireguard
+
+- name: WireGuard should be enabled and started
+  ansible.builtin.systemd:
+    name: "wg-quick@{{ bastion_wireguard_interface }}"
+    state: started
+    enabled: yes
+  # The package is not installed in check mode, so the service may not exist yet.
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Run notified handlers of bastion_wireguard
+  ansible.builtin.meta: flush_handlers
+
+- name: Read the public key of WireGuard
+  ansible.builtin.command:
+    argv: ["cat", "/etc/wireguard/publickey"]
+  register: result_of_wireguard_publickey
+  changed_when: false
+  check_mode: false
+  failed_when: false
+
+- name: Print the public key to register on the VPS as [Peer]
+  ansible.builtin.debug:
+    msg:
+      - "PublicKey of {{ inventory_hostname }}: {{ result_of_wireguard_publickey.stdout | default('', true) or '(not generated yet)' }}"
+      - "AllowedIPs on the VPS: {{ bastion_wireguard_address | split('/') | first }}/32"
+      - "{{ 'Peer is configured.' if (bastion_wireguard_peer.public_key and bastion_wireguard_peer.endpoint)
+            else 'Peer is NOT configured yet. Set bastion_wireguard_peer.public_key and .endpoint.' }}"

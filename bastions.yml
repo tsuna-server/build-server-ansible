@@ -1,0 +1,14 @@
+---
+# Playbook for bastion servers of the home network (e.g. bastion01).
+# Bastion servers are excluded from commons.yml and verify.yml, so they never get
+# the OpenStack /etc/hosts or the OpenStack roles.
+#
+#   ansible-playbook -i production -l bastions bastions.yml
+- hosts: bastions
+  become: yes
+  roles:
+    - { role: bastion_base, tags: ['role_bastion_base'] }
+    - { role: bastion_firewall, tags: ['role_bastion_firewall'] }
+    - { role: bastion_ntp, tags: ['role_bastion_ntp'] }
+    - { role: bastion_proxy, tags: ['role_bastion_proxy'] }
+    - { role: bastion_wireguard, tags: ['role_bastion_wireguard'] }

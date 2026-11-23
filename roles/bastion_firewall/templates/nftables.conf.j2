@@ -1,0 +1,32 @@
+#!/usr/sbin/nft -f
+# This file is managed by Ansible (role bastion_firewall). Do not edit by hand.
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority filter; policy drop;
+        ct state established,related accept
+        ct state invalid drop
+        iifname "lo" accept
+        meta l4proto { icmp, ipv6-icmp } accept
+{% if bastion_firewall_lan_tcp_ports | length > 0 %}
+        iifname "{{ bastion_lan_interface }}" ip saddr {{ bastion_lan_cidr }} tcp dport { {{ bastion_firewall_lan_tcp_ports | join(', ') }} } accept
+{% endif %}
+{% if bastion_firewall_lan_udp_ports | length > 0 %}
+        iifname "{{ bastion_lan_interface }}" ip saddr {{ bastion_lan_cidr }} udp dport { {{ bastion_firewall_lan_udp_ports | join(', ') }} } accept
+{% endif %}
+{% if bastion_firewall_wireguard_tcp_ports | length > 0 %}
+        iifname "{{ bastion_firewall_wireguard_interface }}" tcp dport { {{ bastion_firewall_wireguard_tcp_ports | join(', ') }} } accept
+{% endif %}
+    }
+
+    # bastion is not a router.
+    chain forward {
+        type filter hook forward priority filter; policy drop;
+    }
+
+    chain output {
+        type filter hook output priority filter; policy accept;
+    }
+}

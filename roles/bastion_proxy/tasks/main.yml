@@ -1,0 +1,35 @@
+---
+- name: Install squid
+  ansible.builtin.apt:
+    name: squid
+    update_cache: yes
+    cache_valid_time: 3600
+
+# squid.service runs "squid --foreground -z" before it starts,
+# so a new cache_dir is created when squid is restarted.
+- name: Configure /etc/squid/squid.conf
+  ansible.builtin.template:
+    src: squid.conf.j2
+    dest: /etc/squid/squid.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+    validate: /usr/sbin/squid -k parse -f %s
+  notify: Restart squid
+
+- name: squid should be enabled and started
+  ansible.builtin.systemd:
+    name: squid
+    state: started
+    enabled: yes
+  # The package is not installed in check mode, so the service may not exist yet.
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Run notified handlers of bastion_proxy
+  ansible.builtin.meta: flush_handlers
+
+- name: squid listens on the proxy port
+  ansible.builtin.wait_for:
+    port: "{{ bastion_proxy_port }}"
+    timeout: 60

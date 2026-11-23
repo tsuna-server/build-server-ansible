@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: all:!bastions
   become: yes
   roles:
     - { role: common, tags: ['role_common']}
