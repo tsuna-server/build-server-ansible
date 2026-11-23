@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: all:!bastions
   become: yes
   roles:
     - { role: verify_swift, tags: ['role_verify_swift'] }

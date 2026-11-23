@@ -1,0 +1,5 @@
+# This file is managed by Ansible (role bastion_ntp). Do not edit by hand.
+{% for network in bastion_ntp_allow %}
+allow {{ network }}
+{% endfor %}
+local stratum {{ bastion_ntp_local_stratum }} orphan

@@ -1,0 +1,21 @@
+# This file is managed by Ansible (role bastion_wireguard). Do not edit by hand.
+{% set source_ip = bastion_wireguard_address | split('/') | first %}
+[Interface]
+Address = {{ bastion_wireguard_address }}
+MTU = {{ bastion_wireguard_mtu }}
+# Do not replace the default route of bastion with AllowedIPs = 0.0.0.0/0.
+Table = off
+# The private key is read from the file so that it is not written in this file.
+PostUp = wg set %i private-key /etc/wireguard/privatekey
+# Only packets from {{ source_ip }} (replies to the clients DNATed by the VPS) go to the tunnel.
+PostUp = ip rule add from {{ source_ip }} table {{ bastion_wireguard_route_table }} priority {{ bastion_wireguard_rule_priority }}; ip route add default dev %i table {{ bastion_wireguard_route_table }}
+PostDown = ip rule del from {{ source_ip }} table {{ bastion_wireguard_route_table }} priority {{ bastion_wireguard_rule_priority }}; ip route flush table {{ bastion_wireguard_route_table }}
+{% if bastion_wireguard_peer.public_key and bastion_wireguard_peer.endpoint %}
+
+[Peer]
+# {{ bastion_wireguard_peer.name }}
+PublicKey = {{ bastion_wireguard_peer.public_key }}
+Endpoint = {{ bastion_wireguard_peer.endpoint }}
+AllowedIPs = {{ bastion_wireguard_peer.allowed_ips }}
+PersistentKeepalive = {{ bastion_wireguard_peer.persistent_keepalive }}
+{% endif %}

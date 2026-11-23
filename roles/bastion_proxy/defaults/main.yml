@@ -1,0 +1,17 @@
+---
+bastion_proxy_port: 3128
+
+# Networks allowed to use the proxy.
+bastion_proxy_allow:
+  - "{{ bastion_lan_cidr | default('172.31.0.0/16') }}"
+
+# Disk cache. Packages are large, so the cache is large too.
+bastion_proxy_cache_dir: /var/spool/squid
+bastion_proxy_cache_size_mb: 30000
+bastion_proxy_cache_mem_mb: 512
+bastion_proxy_maximum_object_size_mb: 1024
+
+# Mirrors like archive.ubuntu.com have many addresses, and some of them may be unreachable.
+# squid tries the next address after this timeout (the squid default is 1 minute,
+# which is longer than the timeout of most clients).
+bastion_proxy_connect_timeout: 5 seconds

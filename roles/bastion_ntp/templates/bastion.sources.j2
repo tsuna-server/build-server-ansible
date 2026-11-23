@@ -1,0 +1,4 @@
+# This file is managed by Ansible (role bastion_ntp). Do not edit by hand.
+{% for pool in bastion_ntp_upstream_pools %}
+pool {{ pool.host }} iburst maxsources {{ pool.maxsources | default(1) }}{{ (' ' + pool.options) if pool.options | default('') else '' }}
+{% endfor %}

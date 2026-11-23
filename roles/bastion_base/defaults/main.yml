@@ -1,0 +1,14 @@
+---
+bastion_timezone: Asia/Tokyo
+
+# Netplan of the bastion. It is rendered into bastion_netplan_file as it is.
+# The default is empty, so it must be set in the inventory (host_vars/<host>).
+bastion_netplan_file: /etc/netplan/00-installer-config.yaml
+bastion_netplan: {}
+
+# Options written to /etc/ssh/sshd_config.d/10-bastion.conf.
+# sshd uses the first value it reads, so this file overrides 50-cloud-init.conf.
+bastion_sshd_options:
+  PasswordAuthentication: "no"
+  KbdInteractiveAuthentication: "no"
+  PermitRootLogin: prohibit-password

@@ -1,0 +1,15 @@
+---
+# Upstream NTP servers added to Ubuntu's default sources (ntp.ubuntu.com with NTS).
+# NICT (Japan) is stratum 1 and close to the home network, so the offset is small.
+# "prefer" is needed because Ubuntu's sources have "prefer", and chrony selects only
+# preferred sources when any of them is usable. An unauthenticated source like NICT is
+# still selected only while it agrees with the NTS sources (authselectmode mix).
+bastion_ntp_upstream_pools:
+  - { host: ntp.nict.jp, maxsources: 2, options: prefer }
+
+# Networks allowed to use bastion as their NTP server.
+bastion_ntp_allow:
+  - "{{ bastion_lan_cidr | default('172.31.0.0/16') }}"
+
+# bastion keeps serving time at this stratum when all the upstream servers are unreachable.
+bastion_ntp_local_stratum: 10

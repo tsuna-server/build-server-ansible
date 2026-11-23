@@ -1,0 +1,42 @@
+---
+- name: Install nftables
+  ansible.builtin.apt:
+    name: nftables
+    update_cache: yes
+    cache_valid_time: 3600
+
+# ufw also writes rules with iptables-nft, and /etc/nftables.conf flushes them.
+# Only nftables manages the firewall of bastion.
+- name: Disable ufw
+  ansible.builtin.systemd:
+    name: ufw
+    state: stopped
+    enabled: no
+  register: result_of_ufw
+  failed_when:
+    - result_of_ufw is failed
+    - "'Could not find the requested service' not in result_of_ufw.msg | default('')"
+
+- name: Configure /etc/nftables.conf
+  ansible.builtin.template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: '0755'
+    backup: yes
+    validate: /usr/sbin/nft -c -f %s
+  notify: Restart nftables
+
+- name: nftables should be enabled and started
+  ansible.builtin.systemd:
+    name: nftables
+    state: started
+    enabled: yes
+
+- name: Run notified handlers of bastion_firewall
+  ansible.builtin.meta: flush_handlers
+
+- name: Ansible can still connect after the firewall was applied
+  ansible.builtin.wait_for_connection:
+    timeout: 30

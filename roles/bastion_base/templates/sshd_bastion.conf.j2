@@ -1,0 +1,4 @@
+# This file is managed by Ansible (role bastion_base). Do not edit by hand.
+{% for key, value in bastion_sshd_options.items() %}
+{{ key }} {{ value }}
+{% endfor %}
